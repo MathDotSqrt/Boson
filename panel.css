@@ -1,0 +1,373 @@
+body {
+  margin: 0;
+  /* font-family: "Lato", sans-serif; */
+  font-family: "Helvetica", sans-serif;
+  /* font-family: "Verdana", sans-serif; */
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+#view {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+}
+
+/*
+
+  PANEL
+
+*/
+
+.side_panel{
+  /* height: 350px; */
+  width: 0px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left 0;
+  background-color: #1d272b;
+  opacity: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-top: 60px;
+  padding-bottom: 30px;
+  transition: .3s;
+
+  max-height: 80%;
+  box-shadow: 0px 0px 5px 2px #111;
+}
+
+/* The sidepanel links */
+.side_panel a {
+  /* padding: 8px 8px 8px 32px; */
+  text-decoration: none;
+  font-size: 25px;
+  color: #AA510E;
+  display: block;
+  transition: 0.3s;
+  white-space: pre;
+}
+
+/* When you mouse over the navigation links, change their color */
+.side_panel a:hover {
+  color: #f3f3f3;
+}
+
+/* Position and style the close button (top right corner) */
+.side_panel .close_btn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+/* Style the button that is used to open the sidepanel */
+.open_btn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #1d272b;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  z-index: 10;
+  position: absolute;
+  opacity: 1;
+
+}
+
+.open_btn:hover {
+  background-color: #303c42;
+}
+
+/* Style Panel Elements */
+.side_panel_element{
+  margin-top: 8px;
+  margin-bottom: 0px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/*
+
+  GLOBAL CONTROLS
+
+*/
+
+.global_controls {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  background-color: #303c42;
+  /* border-style: solid; */
+  border-radius: 5px;
+  /* border-color: #59595b; */
+  /* border-width: 2px; */
+}
+
+.global_controls h3 {
+  color: #E0E0E0;
+  margin: 0px 0px 5px 0px;
+}
+
+.global_control {
+  margin: 0px 0px 5px 5px;
+  /* background-color: #888; */
+}
+
+.global_control p {
+  color: #E0E0E0;
+  margin: 0px;
+}
+
+/*
+
+  SATELLITE PANEL
+
+*/
+
+.element_list {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  background-color: #303c42;
+  /* border-style: solid; */
+  /* border-color: #59595b; */
+  /* border-width: 2px; */
+  border-radius: 5px;
+}
+
+.element_list h3 {
+  color: #E0E0E0;
+  margin: 0px 0px 5px 0px;
+}
+
+.element {
+  margin: 0px 10px 5px 5px;
+  padding: 10px 0px 10px 10px;
+  background-color: #1d272b;
+  /* border-color: #909090; */
+  border-radius: 5px;
+  /* border-width: 2px; */
+  /* border-style: solid; */
+
+  position: relative;
+}
+
+.element p {
+  color: #FFF;
+  margin: 0px;
+  font-weight: bold;
+  user-select: none;
+}
+
+.element_controls {
+  display: none;
+  width: auto;
+  overflow: auto;
+
+  margin-top: 5px;
+  margin-right: 5px;
+
+  background-color: #303c42;
+  border-radius: 5px;
+}
+
+.element.show .element_controls {
+  display: block;
+}
+
+.element_controls p {
+  font-weight: normal;
+}
+
+.element_controls table {
+  width: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.element_controls .data {
+  float: right;
+  color: #999;
+}
+
+.element_controls .orbit_trail_selector {
+  float: right;
+}
+
+.element_controls .sensor_input {
+  float: right;
+  width: 90%;
+  height: 20px;
+  line-height: 20px;
+
+  background-color: #1d272b;
+
+  border-style: dashed;
+  border-width: 2px;
+  border-radius: 5px;
+  border-color: #AA510E;
+  vertical-align: middle;
+
+}
+
+.element_controls .sensor_input p {
+  margin: 0px;
+  text-align: center;
+  color: #818181;
+  font-size: 10px;
+}
+
+.element_controls .sensor_input input {
+  display: none;
+}
+
+.element_list .file_drop {
+  margin: 5px 10px 5px 5px;
+  padding: 10px;
+  border-style: dashed;
+  border-radius: 5px;
+  background-color: #1d272b;
+  /* border-color: #EA7721; GOOD ORANGE */
+  border-color: #AA510E;
+  transition: .1s;
+}
+
+.element_list .file_drop p {
+  margin: 0px;
+  text-align: center;
+  white-space: pre;
+
+  font-size: 15px;
+  color: #818181;
+}
+
+.element_controls .color_picker {
+  -webkit-appearance: none;
+  float: right;
+  width: 35px;
+  height: 15px;
+  padding: 0px;
+  /* border-style: solid; */
+  /* border-width: 2px; */
+  /* border-radius: 5px; */
+  /* border-color: #666; */
+  /* background-color: #666; */
+}
+
+.element_controls .color_picker::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+.element_controls .color_picker::-webkit-color-swatch {
+	border: none;
+}
+
+/*
+
+  SLIDER FORMATTING
+
+*/
+
+.slider_container{
+  position: relative;
+  margin-right: 20px;
+}
+
+.slider_container p {
+  margin: inherit;
+  margin-left: 0px;
+  color: #ffffff;
+  white-space: pre;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  /* opacity: 0.7; */
+  /* -webkit-transition: .2s; */
+  /* transition: opacity .2s; */
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+/*
+
+  DROP BOX
+
+*/
+
+.ephemeris {
+  width: auto;
+  height: auto;
+  border-radius: 5px;
+  padding-top: 0px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #606060;
+
+}
+
+.ephemeris p {
+  /* width: auto; */
+  height: auto;
+  margin: 0px;
+  padding: 0px;
+  padding-left: 10px;
+  font-size: 20px;
+  float: left;
+  text-align: left;
+  color: #FFF;
+a
+}
+
+.ephemeris a {
+  /* width: auto; */
+  float: right;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  padding-right: 10px;
+  text-align: right;
+  float: right;
+  white-space: pre;
+  font-size: 20px;
+  color: #ddd;
+  font-weight: bold;
+}
+
+.ephemeris .clear {
+  clear: both;
+}
+
+.file_input {
+  display: none;
+}

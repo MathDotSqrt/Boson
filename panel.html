@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>EarthDemoPanel</title>
+    <link rel="stylesheet" href="panel.css"></link>
+  </head>
+  <body ondragstart="return false;" ondrop="return false;">
+    <div id="side_panel_1" class="side_panel">
+      <a href="javascript:void(0)" class="close_btn">&times;</a>
+      <div class="side_panel_element slider_container">
+        <p>Simulation Speed</p>
+        <input type="range" min="-20" max="60000" value="10" class="slider" id="speed">
+      </div>
+      <div class="side_panel_element slider_container">
+        <p>Time Step</p>
+        <input type="range" min="0" max="100" value="10" class="slider" id="scrub">
+      </div>
+      <a href="javascript:void(0)" class="side_panel_element" id="head">Load Ephemeris</a>
+      <div class="side_panel_element file_drop" id="file_drop_0">
+        <p>EPHEMERIS FILE</p>
+      </div>
+    </div>
+
+    <button class="open_btn" onclick="">&#9776; Toggle Controls</button>
+    <div id="view"></div>
+
+    <script type="module" src="./js/frontend.js"></script>
+    <!-- <script type="module" type="text/javascript" src="./js/file_loader.js"></script> -->
+    <script type="module" type="text/javascript" src="./js/demo.js"></script>
+
+  </body>
+</html>

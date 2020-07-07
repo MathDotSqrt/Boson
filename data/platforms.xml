@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- ====================================================================== -->
+<!--	Database_name  ==  Engineering_name -->
+<!--    =============      ================ -->
+<!--	name  ==  none:none -->
+<!--	simulationType  ==  ???:??? -->
+<!--  ..................................................................... -->
+<!--	maxImagingWindowDuration  ==  W0000:MaxIWDuration -->
+<!--	minSeperation  ==  W0000:MIN_SEP -->
+<!--	dutyFactorFile  ==  ???:??? -->
+<!--	cwGenerationType  ==  ???:??? -->
+<!--	iwToCWDurationRatio  ==  ???:??? -->
+<!--	scheduleWeighingFactor == DP3730:Wfitness  -->
+<!--  ..................................................................... -->
+<!--	shadeActive  ==   SLEW0000:SHADE_FLAG -->
+<!--	bodyFrameShadeX  ==  SLEW0000:vbSHADE -->
+<!--	bodyFrameShadeY>  ==  SLEW0000:vbSHADE -->
+<!--	bodyFrameShadeZ  ==  SLEW0000:vbSHADE -->
+<!--  ..................................................................... -->
+<!--	numSolarPanels  ==  SPPO0000:numberSolarPanels -->
+<!--	solarPanelAxisAngle  ==  NOCOMM0000:solar_panel_axis_angle, SPAS0000:solar_panel_axis_angle -->
+<!--	solarPanelEavesAngle  ==  EOattitude0000:Theta_eaves -->
+<!--	solarPanelEavesReflexAngle  ==  HK0002:deltaTheta -->
+<!--	solarPanelArea  ==  SPPO0000:solarPanelArea -->
+<!--	solarPanelEfficiency  ==  SPPO0000:solarPanelEfficiency -->
+<!--	solarPanelExponent  ==  SPPO0000:spExponent -->
+<!--	betaAngleCritical  ==  solarBetaAngle0000:solarBetaAngleCritical -->
+<!--	solarBetaAngleManeuverDuration  ==  DS0000:SolarBetaAngleManeuverDuration -->
+<!--  ..................................................................... -->
+<!--	bufferModelEnabled  ==  none:none -->
+<!--	commGimbalModelEnabled  ==  none:none -->
+<!--	powerModelEnabled  ==  none:none -->
+<!--  ..................................................................... -->
+<!--	bufferModelOutput  ==  none:none -->
+<!--	commGimbalModelOutput  ==  none:none -->
+<!--	powerModelOutput  ==  none:none -->
+<!--	slewModelOutput  ==  none:none -->
+<!--	vehicleAttitudeOutput  ==  none:none -->
+<!--  ..................................................................... -->
+<!--	epoch  ==  none, Keplerian element -->
+<!--	semimajorAxisKm  ==  none, Keplerian element -->
+<!--	raanDeg  ==  none, Keplerian element -->
+<!--	inclinationDeg  ==  none, Keplerian element -->
+<!--	argOfPerigeeDeg  ==  none, Keplerian element -->
+<!--	meanAnomalyDeg  ==  none, Keplerian element -->
+<!--	eccentricity  ==  none, Keplerian element -->
+<!--  ..................................................................... -->
+<!--	bufferSize == B0000:BufferSize -->
+<!-- ====================================================================== -->
+
+<config>
+	<satellite>
+		<name>SAR-1</name>
+		<simulationType>INTERNAL</simulationType>
+		
+		<maxImagingWindowDuration>1800</maxImagingWindowDuration>
+		<minSeperation>600</minSeperation>
+		<dutyFactorFile>./platform_duty_factors.csv</dutyFactorFile>
+		<cwGenerationType>UNRESTRICTED</cwGenerationType>
+		<iwToCWDurationRatio>1.0</iwToCWDurationRatio>
+		<scheduleWeighingFactor>.5</scheduleWeighingFactor>      
+		
+		<shadeActive>false</shadeActive>
+		<bodyFrameShadeX>1.0</bodyFrameShadeX>
+		<bodyFrameShadeY>0</bodyFrameShadeY>
+		<bodyFrameShadeZ>0</bodyFrameShadeZ>
+		
+		<numSolarPanels>2</numSolarPanels>
+		<solarPanelAxisAngle>0</solarPanelAxisAngle>
+		<solarPanelEavesAngle>0</solarPanelEavesAngle>
+		<solarPanelEavesReflexAngle>0.0</solarPanelEavesReflexAngle>
+		<solarPanelArea>200</solarPanelArea>
+		<solarPanelEfficiency>0.5</solarPanelEfficiency>
+		<solarPanelExponent>1</solarPanelExponent>
+		<betaAngleCritical>45</betaAngleCritical> 
+		<solarBetaAngleManeuverDuration>120</solarBetaAngleManeuverDuration>
+		
+		<bufferModelEnabled>true</bufferModelEnabled>
+		<commGimbalModelEnabled>true</commGimbalModelEnabled>
+		<powerModelEnabled>false</powerModelEnabled>
+		
+		<bufferModelOutput>true</bufferModelOutput>
+		<commGimbalModelOutput>true</commGimbalModelOutput>
+		<powerModelOutput>true</powerModelOutput>
+		<slewModelOutput>true</slewModelOutput>
+		<vehicleAttitudeOutput>true</vehicleAttitudeOutput>
+		
+		<bonusingEnabled>true</bonusingEnabled>
+		<pointAtEarthBody>false</pointAtEarthBody>
+		<earthPointingX>0.0</earthPointingX>
+		<earthPointingY>0.0</earthPointingY>
+		<earthPointingZ>1.0</earthPointingZ>
+		<solarPanelNormalX>0.0</solarPanelNormalX>
+		<solarPanelNormalY>0.0</solarPanelNormalY>
+		<solarPanelNormalZ>1.0</solarPanelNormalZ>
+		
+		<epoch>2012-12-01 12:00:00 GMT</epoch>
+		<semimajorAxisKm>7271.0</semimajorAxisKm>
+		<raanDeg>120.0</raanDeg>
+		<inclinationDeg>70.0</inclinationDeg>
+		<argOfPerigeeDeg>120.0</argOfPerigeeDeg>
+		<meanAnomalyDeg>180.0</meanAnomalyDeg>
+		<eccentricity>0.0</eccentricity>
+		
+		<commGimbal>CommGimbal-1</commGimbal>
+		<slewModel>SAR_Slew</slewModel>
+		<schedulerModel>DPScheduler</schedulerModel>
+		
+		<sensors>
+			<sensor>RS-1</sensor>
+		</sensors>
+		<buffer>
+			<bufferSize>1e12</bufferSize>
+		</buffer>
+		<power>
+		</power>
+		
+	</satellite>
+	
+	<satellite>
+		<name>EO-1</name>
+		<simulationType>INTERNAL</simulationType>
+		
+		<maxImagingWindowDuration>1800</maxImagingWindowDuration>
+		<minSeperation>600</minSeperation>
+		<dutyFactorFile>./platform_duty_factors.csv</dutyFactorFile>
+		<cwGenerationType>UNRESTRICTED</cwGenerationType>
+		<iwToCWDurationRatio>1.0</iwToCWDurationRatio>
+		<scheduleWeighingFactor>.5</scheduleWeighingFactor> 
+		
+		<shadeActive>false</shadeActive>
+		<bodyFrameShadeX>1.0</bodyFrameShadeX>
+		<bodyFrameShadeY>0</bodyFrameShadeY>
+		<bodyFrameShadeZ>0</bodyFrameShadeZ>
+		
+		<numSolarPanels>2</numSolarPanels>
+		<solarPanelAxisAngle>0</solarPanelAxisAngle>
+		<solarPanelEavesAngle>0</solarPanelEavesAngle>
+		<solarPanelEavesReflexAngle>0.0</solarPanelEavesReflexAngle>
+		<solarPanelArea>200</solarPanelArea>
+		<solarPanelEfficiency>0.5</solarPanelEfficiency>
+		<solarPanelExponent>1</solarPanelExponent>
+		<betaAngleCritical>0</betaAngleCritical>
+		<solarBetaAngleManeuverDuration>120</solarBetaAngleManeuverDuration>
+		
+		<bufferModelEnabled>true</bufferModelEnabled>
+		<commGimbalModelEnabled>true</commGimbalModelEnabled>
+		<powerModelEnabled>false</powerModelEnabled>
+
+		<bufferModelOutput>true</bufferModelOutput>
+		<commGimbalModelOutput>true</commGimbalModelOutput>
+		<powerModelOutput>true</powerModelOutput>
+		<slewModelOutput>true</slewModelOutput>
+		<vehicleAttitudeOutput>true</vehicleAttitudeOutput>
+		
+		<bonusingEnabled>true</bonusingEnabled>
+		<pointAtEarthBody>false</pointAtEarthBody>
+		<earthPointingX>0.0</earthPointingX>
+		<earthPointingY>0.0</earthPointingY>
+		<earthPointingZ>1.0</earthPointingZ>
+		<solarPanelNormalX>0.0</solarPanelNormalX>
+		<solarPanelNormalY>0.0</solarPanelNormalY>
+		<solarPanelNormalZ>1.0</solarPanelNormalZ>
+		
+		<epoch>2012-12-01 12:00:00 GMT</epoch>
+		<semimajorAxisKm>6971.0</semimajorAxisKm>
+		<raanDeg>120.0</raanDeg>
+		<inclinationDeg>98.0</inclinationDeg>
+		<argOfPerigeeDeg>120.0</argOfPerigeeDeg>
+		<meanAnomalyDeg>180.0</meanAnomalyDeg>
+		<eccentricity>0.001479</eccentricity>
+		
+		<commGimbal>CommGimbal-1</commGimbal>
+		<slewModel>EO_Slew</slewModel>
+		<schedulerModel>DPScheduler</schedulerModel>
+		
+		<sensors>
+			<sensor>ES-1</sensor>
+		</sensors>
+		<buffer>
+			<bufferSize>1e12</bufferSize>
+		</buffer>
+		<power>
+		</power>
+	</satellite>
+</config>
