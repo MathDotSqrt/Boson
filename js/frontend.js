@@ -365,21 +365,21 @@ ephemeris.onclick = function(){
   input.click();
 }
 
-const sensor = document.getElementById("file_drop_sensor");
-sensor.ondrop = dropHandlerSensor;
-sensor.ondragover = dragOverHandler;
-sensor.ondragenter = dragStartHandler;
-sensor.ondragleave = dragEndHandler;
-sensor.onclick = function(){
-  const input = document.getElementById("sensor_file_input");
-  input.onchange = function(e){
-    const files = e.target.files;
-    for(const file of files){
-      BOSON_FILELOADER.loadSensorFile(file);
-    }
-  };
-  input.click();
-}
+// const sensor = document.getElementById("file_drop_sensor");
+// sensor.ondrop = dropHandlerSensor;
+// sensor.ondragover = dragOverHandler;
+// sensor.ondragenter = dragStartHandler;
+// sensor.ondragleave = dragEndHandler;
+// sensor.onclick = function(){
+//   const input = document.getElementById("sensor_file_input");
+//   input.onchange = function(e){
+//     const files = e.target.files;
+//     for(const file of files){
+//       BOSON_FILELOADER.loadSensorFile(file);
+//     }
+//   };
+//   input.click();
+// }
 
 const target = document.getElementById("file_drop_target");
 target.ondrop = dropHandlerTarget;
@@ -387,6 +387,7 @@ target.ondragover = dragOverHandler;
 target.ondragenter = dragStartHandler;
 target.ondragleave = dragEndHandler;
 target.onclick = function(){
+  console.log("CHRIS TRENKOV");
   const input = document.getElementById("target_file_input");
   input.onchange = function(e){
     const files = e.target.files;

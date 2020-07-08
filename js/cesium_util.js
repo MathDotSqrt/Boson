@@ -38,66 +38,35 @@ export function create_squint_sensor(entity, min_clock, max_clock, min_angle, ma
   entity.addProperty('customPatternSensor');
   const sensor = entity.customPatternSensor = new CesiumSensors.CustomPatternSensorGraphics();
 
-  const HALF_NUM_POINTS = 16;
+  const NUM_POINTS = 16;
   const angle_delta = max_clock - min_clock;
 
   const directions = [];
-  // for (var i = 0; i < HALF_NUM_POINTS; i++) {
-	// 	const clock = Cesium.Math.toRadians(angle_delta * i / (HALF_NUM_POINTS-1) + min_clock);
-	// 	const cone = Cesium.Math.toRadians(min_angle);
-  //   directions.push(new Cesium.Spherical(clock, cone));
-	// }
-  //
-  // for (var i = HALF_NUM_POINTS-1; i >= 0; i--) {
-	// 	const clock = Cesium.Math.toRadians(angle_delta * i / (HALF_NUM_POINTS - 1) + min_clock);
-	// 	const cone = Cesium.Math.toRadians(min_angle);
-  //   directions.push(new Cesium.Spherical(clock + Math.PI, cone));
-	// }
-
-
-  const clock = Cesium.Math.toRadians(min_clock);
-  const cone = Cesium.Math.toRadians(min_angle);
-  directions.push(new Cesium.Spherical(clock, cone));
-	for (var i = 0; i < HALF_NUM_POINTS; i++) {
-		const clock = Cesium.Math.toRadians(angle_delta * i / (HALF_NUM_POINTS-1) + min_clock);
+  for (var i = 0; i < NUM_POINTS; i++) {
+		const clock = Cesium.Math.toRadians(angle_delta * i / (NUM_POINTS-1) + min_clock);
 		const cone = Cesium.Math.toRadians(min_angle);
     directions.push(new Cesium.Spherical(clock, cone));
 	}
 
-  for (var i = HALF_NUM_POINTS-1; i >= 0; i--) {
-		const clock = Cesium.Math.toRadians(angle_delta * i / (HALF_NUM_POINTS - 1) + min_clock);
+  for(var i = NUM_POINTS - 1; i >= 0; i--){
+    const clock = Cesium.Math.toRadians(angle_delta * i / (NUM_POINTS-1) + min_clock);
 		const cone = Cesium.Math.toRadians(max_angle);
     directions.push(new Cesium.Spherical(clock, cone));
-	}
-  const clock3 = Cesium.Math.toRadians(min_clock);
-  const cone3 = Cesium.Math.toRadians(min_angle);
-  directions.push(new Cesium.Spherical(clock3 + Math.PI, cone3));
-  directions.push(directions[directions.length - 2]);
-  directions.push(new Cesium.Spherical(0, 0, 0));
-  // directions.push(new Cesium.Spherical(.1, .1, .01));
-
-
-  const clock2 = Cesium.Math.toRadians(min_clock);
-  const cone2 = Cesium.Math.toRadians(min_angle);
-  directions.push(new Cesium.Spherical(clock2 + Math.PI, cone2));
-  for(var i = 0; i < HALF_NUM_POINTS; i++){
-    const clock = Cesium.Math.toRadians(angle_delta * i / (HALF_NUM_POINTS-1) + min_clock);
-		const cone = Cesium.Math.toRadians(min_angle);
-    directions.push(new Cesium.Spherical(clock + Math.PI, cone));
   }
 
-  for (var i = HALF_NUM_POINTS-1; i >= 0; i--) {
-		const clock = Cesium.Math.toRadians(angle_delta * i / (HALF_NUM_POINTS - 1) + min_clock);
-		const cone = Cesium.Math.toRadians(max_angle);
+  directions.push(null);
+
+  for (var i = 0; i < NUM_POINTS; i++) {
+		const clock = Cesium.Math.toRadians(angle_delta * i / (NUM_POINTS - 1) + min_clock);
+		const cone = Cesium.Math.toRadians(min_angle);
     directions.push(new Cesium.Spherical(clock + Math.PI, cone));
 	}
 
-  const clock4 = Cesium.Math.toRadians(min_clock);
-  const cone4 = Cesium.Math.toRadians(min_angle);
-  directions.push(new Cesium.Spherical(clock4 + Math.PI, cone4));
-
-  directions.push(directions[directions.length - 2]);
-  directions.push(new Cesium.Spherical(0, 0, 0));
+  for(var i = NUM_POINTS - 1; i >= 0; i--){
+    const clock = Cesium.Math.toRadians(angle_delta * i / (NUM_POINTS-1) + min_clock);
+		const cone = Cesium.Math.toRadians(max_angle);
+    directions.push(new Cesium.Spherical(clock + Math.PI, cone));
+  }
 
 
   sensor.directions = directions;
