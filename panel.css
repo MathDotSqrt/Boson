@@ -168,14 +168,15 @@ canvas {
 
 a.close {
   float: right;
-  color: #AA510E;
-  padding: 0px;
   margin: 0px;
-  height: 5px;
+  padding: 0px;
 
+  height: 5px;
   line-height: 5px;
   vertical-align: middle;
-  user-select: none; 
+  user-select: none;
+  font-size: 35px;
+  color: #AA510E;
 }
 
 .element p {

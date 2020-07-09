@@ -86,7 +86,7 @@ function createEphemerisNode(name, satellite_names){
   const new_node = document.createElement("div");
   new_node.id = name;
   new_node.className = "element showable";
-  insertP(new_node, name, "showable");
+  new_node.append(createDeleteNodeTitle(name, onDeleteHandeler));
 
   const controls = document.createElement("div");
   controls.className = "element_controls";
@@ -131,7 +131,7 @@ function createTargetNode(name, num_targets){
   const new_node = document.createElement("div");
   new_node.id = name;
   new_node.className = "element showable";
-  new_node.append(createDeleteNodeTitle(name));
+  new_node.append(createDeleteNodeTitle(name, onDeleteTargetHandler));
   //insertP(new_node, name, "showable");
 
   const controls = document.createElement("div");
@@ -184,6 +184,7 @@ function createDeleteNodeTitle(text, deleteFunc){
   const close = document.createElement("a");
   close.className = "close";
   close.innerHTML = "&times;";
+  close.onclick = deleteFunc;
   cell1.append(close);
   header.append(table);
 
@@ -289,7 +290,15 @@ function onToggleHandler(event){
 }
 
 function onDeleteHandeler(event){
-  const parentElement = event.target.parentElement;
+
+  // TODO: Fix this. This is kinda bad lol
+  const parentElement = event.target
+    .parentElement
+    .parentElement
+    .parentElement
+    .parentElement
+    .parentElement
+    .parentElement;
   const names = parentElement.getAttribute("ephemeris_name").split(',');
   parentElement.remove();
 
@@ -304,7 +313,16 @@ function onDeleteHandeler(event){
 }
 
 function onDeleteTargetHandler(event){
-  const parentElement = event.target.parentElement;
+  console.log();
+
+  // TODO: Fix this. This is kinda bad lol
+  const parentElement = event.target
+    .parentElement
+    .parentElement
+    .parentElement
+    .parentElement
+    .parentElement
+    .parentElement;
   const names = parentElement.getAttribute("target_set_name").split(',');
   parentElement.remove();
 
