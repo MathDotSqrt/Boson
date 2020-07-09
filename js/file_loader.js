@@ -24,7 +24,7 @@ export function loadEphemerisFile(new_file){
   const fileReader = new FileReader();
   fileReader.onloadstart = function(){
   };
-  fileReader.onload = function(test){
+  fileReader.onload = function(){
     parseEphemerisFile(new_file.name, fileReader.result);
   };
 
@@ -35,7 +35,7 @@ export function loadSensorFile(new_file, func){
   const fileReader = new FileReader();
   fileReader.onloadstart = function(){
   };
-  fileReader.onload = function(test){
+  fileReader.onload = function(){
     const result = parseSensor(new_file.name, fileReader.result);
     if(func && result){
       func(new_file);
@@ -48,9 +48,20 @@ export function loadTargetFile(new_file){
   const fileReader = new FileReader();
   fileReader.onloadstart = function(){
   };
-  fileReader.onload = function(test){
+  fileReader.onload = function(){
     parseTarget(new_file.name, fileReader.result);
   };
+  fileReader.readAsText(new_file);
+}
+
+export function loadScheduleFile(new_file){
+  const fileReader = new FileReader();
+  fileReader.onloadstart = function(){
+  };
+  fileReader.onload = function(){
+    parseSchedule(new_file, fileReader.result);
+  };
+
   fileReader.readAsText(new_file);
 }
 
@@ -174,4 +185,9 @@ function parseSensor(name, lines){
   }
 
   return true;
+}
+
+function parseSchedule(name, lines){
+  lines = lines.split('\n');
+  console.log(lines[0]);
 }

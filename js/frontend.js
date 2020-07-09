@@ -397,6 +397,13 @@ function dropHandlerTarget(event){
   BOSON_FILELOADER.loadTargetFile(file);
 }
 
+function dropHandlerSchedule(event){
+  event.preventDefault();
+  if(!BOSON_FILELOADER.isValidFile(event)) return;
+  const file = event.dataTransfer.items[0].getAsFile();
+  BOSON_FILELOADER.loadScheduleFile(file);
+}
+
 const ephemeris = document.getElementById("file_drop_ephemeris");
 ephemeris.ondrop = dropHandlerEphemeris;
 ephemeris.ondragover = dragOverHandler;
@@ -413,21 +420,6 @@ ephemeris.onclick = function(){
   input.click();
 }
 
-// const sensor = document.getElementById("file_drop_sensor");
-// sensor.ondrop = dropHandlerSensor;
-// sensor.ondragover = dragOverHandler;
-// sensor.ondragenter = dragStartHandler;
-// sensor.ondragleave = dragEndHandler;
-// sensor.onclick = function(){
-//   const input = document.getElementById("sensor_file_input");
-//   input.onchange = function(e){
-//     const files = e.target.files;
-//     for(const file of files){
-//       BOSON_FILELOADER.loadSensorFile(file);
-//     }
-//   };
-//   input.click();
-// }
 
 const target = document.getElementById("file_drop_target");
 target.ondrop = dropHandlerTarget;
@@ -435,12 +427,27 @@ target.ondragover = dragOverHandler;
 target.ondragenter = dragStartHandler;
 target.ondragleave = dragEndHandler;
 target.onclick = function(){
-  console.log("CHRIS TRENKOV");
   const input = document.getElementById("target_file_input");
   input.onchange = function(e){
     const files = e.target.files;
     for(const file of files){
       BOSON_FILELOADER.loadTargetFile(file);
+    }
+  };
+  input.click();
+}
+
+const schedule = document.getElementById("file_drop_schedule");
+schedule.ondrop = dropHandlerSchedule;
+schedule.ondragover = dragOverHandler;
+schedule.ondragenter = dragStartHandler;
+schedule.ondragleave = dragEndHandler;
+schedule.onclick = function(){
+  const input = document.getElementById("schedule_file_input");
+  input.onchange = function(e){
+    const files = e.target.files;
+    for(const file of files){
+      BOSON_FILELOADER.loadScheduleFile(file);
     }
   };
   input.click();
