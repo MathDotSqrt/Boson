@@ -168,9 +168,14 @@ canvas {
 
 a.close {
   float: right;
-  color: #f0f;
+  color: #AA510E;
   padding: 0px;
   margin: 0px;
+  height: 5px;
+
+  line-height: 5px;
+  vertical-align: middle;
+  user-select: none; 
 }
 
 .element p {

@@ -176,8 +176,11 @@ function createDeleteNodeTitle(text, deleteFunc){
   const tr = table.insertRow(-1);
 
   const cell0 = tr.insertCell(0);
+  cell0.className = "showable";
   insertP(cell0, text, "showable");
   const cell1 = tr.insertCell(1);
+  cell1.className = "showable";
+
   const close = document.createElement("a");
   close.className = "close";
   close.innerHTML = "&times;";
