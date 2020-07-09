@@ -31,12 +31,15 @@ export function loadEphemerisFile(new_file){
   fileReader.readAsText(new_file);
 }
 
-export function loadSensorFile(new_file){
+export function loadSensorFile(new_file, func){
   const fileReader = new FileReader();
   fileReader.onloadstart = function(){
   };
   fileReader.onload = function(test){
-    parseSensor(new_file.name, fileReader.result);
+    const result = parseSensor(new_file.name, fileReader.result);
+    if(func && result){
+      func(new_file);
+    }
   };
   fileReader.readAsText(new_file);
 }
@@ -170,5 +173,5 @@ function parseSensor(name, lines){
     BOSON.import_sensor(sensor);
   }
 
-
+  return true;
 }

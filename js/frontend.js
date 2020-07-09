@@ -131,7 +131,8 @@ function createTargetNode(name, num_targets){
   const new_node = document.createElement("div");
   new_node.id = name;
   new_node.className = "element showable";
-  insertP(new_node, name, "showable");
+  new_node.append(createDeleteNodeTitle(name));
+  //insertP(new_node, name, "showable");
 
   const controls = document.createElement("div");
   controls.className = "element_controls";
@@ -165,6 +166,25 @@ function createTargetNode(name, num_targets){
     new_node.classList.toggle("show");
   }
   return new_node;
+}
+
+function createDeleteNodeTitle(text, deleteFunc){
+  const header = document.createElement("div");
+  header.className = "title showable";
+
+  const table = document.createElement("table");
+  const tr = table.insertRow(-1);
+
+  const cell0 = tr.insertCell(0);
+  insertP(cell0, text, "showable");
+  const cell1 = tr.insertCell(1);
+  const close = document.createElement("a");
+  close.className = "close";
+  close.innerHTML = "&times;";
+  cell1.append(close);
+  header.append(table);
+
+  return header;
 }
 
 function createOrbitSelector(names){
@@ -225,13 +245,20 @@ function createSensorInput(name){
   file_input.id = id;
   sensor_input.append(file_input);
 
+  function appendSensor(file){
+    sensor_input.classList.add("selected");
+    const p = sensor_input.getElementsByTagName("p");
+    if(p){
+      p[0].innerHTML = file.name.split('.')[0];
+    }
+  }
+
   sensor_input.onclick = function(){
-    console.log("CHIRS TRENKOV");
     const file_input = document.getElementById(id);
     file_input.onchange = function(e){
       const files = e.target.files;
       for(const file of files){
-        BOSON_FILELOADER.loadSensorFile(file);
+        BOSON_FILELOADER.loadSensorFile(file, appendSensor);
       }
     };
     file_input.click();

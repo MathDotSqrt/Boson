@@ -151,7 +151,7 @@ canvas {
 
 .element {
   margin: 0px 10px 5px 5px;
-  padding: 10px 0px 10px 10px;
+  padding: 10px 10px 10px 10px;
   background-color: #1d272b;
   /* border-color: #909090; */
   border-radius: 5px;
@@ -159,6 +159,18 @@ canvas {
   /* border-style: solid; */
 
   position: relative;
+}
+
+.element .title table{
+  width: 100%;
+  /* background-color: #f0f; */
+}
+
+a.close {
+  float: right;
+  color: #f0f;
+  padding: 0px;
+  margin: 0px;
 }
 
 .element p {
@@ -174,7 +186,7 @@ canvas {
   overflow: auto;
 
   margin-top: 5px;
-  margin-right: 5px;
+  /* margin-right: 5px; */
 
   background-color: #303c42;
   border-radius: 5px;
@@ -211,12 +223,16 @@ canvas {
 
   background-color: #1d272b;
 
+
+  vertical-align: middle;
+
+}
+
+.element_controls .sensor_input:not(.selected) {
   border-style: dashed;
   border-width: 2px;
   border-radius: 5px;
   border-color: #AA510E;
-  vertical-align: middle;
-
 }
 
 .element_controls .sensor_input p {
@@ -228,6 +244,13 @@ canvas {
 
 .element_controls .sensor_input input {
   display: none;
+}
+
+.element_controls .sensor_input.selected {
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 5px;
+  border-color: #AA510E;
 }
 
 .element_list .file_drop {
