@@ -189,5 +189,46 @@ function parseSensor(name, lines){
 
 function parseSchedule(name, lines){
   lines = lines.split('\n');
-  console.log(lines[0]);
+  const PLATFORM = "PlatformID";
+  const TARGET = "TargetID";
+  const START = "ImageStartTime";
+  const END = "ImageEndTime";
+
+  const header = lines[0].split(',');
+  const platformIndex = header.indexOf(PLATFORM);
+  const targetIndex = header.indexOf(TARGET);
+  const startIndex = header.indexOf(START);
+  const endIndex = header.indexOf(END);
+
+  if(platformIndex === -1
+    || targetIndex === -1
+    || startIndex === -1
+    || endIndex === -1){
+
+    return false;
+  }
+
+  const schedule = {};
+
+  for(var i = 1; i < lines.length; i++){
+    const line = lines[i];
+    const split = line.split(',');
+    const platformID = parseInt(split[platformIndex]);
+    const targetID = split[targetIndex];
+    const start = parseFloat(split[startIndex]);
+    const end = parseFloat(split[endIndex]);
+
+    if(!(platformID in schedule)){
+      schedule[platformID] = {
+        platformID: platformID,
+        targets: [],
+        interval: []
+      };
+    }
+
+    schedule[platformID].targets.push(targetID);
+    schedule[platformID].interval.push(start, end);
+  }
+
+  console.log(schedule);
 }
