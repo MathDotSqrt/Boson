@@ -55,7 +55,6 @@ export function create_orbit(name, ephemeris, color){
     interpolationAlgorithm : Cesium.LagrangePolynomialApproximation,
     interpolationDegree : 2
   });
-  console.log(pos_property);
 
   for(var index = 0; index < ephemeris.position.length/3; index += 1){
     const pos_x = ephemeris.position[3 * index + 0];
@@ -122,6 +121,7 @@ const temp0_vec3 = new Cesium.Cartesian3();
 const temp1_vec3 = new Cesium.Cartesian3();
 const temp0_quat = new Cesium.Quaternion();
 const temp1_quat = new Cesium.Quaternion();
+
 export function update_satellite(name){
   const time = viewer.clock.currentTime;
   const entity = viewer.entities.getById(name);
@@ -173,7 +173,7 @@ export function draw_all_targets(name, target_set){
       geometry : polygon,
       id : target.id,
       attributes : {
-        color : Math.random() > .5 ? color0 : color1
+        color : color0
       }
     });
 
@@ -182,12 +182,11 @@ export function draw_all_targets(name, target_set){
 
   target_primitives[name] = new Cesium.Primitive({
     geometryInstances : instances,
-    appearance : BOSON_UTIL.create_material()
+    appearance : BOSON_UTIL.create_material(),
+    allowPicking : false  //for performance reasons
   });
 
   viewer.scene.primitives.add(target_primitives[name]);
-  console.log(target_primitives);
-  BOSON_UTIL.create_material();
 }
 
 export function remove_target_set(name){
@@ -251,4 +250,12 @@ export function set_select_target_color(id, cssColor){
   const color = Cesium.Color.fromCssColorString(cssColor).withAlpha(.9);
   const primitive = target_primitives[id];
   primitive.appearance.material.uniforms.select = color;
+}
+
+export function select_target(target_set, target_id){
+  const primitive = target_primitives[target_set];
+  const attrib = primitive.getGeometryInstanceAttributes(target_id);
+  if(attrib){
+    attrib.color = new Cesium.ColorGeometryInstanceAttribute(0, 0, 0, 1).value;
+  }
 }

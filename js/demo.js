@@ -155,6 +155,9 @@ export function set_satellite_color(name, css_color){
 
 export function set_target_color(name, css_color){
   BOSON_RENDER.set_target_color(name, css_color);
+  BOSON_RENDER.select_target(name, "D1");
+  BOSON_RENDER.select_target(name, "D3");
+  BOSON_RENDER.select_target(name, "D123123123");
 }
 
 export function set_select_target_color(name, css_color){

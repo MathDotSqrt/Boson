@@ -28,8 +28,6 @@ void main() {
 }
 `
 
-//https://github.com/CesiumGS/cesium/wiki/Fabric
-//Fabric lives in the fragment shader.
 /*
   https://github.com/CesiumGS/cesium/wiki/Fabric
   Frabric lives in the fragment shader. A custom
@@ -37,7 +35,6 @@ void main() {
   fragment. The v_color attribute was passed from
   the vertex shader and is used to select which uniform
   color to use.
-
 */
 const fabric_source =
 `
