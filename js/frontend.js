@@ -151,6 +151,9 @@ function createTargetNode(name, num_targets){
   const color_picker = createColorPicker(name, BOSON.set_target_color);
   insert_field(table, "Color", color_picker);
 
+  const color_select_picker = createColorPicker(name, BOSON.set_select_target_color);
+  insert_field(table, "Select Color", color_select_picker);
+
   const p = document.createElement("p");
   p.className = "data";
   p.append(document.createTextNode(num_targets + ""));

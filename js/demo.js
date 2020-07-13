@@ -154,8 +154,11 @@ export function set_satellite_color(name, css_color){
 }
 
 export function set_target_color(name, css_color){
-  const ids = BOSON_TARGETS.get_all_target_ids();
-  BOSON_RENDER.set_target_color(name, css_color, ids);
+  BOSON_RENDER.set_target_color(name, css_color);
+}
+
+export function set_select_target_color(name, css_color){
+  BOSON_RENDER.set_select_target_color(name, css_color);
 }
 
 init(document.getElementById("view"));

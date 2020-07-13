@@ -161,8 +161,12 @@ export function draw_all_targets(name, target_set){
 
     const polygon = Cesium.PolygonGeometry.fromPositions({
       positions: Cesium.Cartesian3.fromDegreesArray(coords),
-      //vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
-      vertexFormat : Cesium.VertexFormat.ALL,
+
+      vertexFormat : new Cesium.VertexFormat({
+        position : true,
+        st : true,
+        color : true
+      }),
     });
 
     const instance = new Cesium.GeometryInstance({
@@ -237,14 +241,14 @@ export function set_sensor_color(id, sensor_type, css_color){
   }
 }
 
-var bool = false;
-export function set_target_color(id, cssColor, targets){
-  var color0 = new Cesium.ColorGeometryInstanceAttribute(1, 0, 0, 0.5);
-
-  const color = Cesium.Color.fromCssColorString(cssColor).withAlpha(.5);
+export function set_target_color(id, cssColor){
+  const color = Cesium.Color.fromCssColorString(cssColor).withAlpha(.9);
   const primitive = target_primitives[id];
   primitive.appearance.material.uniforms.color = color;
-  //primitive.appearance.material.uniforms.color = color;
+}
 
-  bool = true;
+export function set_select_target_color(id, cssColor){
+  const color = Cesium.Color.fromCssColorString(cssColor).withAlpha(.9);
+  const primitive = target_primitives[id];
+  primitive.appearance.material.uniforms.target = color;
 }
