@@ -44,7 +44,11 @@ export function create_scene(dom){
   viewer.timeline.zoomTo(start, stop);
 }
 
-export function update(){
+export function addPreRenderEvent(update){
+  viewer.scene.preRender.addEventListener(function(){
+    const seconds = Cesium.JulianDate.secondsDifference(viewer.clock.currentTime, viewer.clock.startTime);
+    update(seconds);
+  });
   //todo only render when somthing changes
   //viewer.scene.requestRender();
 };

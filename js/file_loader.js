@@ -218,6 +218,8 @@ function parseSchedule(name, lines){
     const start = parseFloat(split[startIndex]);
     const end = parseFloat(split[endIndex]);
 
+    if(targetID && targetID.includes("stk")) continue;
+
     if(!(platformID in schedule)){
       schedule[platformID] = {
         platformID: platformID,
@@ -230,5 +232,5 @@ function parseSchedule(name, lines){
     schedule[platformID].interval.push(start, end);
   }
 
-  console.log(schedule);
+  BOSON.import_schedule(name, schedule);
 }

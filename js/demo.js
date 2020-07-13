@@ -1,16 +1,15 @@
 "use strict";
 
-import * as THREE from './build/three.module.js'
-
-
 import * as BOSON_RENDER from './cesium_scene.js';
-import * as BOSON_UTIL from './util.js';
 import * as BOSON_ORBIT from './orbit.js';
 import * as BOSON_EPHEMERIS from './ephemeris.js';
 import * as BOSON_TARGETS from './targets.js';
 
+import Schedule from './schedule.js'
+
 const current_simulations = {};
 const current_target_sets = {};
+var current_schedule = null;
 
 class Sensor {
   constructor(name, type, min_value, max_value){
@@ -135,19 +134,24 @@ function get_by_platform_id(id){
 
 function init(dom){
   BOSON_RENDER.create_scene(dom);
+  BOSON_RENDER.addPreRenderEvent(updateTime);
+}
 
-  function animate(){
-    requestAnimationFrame(animate)
-    updateTime();
-    BOSON_RENDER.update();
+function updateTime(seconds){
+  for(const satellite of Object.values(current_simulations)){
+    satellite.update();
   }
 
-  function updateTime(){
-    for(const satellite of Object.values(current_simulations)){
-      satellite.update();
+  if(current_schedule){
+    const id1 = current_schedule.getTargetID(1, seconds);
+    const id2 = current_schedule.getTargetID(2, seconds);
+    if(id1) console.log(id1);
+    if(id2) console.log(id2);
+    for(const target_set of Object.values(current_target_sets)){
+      if(id1) target_set.selectTargetByID(id1);
+      if(id2) target_set.selectTargetByID(id2);
     }
   }
-  animate();
 }
 
 export async function import_data(name, id=-1){
@@ -175,16 +179,6 @@ export function import_sensor(sensor_parameter){
   console.log(satellite.sensor);
 }
 
-export async function import_target_set(name){
-  current_target_sets[name] = new TargetSet(name, "#00FF00", "#FF0000");
-}
-
-export function delete_target_set(name){
-  BOSON_RENDER.remove_target_set(name);
-  delete current_target_sets[name];
-}
-
-
 export function set_orbit_trail(names, value){
   for(const name of names){
     current_simulations[name].orbit_trail = value;
@@ -195,12 +189,27 @@ export function set_satellite_color(name, css_color){
   current_simulations[name].color = css_color;
 }
 
+export async function import_target_set(name){
+  current_target_sets[name] = new TargetSet(name, "#00FF00", "#FF0000");
+}
+
+export function delete_target_set(name){
+  BOSON_RENDER.remove_target_set(name);
+  delete current_target_sets[name];
+}
+
 export function set_target_color(name, css_color){
   current_target_sets[name].color = css_color;
 }
 
 export function set_select_target_color(name, css_color){
   current_target_sets[name].selectColor = css_color;
+}
+
+export function import_schedule(name, schedule){
+  if(!current_schedule){
+    current_schedule = new Schedule(schedule);
+  }
 }
 
 init(document.getElementById("view"));
