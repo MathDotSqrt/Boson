@@ -153,30 +153,32 @@ export function update_satellite(name){
 
 
 export function draw_all_targets(name, target_set){
-  var color = new Cesium.ColorGeometryInstanceAttribute(0.0, 1.0, 1.0, 0.5);
+  var color1 = new Cesium.ColorGeometryInstanceAttribute(0, 0, 0, 1);
+  var color0 = new Cesium.ColorGeometryInstanceAttribute(0, 0, 0, 0);
   const instances = [];
   for(const target of Object.values(target_set)){
     const coords = target.coords;
 
     const polygon = Cesium.PolygonGeometry.fromPositions({
       positions: Cesium.Cartesian3.fromDegreesArray(coords),
-      vertexFormat : Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
+      //vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+      vertexFormat : Cesium.VertexFormat.ALL,
     });
 
     const instance = new Cesium.GeometryInstance({
       geometry : polygon,
       id : target.id,
       attributes : {
-        color : color
+        color : Math.random() > .5 ? color0 : color1
       }
     });
 
     instances.push(instance);
   }
 
-  target_primitives[name] = new Cesium.GroundPrimitive({
+  target_primitives[name] = new Cesium.Primitive({
     geometryInstances : instances,
-    appearance : new Cesium.PerInstanceColorAppearance()
+    appearance : BOSON_UTIL.create_material()
   });
 
   viewer.scene.primitives.add(target_primitives[name]);
@@ -237,18 +239,12 @@ export function set_sensor_color(id, sensor_type, css_color){
 
 var bool = false;
 export function set_target_color(id, cssColor, targets){
-  if(targets && bool){
-    var color0 = new Cesium.ColorGeometryInstanceAttribute(1, 0, 0, 0.5);
+  var color0 = new Cesium.ColorGeometryInstanceAttribute(1, 0, 0, 0.5);
 
-    const color = Cesium.Color.fromCssColorString(cssColor).withAlpha(.5);
-    const primitive = target_primitives[id];
+  const color = Cesium.Color.fromCssColorString(cssColor).withAlpha(.5);
+  const primitive = target_primitives[id];
+  primitive.appearance.material.uniforms.color = color;
+  //primitive.appearance.material.uniforms.color = color;
 
-    const value = Cesium.ColorGeometryInstanceAttribute.fromColor(color).value;
-    console.log(targets);
-    for(const targetID of targets){
-      const attrib = primitive.getGeometryInstanceAttributes(targetID);
-      attrib.color = value;
-    }
-  }
   bool = true;
 }

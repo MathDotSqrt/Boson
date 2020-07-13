@@ -1,17 +1,60 @@
+/*
+  This is the same vertex shader as EllipsoidSurfaceAppearance.
+  I have added color attribute and passed it to the fragment shader
+*/
+const vertexSource =
+`
+attribute vec3 position3DHigh;
+attribute vec3 position3DLow;
+attribute vec2 st;
+attribute vec4 color;         //added color attribute
+attribute float batchId;
+varying vec3 v_positionMC;
+varying vec3 v_positionEC;
+varying vec2 v_st;
+varying vec4 v_color;         //define fragment variable for color attribute
+void main() {
+  vec4 p = czm_computePosition();
+  v_positionMC = position3DHigh + position3DLow;
+  v_positionEC = (czm_modelViewRelativeToEye * p).xyz;
+  v_st = st;
+  v_color = color;            //apply vertex color attribute to fragment
+  gl_Position = czm_modelViewProjectionRelativeToEye * p;
+}
+`
+
+//https://github.com/CesiumGS/cesium/wiki/Fabric
+//fabric lives in the fragment shader
+const fabric_source =
+`
+varying vec4 v_color;         //fragment color attribute
+czm_material czm_getMaterial(czm_materialInput materialInput){
+  czm_material m = czm_getDefaultMaterial(materialInput);
+  m.diffuse = v_color.a > .5 ? target.rgb : color.rgb;
+  m.alpha = v_color.a > .5 ? target.a : color.a;
+  return m;
+}
+`
 
 export function create_material(){
   const material = new Cesium.Material({
     fabric : {
-      type: 'Color',
       uniforms : {
-        color : new Cesium.Color(1, 1, 0, 1)
-      }
+        color : new Cesium.Color(1, 1, 0, 1),
+        target : new Cesium.Color(1, 0, 1, 1)
+      },
+      source : fabric_source
     }
   });
 
+  const appearance = new Cesium.EllipsoidSurfaceAppearance({
+    flat : true,
+    vertexShaderSource : vertexSource,
+    //fragmentShaderSource : fragmentSource,  //no need for a custom fragment shader
+    material : material,
+  });
 
-
-  console.log(material);
+  return appearance;
 }
 
 export function create_rectangular_sensor(entity, x_angle, y_angle, color){
