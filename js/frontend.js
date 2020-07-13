@@ -151,7 +151,7 @@ function createTargetNode(name, num_targets){
   const color_picker = createColorPicker(name, BOSON.set_target_color);
   insert_field(table, "Color", color_picker);
 
-  const color_select_picker = createColorPicker(name, BOSON.set_select_target_color);
+  const color_select_picker = createColorPicker(name, BOSON.set_select_target_color, "#ff0000");
   insert_field(table, "Select Color", color_select_picker);
 
   const p = document.createElement("p");
@@ -222,13 +222,13 @@ function createOrbitSelector(names){
 }
 
 const colors = ["#34b1eb", "#00FFFF", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#C02B9A"];
-function createColorPicker(id, set_color_func){
+function createColorPicker(id, set_color_func, default_color){
   const color_picker = document.createElement("input");
   color_picker.className = "color_picker";
   color_picker.type = "color";
   color_picker.id = id;
 
-  const color = colors.pop();
+  const color = default_color ? default_color : colors.pop();
   color_picker.value = color;
   color_picker.addEventListener("input", function(event){
     set_color_func(id, event.target.value);

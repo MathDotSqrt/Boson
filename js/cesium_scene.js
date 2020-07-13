@@ -186,6 +186,7 @@ export function draw_all_targets(name, target_set){
     allowPicking : false  //for performance reasons
   });
 
+  console.log(target_primitives[name]);
   viewer.scene.primitives.add(target_primitives[name]);
 }
 
@@ -254,8 +255,12 @@ export function set_select_target_color(id, cssColor){
 
 export function select_target(target_set, target_id){
   const primitive = target_primitives[target_set];
+  console.log(primitive);
   const attrib = primitive.getGeometryInstanceAttributes(target_id);
+  console.log(attrib);
   if(attrib){
+    console.log("CHRIS TRENKOV");
+
     attrib.color = new Cesium.ColorGeometryInstanceAttribute(0, 0, 0, 1).value;
   }
 }

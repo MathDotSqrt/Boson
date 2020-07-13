@@ -10,6 +10,7 @@ import * as BOSON_EPHEMERIS from './ephemeris.js';
 import * as BOSON_TARGETS from './targets.js';
 
 const current_simulations = {};
+const current_target_sets = {};
 
 class Sensor {
   constructor(name, type, min_value, max_value){
@@ -81,6 +82,47 @@ class Satellite {
   }
 }
 
+class TargetSet {
+  constructor(name, color, selectColor){
+    this._name = name;
+
+    const target_set = BOSON_TARGETS.get_target_set(name);
+    BOSON_RENDER.draw_all_targets(name, target_set);
+
+    this.color = color;
+    this.selectColor = selectColor;
+
+  }
+
+  get name(){
+    return this._name;
+  }
+
+  get color(){
+    return this._color;
+  }
+  set color(color){
+    BOSON_RENDER.set_target_color(this._name, color);
+    this._color = color;
+  }
+
+  get selectColor(){
+    return this._selectColor;
+  }
+  set selectColor(selectColor){
+    BOSON_RENDER.set_select_target_color(this._name, selectColor);
+    this._selectColor;
+  }
+
+  selectTargetByID(id){
+    BOSON_RENDER.select_target(this._name, id);
+  }
+
+  update(schedule){
+
+  }
+};
+
 function get_by_platform_id(id){
   for(const satellite of Object.values(current_simulations)){
     if(satellite.id === id){
@@ -134,12 +176,12 @@ export function import_sensor(sensor_parameter){
 }
 
 export async function import_target_set(name){
-  const target_set = BOSON_TARGETS.get_target_set(name);
-  BOSON_RENDER.draw_all_targets(name, target_set);
+  current_target_sets[name] = new TargetSet(name, "#00FF00", "#FF0000");
 }
 
 export function delete_target_set(name){
   BOSON_RENDER.remove_target_set(name);
+  delete current_target_sets[name];
 }
 
 
@@ -154,14 +196,11 @@ export function set_satellite_color(name, css_color){
 }
 
 export function set_target_color(name, css_color){
-  BOSON_RENDER.set_target_color(name, css_color);
-  BOSON_RENDER.select_target(name, "D1");
-  BOSON_RENDER.select_target(name, "D3");
-  BOSON_RENDER.select_target(name, "D123123123");
+  current_target_sets[name].color = css_color;
 }
 
 export function set_select_target_color(name, css_color){
-  BOSON_RENDER.set_select_target_color(name, css_color);
+  current_target_sets[name].selectColor = css_color;
 }
 
 init(document.getElementById("view"));
