@@ -1,6 +1,11 @@
 /*
-  This is the same vertex shader as EllipsoidSurfaceAppearance.
-  I have added color attribute and passed it to the fragment shader
+  This is a modified version of EllipsoidSurfaceAppearance vertex shader.
+  The only modification was adding the color attribute and passing it
+  to the fragment shader. This color attribute is a value passed to each
+  vertex in the shader. The color attribute's alpha value is used in the
+  fragment shader to decide whether to sample from a default color uniform
+  or from a selected color uniform. This is done for performance reasons
+
 */
 const vertexSource =
 `
@@ -24,14 +29,23 @@ void main() {
 `
 
 //https://github.com/CesiumGS/cesium/wiki/Fabric
-//fabric lives in the fragment shader
+//Fabric lives in the fragment shader.
+/*
+  https://github.com/CesiumGS/cesium/wiki/Fabric
+  Frabric lives in the fragment shader. A custom
+  material is defined with this source to color the
+  fragment. The v_color attribute was passed from
+  the vertex shader and is used to select which uniform
+  color to use.
+
+*/
 const fabric_source =
 `
-varying vec4 v_color;         //fragment color attribute
+varying vec4 v_color;         //fragment color attribute from vertex shader
 czm_material czm_getMaterial(czm_materialInput materialInput){
   czm_material m = czm_getDefaultMaterial(materialInput);
-  m.diffuse = v_color.a > .5 ? target.rgb : color.rgb;
-  m.alpha = v_color.a > .5 ? target.a : color.a;
+  m.diffuse = v_color.a > .5 ? select.rgb : color.rgb;
+  m.alpha = v_color.a > .5 ? select.a : color.a;
   return m;
 }
 `
@@ -41,7 +55,7 @@ export function create_material(){
     fabric : {
       uniforms : {
         color : new Cesium.Color(1, 1, 0, 1),
-        target : new Cesium.Color(1, 0, 1, 1)
+        select : new Cesium.Color(1, 0, 1, 1)
       },
       source : fabric_source
     }

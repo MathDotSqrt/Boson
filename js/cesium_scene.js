@@ -250,5 +250,5 @@ export function set_target_color(id, cssColor){
 export function set_select_target_color(id, cssColor){
   const color = Cesium.Color.fromCssColorString(cssColor).withAlpha(.9);
   const primitive = target_primitives[id];
-  primitive.appearance.material.uniforms.target = color;
+  primitive.appearance.material.uniforms.select = color;
 }
