@@ -1,5 +1,18 @@
 
+export function create_material(){
+  const material = new Cesium.Material({
+    fabric : {
+      type: 'Color',
+      uniforms : {
+        color : new Cesium.Color(1, 1, 0, 1)
+      }
+    }
+  });
 
+
+
+  console.log(material);
+}
 
 export function create_rectangular_sensor(entity, x_angle, y_angle, color){
   console.log('CHRIS TRENKOV');
@@ -32,6 +45,8 @@ export function create_conic_sensor(entity, inner_half_angle, outer_half_angle, 
     outline: new Cesium.ConstantProperty(true),
     show: false
   });
+
+  console.log(new Cesium.CheckerboardMaterialProperty());
 }
 
 export function create_squint_sensor(entity, min_clock, max_clock, min_angle, max_angle, color){
