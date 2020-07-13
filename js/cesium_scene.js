@@ -241,7 +241,7 @@ export function set_sensor_color(id, sensor_type, css_color){
 }
 
 export function set_target_color(id, cssColor){
-  const color = Cesium.Color.fromCssColorString(cssColor).withAlpha(.9);
+  const color = Cesium.Color.fromCssColorString(cssColor).withAlpha(.5);
   const primitive = target_primitives[id];
   primitive.appearance.material.uniforms.color = color;
 }
