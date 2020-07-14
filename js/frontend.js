@@ -53,7 +53,7 @@ function createSatelliteNode(name){
     cell1.append(field);
   }
 
-  const color_picker = createColorPicker(name, BOSON.set_satellite_color);
+  const color_picker = createColorPicker(name, simulation.setOrbitColor);
   insert_field(table, "Color", color_picker);
 
   const alpha_data = document.createElement("p");
@@ -147,10 +147,10 @@ function createTargetNode(name, num_targets){
     cell1.append(field);
   }
 
-  const color_picker = createColorPicker(name, BOSON.set_target_color);
+  const color_picker = createColorPicker(name, simulation.setTargetColor);
   insert_field(table, "Color", color_picker);
 
-  const color_select_picker = createColorPicker(name, BOSON.set_select_target_color, "#ff0000");
+  const color_select_picker = createColorPicker(name, simulation.setTargetSelectColor, "#ff0000");
   insert_field(table, "Select Color", color_select_picker);
 
   const p = document.createElement("p");
@@ -198,7 +198,7 @@ function createOrbitSelector(names){
   select.className = "orbit_trail_selector";
   select.onchange = function(event){
     const value = select.options[select.selectedIndex].value;
-    BOSON.set_orbit_trail(names, value);
+    simulation.setOrbitTrail(names, value);
   }
 
   const option_all = document.createElement("option");
@@ -286,9 +286,9 @@ function insertP(parent, text, className=""){
 /* FILE DROP */
 
 function onToggleHandler(event){
-  const parentElement = event.target.parentElement;
-  const names = parentElement.getAttribute("ephemeris_name").split(',');
-  BOSON.make_trail_visible(names);
+  // const parentElement = event.target.parentElement;
+  // const names = parentElement.getAttribute("ephemeris_name").split(',');
+  // BOSON.make_trail_visible(names);
 }
 
 function onDeleteHandeler(event){
@@ -304,19 +304,16 @@ function onDeleteHandeler(event){
   const names = parentElement.getAttribute("ephemeris_name").split(',');
   parentElement.remove();
 
-  console.log('removed: ' + names);
-
   for(const name of names){
     BOSON_EPHEMERIS.delete_ephemeris(name);
     deleteSatelliteNode(name);
   }
 
-  BOSON.remove_simulation(names);
+  simulation.removeOrbit(names);
+  //BOSON.remove_simulation(names);
 }
 
 function onDeleteTargetHandler(event){
-  console.log();
-
   // TODO: Fix this. This is kinda bad lol
   const parentElement = event.target
     .parentElement
@@ -328,13 +325,12 @@ function onDeleteTargetHandler(event){
   const names = parentElement.getAttribute("target_set_name").split(',');
   parentElement.remove();
 
-  console.log('removed: ' + names);
-
   for(const name of names){
     BOSON_TARGETS.delete_target_set(name);
+    simulation.removeTargetSet(name);
   }
 
-  BOSON.delete_target_set(names);
+  //BOSON.delete_target_set(names);
 }
 
 export function appendDropFileElement(name, satellite_names){

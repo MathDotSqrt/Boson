@@ -81,7 +81,7 @@ class Satellite {
 class TargetSet {
   constructor(name, color, selectColor, scene){
     this._name = name;
-    this._scene;
+    this._scene = scene;
 
     const target_set = BOSON_TARGETS.get_target_set(name);
     this._scene.createTargetPrimitive(name, target_set);
@@ -147,6 +147,22 @@ class Simulation {
     satellite.sensor = new Sensor(name, type, min, max);
   }
 
+  setOrbitColor(name, color){
+    const orbit = this._currentOrbits[name];
+    if(orbit){
+      orbit.color = color;
+    }
+  }
+
+  setOrbitTrail(names, value){
+    for(const name of names){
+      const orbit = this._currentOrbits[name];
+      if(orbit){
+        orbit.orbit_trail = value;
+      }
+    }
+  }
+
   removeOrbit(names){
     if(!Array.isArray(names)) names = [names];
 
@@ -158,6 +174,20 @@ class Simulation {
 
   importTargetSet(name){
     this._currentTargetSets[name] = new TargetSet(name, "#00FF00", "#FF0000");
+  }
+
+  setTargetColor(name, color){
+    const target_set = this._currentTargetSets[name];
+    if(target_set){
+      target_set.color = color;
+    }
+  }
+
+  setTargetSelectColor(name, color){
+    const target_set = this._currentTargetSets[name];
+    if(target_set){
+      target_set.selectColor = color;
+    }
   }
 
   removeTargetSet(name){
