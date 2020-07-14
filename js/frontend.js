@@ -4,6 +4,7 @@ import * as BOSON_EPHEMERIS from './ephemeris.js'
 import * as BOSON_TARGETS from './targets.js'
 import * as BOSON_FILELOADER from './file_loader.js';
 
+const simulation = new BOSON.Simulation(document.getElementById('view'));
 /* PANEL */
 export function openNav(){
   document.getElementById("side_panel_1").style.width = "275px";
@@ -14,12 +15,10 @@ export function closeNav(){
 
 for(const element of document.getElementsByClassName("close_btn")){
   element.onclick = closeNav;
-  console.log(element);
 }
 
 for(const element of document.getElementsByClassName("open_btn")){
   element.onclick = openNav;
-  console.log(element);
 }
 /* PANEL */
 
