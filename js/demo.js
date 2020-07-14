@@ -1,12 +1,12 @@
 "use strict";
 
 import * as BOSON_RENDER from './cesium_scene.js';
-import * as BOSON_ORBIT from './orbit.js';
 import * as BOSON_EPHEMERIS from './ephemeris.js';
 import * as BOSON_TARGETS from './targets.js';
 
 import Schedule from './schedule.js'
 
+const scene = new BOSON_RENDER.Scene(document.getElementById("view"));
 const current_simulations = {};
 const current_target_sets = {};
 var current_schedule = null;
@@ -17,7 +17,7 @@ class Sensor {
     this._min_value = min_value;
     this._max_value = max_value;
 
-    BOSON_RENDER.create_sensor(name, type, min_value, max_value);
+    scene.appendSensor(name, type, min_value, max_value);
   }
   get sensor_type(){
     return this._sensor_type;
@@ -37,7 +37,7 @@ class Satellite {
     this._id = id;
     this._sensor = null;
 
-    BOSON_RENDER.create_orbit(name, ephemeris, color);
+    scene.createOrbit(name, ephemeris, color);
 
     this.color = color;
     this.orbit_trail = BOSON_RENDER.ALL;
@@ -49,9 +49,9 @@ class Satellite {
 
   get color() { return this._color }
   set color(new_color) {
-    BOSON_RENDER.set_satellite_color(this.name, new_color);
+    scene.setOrbitColor(this.name, new_color);
     if(this._sensor)
-      BOSON_RENDER.set_sensor_color(this.name, this.sensor.sensor_type, new_color);
+      scene.setSensorColor(this.name, this.sensor.sensor_type, new_color);
     this._color = new_color;
   }
 
@@ -62,7 +62,7 @@ class Satellite {
     else if(trail_type === "none") trail_type = BOSON_RENDER.NONE;
     else if(typeof trail_type !== "number") return; //invalid input
 
-    BOSON_RENDER.set_orbit_trail(this.name, trail_type);
+    scene.setOrbitTrail(this.name, trail_type);
     this._orbit_trail = trail_type;
   }
 
@@ -77,7 +77,7 @@ class Satellite {
   }
 
   update(){
-    BOSON_RENDER.update_satellite(this.name);
+    scene.updateSatellite(this.name);
   }
 }
 
@@ -86,7 +86,7 @@ class TargetSet {
     this._name = name;
 
     const target_set = BOSON_TARGETS.get_target_set(name);
-    BOSON_RENDER.draw_all_targets(name, target_set);
+    scene.createTargetPrimitive(name, target_set);
 
     this.color = color;
     this.selectColor = selectColor;
@@ -101,7 +101,7 @@ class TargetSet {
     return this._color;
   }
   set color(color){
-    BOSON_RENDER.set_target_color(this._name, color);
+    scene.setTargetColor(this.name, color);
     this._color = color;
   }
 
@@ -109,12 +109,12 @@ class TargetSet {
     return this._selectColor;
   }
   set selectColor(selectColor){
-    BOSON_RENDER.set_select_target_color(this._name, selectColor);
-    this._selectColor;
+    scene.setTargetSelectColor(this.name, selectColor);
+    this._selectColor = selectColor;
   }
 
   selectTargetByID(id){
-    BOSON_RENDER.select_target(this._name, id);
+    scene.selectTarget(this.name, id);
   }
 
   update(schedule){
@@ -132,9 +132,8 @@ function get_by_platform_id(id){
   return null;
 }
 
-function init(dom){
-  BOSON_RENDER.create_scene(dom);
-  BOSON_RENDER.addPreRenderEvent(updateTime);
+function init(){
+  scene.addPreRenderEvent(updateTime);
 }
 
 function updateTime(seconds){
@@ -162,7 +161,7 @@ export async function import_data(name, id=-1){
 
 export function remove_simulation(names){
   for(const name of names){
-    BOSON_RENDER.remove_satellite(name);
+    scene.removeOrbit(name);
     delete current_simulations[name];
   }
 }
@@ -176,7 +175,6 @@ export function import_sensor(sensor_parameter){
   const max = sensor_parameter.maxValue;
 
   satellite.sensor = new Sensor(name, type, min, max);
-  console.log(satellite.sensor);
 }
 
 export function set_orbit_trail(names, value){
@@ -195,6 +193,7 @@ export async function import_target_set(name){
 
 export function delete_target_set(name){
   BOSON_RENDER.remove_target_set(name);
+  scene.removeTargetPrimitive(name);
   delete current_target_sets[name];
 }
 
@@ -212,4 +211,4 @@ export function import_schedule(name, schedule){
   }
 }
 
-init(document.getElementById("view"));
+init();

@@ -15,8 +15,9 @@ const temp1_quat = new Cesium.Quaternion();
 export class Scene {
   constructor(dom){
     this._targetPrimitives = {};
-    this._start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));;
-    this._stop = Cesium.JulianDate.addSeconds(start, 36000000);
+    this._start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
+    console.log(this);
+    this._stop = Cesium.JulianDate.addSeconds(this._start, 36000000, new Cesium.JulianDate());
 
     this._viewer = new Cesium.Viewer(dom.id, {
       infoBox: false, //Disable InfoBox widget
@@ -29,24 +30,25 @@ export class Scene {
 
     //Set bounds of our simulation time
     //Make sure viewer is at the desired time.
-    this._viewer.clock.startTime = start.clone();
-    this._viewer.clock.stopTime = stop.clone();
-    this._viewer.clock.currentTime = start.clone();
+    this._viewer.clock.startTime = this._start.clone();
+    this._viewer.clock.stopTime = this._stop.clone();
+    this._viewer.clock.currentTime = this._start.clone();
     this._viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; //Loop at the end
     this._viewer.clock.multiplier = 10;
 
     //Set timeline to simulation bounds
-    this._viewer.timeline.zoomTo(start, stop);
+    this._viewer.timeline.zoomTo(this._start, this._stop);
   }
 
-  function addPreRenderEvent(update){
+  addPreRenderEvent(update){
+    const that = this;
     this._viewer.scene.preRender.addEventListener(function(){
-      const seconds = Cesium.JulianDate.secondsDifference(this._viewer.clock.currentTime, this._viewer.clock.startTime);
+      const seconds = Cesium.JulianDate.secondsDifference(that._viewer.clock.currentTime, that._viewer.clock.startTime);
       update(seconds);
     });
   }
 
-  function createOrbit(name, ephemeris, color){
+  createOrbit(name, ephemeris, color){
     const pos_property = new Cesium.SampledPositionProperty();
     pos_property.setInterpolationOptions({
       interpolationAlgorithm : Cesium.LagrangePolynomialApproximation,
@@ -60,7 +62,7 @@ export class Scene {
 
       const time = ephemeris.time[index];
       const cesium_pos = new Cesium.Cartesian3(pos_x, pos_y, pos_z);
-      const cesium_time = Cesium.JulianDate.addSeconds(start, time, new Cesium.JulianDate());
+      const cesium_time = Cesium.JulianDate.addSeconds(this._start, time, new Cesium.JulianDate());
       pos_property.addSample(cesium_time, cesium_pos);
     }
 
@@ -71,8 +73,8 @@ export class Scene {
       //Set the entity availability to the same interval as the simulation time.
       availability: new Cesium.TimeIntervalCollection([
         new Cesium.TimeInterval({
-          start: start,
-          stop: stop,
+          start: this._start,
+          stop: this._stop,
         }),
       ]),
 
@@ -99,7 +101,7 @@ export class Scene {
     });
   }
 
-  function setOrbitTrail(id, trail){
+  setOrbitTrail(id, trail){
     const entity = this._viewer.entities.getById(id);
 
     if(trail === ALL){
@@ -126,14 +128,14 @@ export class Scene {
     }
   }
 
-  function setOrbitColor(id, css_color){
+  setOrbitColor(id, css_color){
     const color = Cesium.Color.fromCssColorString(css_color);
     const entity = this._viewer.entities.getById(id);
     if(!entity) return;
     entity.path.material.color = color;
   }
 
-  function appendSensor(name, sensor_type, min, max){
+  appendSensor(name, sensor_type, min, max){
     const color = Cesium.Color.fromCssColorString("#FFF");
     const entity = this._viewer.entities.getById(name);
     if(sensor_type === "Doppler Cone Angle"){
@@ -144,7 +146,7 @@ export class Scene {
     }
   }
 
-  function setSensorColor(id, sensor_type, css_color){
+  setSensorColor(id, sensor_type, css_color){
     const color = Cesium.Color.fromCssColorString(css_color).withAlpha(.5);
     const entity = this._viewer.entities.getById(id);
     if(sensor_type === "Doppler Cone Angle"){
@@ -155,11 +157,11 @@ export class Scene {
     }
   }
 
-  function removeOrbit(name){
+  removeOrbit(name){
     this._viewer.entities.removeById(name);
   }
 
-  function createTargetPrimitive(name, target_set){
+  createTargetPrimitive(name, target_set){
     var color0 = new Cesium.ColorGeometryInstanceAttribute(0, 0, 0, 0);
     const instances = [];
     for(const target of Object.values(target_set)){
@@ -195,19 +197,19 @@ export class Scene {
     this._viewer.scene.primitives.add(this._targetPrimitives[name]);
   }
 
-  function setTargetColor(id, css_color){
+  setTargetColor(id, css_color){
     const color = Cesium.Color.fromCssColorString(css_color).withAlpha(.5);
     const primitive = this._targetPrimitives[id];
     primitive.appearance.material.uniforms.color = color;
   }
 
-  function setTargetSelectColor(id, css_color){
+  setTargetSelectColor(id, css_color){
     const color = Cesium.Color.fromCssColorString(css_color).withAlpha(.9);
     const primitive = this._targetPrimitives[id];
     primitive.appearance.material.uniforms.select = color;
   }
 
-  function selectTarget(name, target_id){
+  selectTarget(name, target_id){
     const primitive = this._targetPrimitives[name];
     const attrib = primitive.getGeometryInstanceAttributes(target_id);
     if(attrib){
@@ -215,12 +217,12 @@ export class Scene {
     }
   }
 
-  function removeTargetPrimitive(name){
+  removeTargetPrimitive(name){
     this._viewer.scene.primitives.remove(this._targetPrimitives[name]);
-    delete = this._targetPrimitives[name];
+    delete this._targetPrimitives[name];
   }
 
-  function _updateSatellite(name){
+  updateSatellite(name){
     const time = this._viewer.clock.currentTime;
     const entity = this._viewer.entities.getById(name);
     const position = entity.position.getValue(time);
