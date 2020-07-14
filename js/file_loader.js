@@ -115,12 +115,12 @@ function parsePlatform(name, lines){
     const ephemeris = platform[id];
     ephemeris.time.push(Number(split[1]));
     ephemeris.position.push(Number(split[2]));
-    ephemeris.position.push(Number(split[4]));
     ephemeris.position.push(Number(split[3]));
+    ephemeris.position.push(Number(split[4]));
 
     ephemeris.velocity.push(Number(split[5]));
-    ephemeris.velocity.push(Number(split[7]));
     ephemeris.velocity.push(Number(split[6]));
+    ephemeris.velocity.push(Number(split[7]));
   }
 
   const names = [];
