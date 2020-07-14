@@ -4,6 +4,8 @@ import * as BOSON_EPHEMERIS from './ephemeris.js'
 import * as BOSON_TARGETS from './targets.js'
 import * as BOSON_FILELOADER from './file_loader.js';
 
+const colors = ["#34b1eb", "#00FFFF", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#C02B9A"];
+
 const simulation = new BOSON.Simulation(document.getElementById('view'));
 /* PANEL */
 export function openNav(){
@@ -21,6 +23,34 @@ for(const element of document.getElementsByClassName("open_btn")){
   element.onclick = openNav;
 }
 /* PANEL */
+
+/* GLOBAL CONTROLS */
+function createGlobalControls(){
+  const global_panel = document.getElementById("global");
+
+  const controls = document.createElement("div");
+  controls.className = "global_controls";
+  global_panel.append(controls);
+
+  const table = document.createElement("table");
+  controls.append(table);
+
+  function insert_field(table, field_name, field){
+    const tr = table.insertRow(-1);
+    tr.className = "global_control";
+    const cell0 = tr.insertCell(0);
+    insertP(cell0, field_name);
+
+    const cell1 = tr.insertCell(1);
+    cell1.append(field);
+  }
+
+  const color_picker = createColorPicker("CHRIS", function(name, color){});
+  insert_field(table, "Color", color_picker);
+
+}
+createGlobalControls();
+/* GLOBAL CONTROLS */
 
 /* SATELLITE */
 export function appendSatellite(name){
@@ -226,7 +256,6 @@ function createOrbitSelector(names){
   return select;
 }
 
-const colors = ["#34b1eb", "#00FFFF", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#C02B9A"];
 function createColorPicker(id, set_color_func, default_color){
   const color_picker = document.createElement("input");
   color_picker.className = "color_picker";
