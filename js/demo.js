@@ -120,31 +120,34 @@ class TargetSet {
   }
 };
 
-class Simulation {
+export class Simulation {
   constructor(dom){
     this._scene = new BOSON_RENDER.Scene(dom);
     this._currentOrbits = {};
     this._currentTargetSets = {};
     this._currentSchedule = null;
-
-    this._scene.addPreRenderEvent(this.update);
+    console.log(this);
+    this._scene.addPreRenderEvent(this);
   }
 
   importOrbit(name, id=-1){
     const color = "#fff";
     const ephemeris = BOSON_EPHEMERIS.get_ephemeris(name);
-    this._currentOrbits[name] = new Satellite(name, parseInt(id), color, ephemeris);
+    this._currentOrbits[name] = new Satellite(name, parseInt(id), color, ephemeris, this._scene);
   }
 
   importSensor(sensor_parameter){
+    console.log(sensor_parameter);
     const satellite = this._getByPlatformID(sensor_parameter.platformID);
+    console.log(satellite);
+    if(satellite){
+      const name = satellite.name;
+      const type = sensor_parameter.sensorType;
+      const min = sensor_parameter.minValue;
+      const max = sensor_parameter.maxValue;
 
-    const name = satellite.name;
-    const type = sensor_parameter.sensorType;
-    const min = sensor_parameter.minValue;
-    const max = sensor_parameter.maxValue;
-
-    satellite.sensor = new Sensor(name, type, min, max);
+      satellite.sensor = new Sensor(name, type, min, max, this._scene);
+    }
   }
 
   setOrbitColor(name, color){
@@ -167,13 +170,13 @@ class Simulation {
     if(!Array.isArray(names)) names = [names];
 
     for(const name of names){
-      scene.removeOrbit(name);
-      delete current_simulations[name];
+      this._scene.removeOrbit(name);
+      delete this._currentOrbits[name];
     }
   }
 
   importTargetSet(name){
-    this._currentTargetSets[name] = new TargetSet(name, "#00FF00", "#FF0000");
+    this._currentTargetSets[name] = new TargetSet(name, "#00FF00", "#FF0000", this._scene);
   }
 
   setTargetColor(name, color){
@@ -196,7 +199,7 @@ class Simulation {
   }
 
   importSchedule(name, schedule){
-    if(!current_schedule){
+    if(!this._currentSchedule){
       this._currentSchedule = new Schedule(schedule);
     }
   }
@@ -206,7 +209,7 @@ class Simulation {
       satellite.update();
     }
 
-    if(current_schedule){
+    if(this._currentSchedule){
       const id1 = this._currentSchedule.getTargetID(1, seconds);
       const id2 = this._currentSchedule.getTargetID(2, seconds);
       if(id1) console.log(id1);

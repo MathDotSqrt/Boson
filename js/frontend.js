@@ -53,7 +53,9 @@ function createSatelliteNode(name){
     cell1.append(field);
   }
 
-  const color_picker = createColorPicker(name, simulation.setOrbitColor);
+  const color_picker = createColorPicker(name, function(name, color){
+    simulation.setOrbitColor(name, color);
+  });
   insert_field(table, "Color", color_picker);
 
   const alpha_data = document.createElement("p");
@@ -147,10 +149,14 @@ function createTargetNode(name, num_targets){
     cell1.append(field);
   }
 
-  const color_picker = createColorPicker(name, simulation.setTargetColor);
+  const color_picker = createColorPicker(name, function(name, color){
+    simulation.setTargetColor(name, color);
+  });
   insert_field(table, "Color", color_picker);
 
-  const color_select_picker = createColorPicker(name, simulation.setTargetSelectColor, "#ff0000");
+  const color_select_picker = createColorPicker(name, function(name, color){
+    simulation.setTargetSelectColor(name, color);
+  }, "#ff0000");
   insert_field(table, "Select Color", color_select_picker);
 
   const p = document.createElement("p");
@@ -251,11 +257,11 @@ function createSensorInput(name){
   file_input.id = id;
   sensor_input.append(file_input);
 
-  function appendSensor(file){
+  function appendSensor(name){
     sensor_input.classList.add("selected");
     const p = sensor_input.getElementsByTagName("p");
     if(p){
-      p[0].innerHTML = file.name.split('.')[0];
+      p[0].innerHTML = name.split('.')[0];
     }
   }
 
@@ -264,7 +270,10 @@ function createSensorInput(name){
     file_input.onchange = function(e){
       const files = e.target.files;
       for(const file of files){
-        BOSON_FILELOADER.loadSensorFile(file, appendSensor);
+        BOSON_FILELOADER.loadSensorFile(file, function(name, result){
+          appendSensor(name);
+          importSensor(name, result);
+        });
       }
     };
     file_input.click();
@@ -359,6 +368,41 @@ export function appendDropFileElementTarget(name, num_targets){
   return new_node;
 }
 
+function importEphemeris(name, platform){
+  console.log(platform);
+  const names = [];
+
+  for(const id of Object.keys(platform)){
+    const new_name = name + "_" + id;
+    BOSON_EPHEMERIS.register_ephemeris(new_name, platform[id]);
+    names.push(new_name);
+    simulation.importOrbit(new_name, id);
+  }
+  for(const name of names){
+    appendSatellite(name);
+  }
+  appendDropFileElementPlatform(name, names);
+}
+
+function importSensor(name, sensors){
+  console.log(sensors);
+  for(const sensor of sensors){
+    simulation.importSensor(sensor);
+  }
+}
+
+function importTargetSet(name, target){
+  console.log(target);
+  appendDropFileElementTarget(name, Object.values(target).length);
+  BOSON_TARGETS.register_target_set(name, target);
+  simulation.importTargetSet(name);
+}
+
+function importSchedule(name, schedule){
+  console.log(schedule);
+  simulation.importSchedule(name, schedule);
+}
+
 function dragOverHandler(event){
   event.preventDefault();
 }
@@ -375,7 +419,7 @@ function dropHandlerEphemeris(event){
 
   const file = event.dataTransfer.items[0].getAsFile();
   // appendDropFileElement(file.name);
-  BOSON_FILELOADER.loadEphemerisFile(file);
+  BOSON_FILELOADER.loadEphemerisFile(file, importEphemeris);
 }
 
 function dropHandlerSensor(event){
@@ -384,7 +428,7 @@ function dropHandlerSensor(event){
 
   const file = event.dataTransfer.items[0].getAsFile();
   // appendDropFileElement(file.name);
-  BOSON_FILELOADER.loadSensorFile(file);
+  BOSON_FILELOADER.loadSensorFile(file, importSensor);
 }
 
 function dropHandlerTarget(event){
@@ -392,14 +436,14 @@ function dropHandlerTarget(event){
   if(!BOSON_FILELOADER.isValidFile(event)) return;
   const file = event.dataTransfer.items[0].getAsFile();
   // appendDropFileElement(file.name);
-  BOSON_FILELOADER.loadTargetFile(file);
+  BOSON_FILELOADER.loadTargetFile(file, importTargetSet);
 }
 
 function dropHandlerSchedule(event){
   event.preventDefault();
   if(!BOSON_FILELOADER.isValidFile(event)) return;
   const file = event.dataTransfer.items[0].getAsFile();
-  BOSON_FILELOADER.loadScheduleFile(file);
+  BOSON_FILELOADER.loadScheduleFile(file, importSchedule);
 }
 
 const ephemeris = document.getElementById("file_drop_ephemeris");
@@ -412,7 +456,7 @@ ephemeris.onclick = function(){
   input.onchange = function(e){
     const files = e.target.files;
     for(const file of files){
-      BOSON_FILELOADER.loadEphemerisFile(file);
+      BOSON_FILELOADER.loadEphemerisFile(file, importEphemeris);
     }
   };
   input.click();
@@ -429,7 +473,7 @@ target.onclick = function(){
   input.onchange = function(e){
     const files = e.target.files;
     for(const file of files){
-      BOSON_FILELOADER.loadTargetFile(file);
+      BOSON_FILELOADER.loadTargetFile(file, importTargetSet);
     }
   };
   input.click();
@@ -445,7 +489,7 @@ schedule.onclick = function(){
   input.onchange = function(e){
     const files = e.target.files;
     for(const file of files){
-      BOSON_FILELOADER.loadScheduleFile(file);
+      BOSON_FILELOADER.loadScheduleFile(file, importSchedule);
     }
   };
   input.click();

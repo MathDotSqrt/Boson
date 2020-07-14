@@ -20,12 +20,15 @@ export function isValidFile(event){
 
 
 
-export function loadEphemerisFile(new_file){
+export function loadEphemerisFile(new_file, func){
   const fileReader = new FileReader();
   fileReader.onloadstart = function(){
   };
   fileReader.onload = function(){
-    parseEphemerisFile(new_file.name, fileReader.result);
+    const result = parseEphemerisFile(new_file.name, fileReader.result);
+    if(result){
+      func(new_file.name, result);
+    }
   };
 
   fileReader.readAsText(new_file);
@@ -37,41 +40,47 @@ export function loadSensorFile(new_file, func){
   };
   fileReader.onload = function(){
     const result = parseSensor(new_file.name, fileReader.result);
-    if(func && result){
-      func(new_file);
+    if(result){
+      func(new_file.name, result);
     }
   };
   fileReader.readAsText(new_file);
 }
 
-export function loadTargetFile(new_file){
+export function loadTargetFile(new_file, func){
   const fileReader = new FileReader();
   fileReader.onloadstart = function(){
   };
   fileReader.onload = function(){
-    parseTarget(new_file.name, fileReader.result);
+    const target = parseTarget(new_file.name, fileReader.result);
+    if(target){
+      func(new_file.name, target);
+    }
   };
   fileReader.readAsText(new_file);
 }
 
-export function loadScheduleFile(new_file){
+export function loadScheduleFile(new_file, func){
   const fileReader = new FileReader();
   fileReader.onloadstart = function(){
   };
   fileReader.onload = function(){
-    parseSchedule(new_file, fileReader.result);
+    const schedule = parseSchedule(new_file.name, fileReader.result);
+    if(schedule){
+      func(new_file, schedule);
+    }
   };
 
   fileReader.readAsText(new_file);
 }
 
-async function parseEphemerisFile(name, fr){
+function parseEphemerisFile(name, fr){
   const lines = fr.split('\n');
   if(lines[0].trim() === "platform"){
-    parsePlatform(name, lines);
+    return parsePlatform(name, lines);
   }
   else{
-    parseRegular(name, lines);
+    return parseRegular(name, lines);
   }
 
 }
@@ -92,10 +101,12 @@ function parseRegular(name, lines){
     ephemeris.velocity.push(Number(split[6]));
   }
 
-  BOSON_EPHEMERIS.register_ephemeris(name, ephemeris);
-  BOSON.import_data(name);
-  appendDropFileElement(name);
-  appendSatellite(name);
+  return ephemeris;
+  //
+  // BOSON_EPHEMERIS.register_ephemeris(name, ephemeris);
+  // BOSON.import_data(name);
+  // appendDropFileElement(name);
+  // appendSatellite(name);
 }
 
 function parsePlatform(name, lines){
@@ -123,20 +134,21 @@ function parsePlatform(name, lines){
     ephemeris.velocity.push(Number(split[7]));
   }
 
-  const names = [];
+  return platform;
 
-  for(const id of Object.keys(platform)){
-    const new_name = name + "_" + id;
-    BOSON_EPHEMERIS.register_ephemeris(new_name, platform[id]);
-    names.push(new_name);
-    console.log(id);
-    BOSON.import_data(new_name, id);
-  }
-  for(const name of names){
-    appendSatellite(name);
-  }
-  appendDropFileElementPlatform(name, names);
-
+  // const names = [];
+  //
+  // for(const id of Object.keys(platform)){
+  //   const new_name = name + "_" + id;
+  //   BOSON_EPHEMERIS.register_ephemeris(new_name, platform[id]);
+  //   names.push(new_name);
+  //   console.log(id);
+  //   BOSON.import_data(new_name, id);
+  // }
+  // for(const name of names){
+  //   appendSatellite(name);
+  // }
+  // appendDropFileElementPlatform(name, names);
 }
 
 function parseTarget(name, lines){
@@ -160,14 +172,16 @@ function parseTarget(name, lines){
     target.coords = target.coords.concat(coord);
   }
   targets[target.id] = target;
-  BOSON_TARGETS.register_target_set(name, targets);
-  BOSON.import_target_set(name);
-  appendDropFileElementTarget(name, Object.keys(targets).length);
+
+  return targets;
+  // BOSON_TARGETS.register_target_set(name, targets);
+  // BOSON.import_target_set(name);
+  // appendDropFileElementTarget(name, Object.keys(targets).length);
 }
 
 function parseSensor(name, lines){
   lines = lines.split('\n');
-
+  const sensors = [];
   for(var i = 1; i < lines.length; i++){
     const line = lines[i];
     const split = line.split(',');
@@ -181,10 +195,10 @@ function parseSensor(name, lines){
       maxValue      : Number(split[3]),
     }
     console.log("ID: " + i);
-    BOSON.import_sensor(sensor);
+    sensors.push(sensor);
   }
 
-  return true;
+  return sensors;
 }
 
 function parseSchedule(name, lines){
@@ -205,7 +219,7 @@ function parseSchedule(name, lines){
     || startIndex === -1
     || endIndex === -1){
 
-    return false;
+    return null;
   }
 
   const schedule = {};
@@ -232,5 +246,5 @@ function parseSchedule(name, lines){
     schedule[platformID].interval.push(start, end);
   }
 
-  BOSON.import_schedule(name, schedule);
+  return schedule;
 }
