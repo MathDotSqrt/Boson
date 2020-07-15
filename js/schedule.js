@@ -12,12 +12,22 @@ export default class Schedule {
     return Object.keys(this._schedule).filter(x => x > 0).map(x => parseInt(x));
   }
 
-  getTargetID(platformID, seconds){
+  getScheduleEvent(platformID, seconds){
     const platform_schedule = this._schedule[platformID];
     if(platform_schedule){
       const id_index = binary_search_interval(platform_schedule.interval, seconds);
       if(id_index !== -1){
-        return platform_schedule.targets[id_index];
+        const start = platform_schedule.interval[id_index * 2];
+        const end = platform_schedule.interval[id_index * 2 + 1];
+        const lon = platform_schedule.coords[id_index * 2];
+        const lat = platform_schedule.coords[id_index * 2 + 1];
+        const targetID = platform_schedule.targets[id_index];
+
+        return {
+          interval : [start, end],
+          coord : [lon, lat],
+          target : targetID
+        }
       }
     }
 

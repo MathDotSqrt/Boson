@@ -49,10 +49,14 @@ export class Scene {
 
   _preRender(){
     this._updateEntityView();
+    for(const line of Object.values(this._sampleLines)){
+
+    }
   }
 
   _postRender(){
-
+    for(const line of Object.values(this._sampleLines)){
+    }
   }
 
   _updateEntityView(){
@@ -257,13 +261,16 @@ export class Scene {
   }
 
   fireVector(name, lon, lat){
+    const pos = new Cesium.PositionPropertyArray([
+      new Cesium.ReferenceProperty(this._viewer.entities, name, ['position']),
+      new Cesium.ConstantPositionProperty(Cesium.Cartesian3.fromDegrees(lon, lat))
+    ]);
+
     if(!(name in this._sampleLines)){
+      console.log();
       this._sampleLines[name] = this._viewer.entities.add({
         polyline : {
-          positions : new Cesium.PositionPropertyArray([
-            new Cesium.ReferenceProperty(this._viewer.entities, name, ['position']),
-            new Cesium.ConstantProperty(Cesium.Cartesian3.fromDegrees(lon, lat))
-          ]),
+          positions : pos,
 
           width : 5,
           material : new Cesium.PolylineOutlineMaterialProperty({
@@ -272,8 +279,18 @@ export class Scene {
           })
         }
       });
+    }
+    else{
+      //console.log(this._sampleLines[name].polyline);
+      this._sampleLines[name].polyline.positions = pos;
+      this._sampleLines[name].polyline.show = true;
 
-      console.log(this._sampleLines);
+    }
+  }
+
+  iceVector(name){
+    if(name in this._sampleLines){
+      this._sampleLines[name].polyline.show = false;
     }
   }
 

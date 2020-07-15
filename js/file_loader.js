@@ -247,18 +247,20 @@ function parseSchedule(name, lines){
   const TARGET = "TargetID";
   const START = "ImageStartTime";
   const END = "ImageEndTime";
+  const LONGITUDE = "Longitude";
+  const LATITUDE = "Latitude";
 
   const header = lines[0].split(',');
   const platformIndex = header.indexOf(PLATFORM);
   const targetIndex = header.indexOf(TARGET);
   const startIndex = header.indexOf(START);
   const endIndex = header.indexOf(END);
+  const lonIndex = header.indexOf(LONGITUDE);
+  const latIndex = header.indexOf(LATITUDE);
 
-  if(platformIndex === -1
-    || targetIndex === -1
-    || startIndex === -1
-    || endIndex === -1){
-
+  if([platformIndex, targetIndex,
+      startIndex, endIndex,
+      lonIndex, latIndex].some(x => x < 0)){
     return null;
   }
 
@@ -271,6 +273,8 @@ function parseSchedule(name, lines){
     const targetID = split[targetIndex];
     const start = parseFloat(split[startIndex]);
     const end = parseFloat(split[endIndex]);
+    const lon = parseFloat(split[lonIndex]);
+    const lat = parseFloat(split[latIndex]);
 
     //if(targetID && targetID.includes("stk")) continue;
 
@@ -278,12 +282,14 @@ function parseSchedule(name, lines){
       schedule[platformID] = {
         platformID: platformID,
         targets: [],
-        interval: []
+        interval: [],
+        coords : [],
       };
     }
 
     schedule[platformID].targets.push(targetID);
     schedule[platformID].interval.push(start, end);
+    schedule[platformID].coords.push(lon, lat);
   }
 
   return schedule;

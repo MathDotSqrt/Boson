@@ -226,15 +226,23 @@ export class Simulation {
 
     if(this._currentSchedule){
       const platformIDs = this._currentSchedule.getAllPlatformIDs();
+
       for(const platformID of platformIDs){
-        const targetID = this._currentSchedule.getTargetID(platformID, seconds);
-        if(targetID){
-          const platform = this._getByPlatformID(platformID);
+        const schedule_event = this._currentSchedule.getScheduleEvent(platformID, seconds);
+        const platform = this._getByPlatformID(platformID);
+
+        if(schedule_event){
           if(platform){
-            this._scene.fireVector(platform.name, 0, 0);
+            const [lon, lat] = schedule_event.coord;
+            this._scene.fireVector(platform.name, lon, lat);
           }
           for(const target_set of Object.values(this._currentTargetSets)){
-            target_set.selectTargetByID(targetID);
+            target_set.selectTargetByID(schedule_event.target);
+          }
+        }
+        else{
+          if(platform){
+            this._scene.iceVector(platform.name);
           }
         }
       }
