@@ -156,7 +156,7 @@ function parseSubtarget(name, lines){
   }
 
   const targets = {};
-  for(var i = 1; i < lines.length * .9; i++){
+  for(var i = 1; i < lines.length -1; i++){
     const split = lines[i].split(',');
     if(split === undefined) break;
     const targetID = split[targetIndex];

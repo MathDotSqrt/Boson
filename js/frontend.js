@@ -44,7 +44,7 @@ function createGlobalControls(){
 
   const selector = createFollowSelector(["None"]);
   insert_field(table, "Follow", selector);
-  insert_field(table, "Example", "example_control");
+  insert_field(table, "Collapse All", "collapse");
   insert_field(table, "Delete All", "delete_all");
 }
 
@@ -230,10 +230,13 @@ function createTargetNode(name, num_targets){
 
   const color_picker = createColorPicker(name, function(name, color){
     simulation.setTargetColor(name, color);
-  });
+  }, "#00FF00");
   insert_field(table, "Color", color_picker);
 
-  const slider = createSlider(0, 1, .5);
+  const slider = createSlider(0, 1, 1, function(e){
+    const alpha = e.target.value;
+    simulation.setTargetColor(name, color_picker.value, alpha);
+  });
   insert_field(table, "Alpha", slider);
 
   const color_select_picker = createColorPicker(name, function(name, color){
@@ -321,7 +324,7 @@ function createColorPicker(id, set_color_func, default_color){
   const color_picker = document.createElement("input");
   color_picker.className = "color_picker";
   color_picker.type = "color";
-  color_picker.id = id;
+  color_picker.id = "color_" + id;
 
   const color = default_color ? default_color : colors.pop();
   color_picker.value = color;
@@ -372,7 +375,7 @@ function createSensorInput(name){
   return sensor_input;
 }
 
-function createSlider(min, max, defaultValue){
+function createSlider(min, max, defaultValue, func){
   const slider_container = document.createElement("div");
   slider_container.className = "slider_container";
   const input = document.createElement("input");
@@ -382,6 +385,7 @@ function createSlider(min, max, defaultValue){
   input.step = .01;
   input.max = max;
   input.value = defaultValue;
+  input.oninput = func;
 
   slider_container.append(input);
   return slider_container;

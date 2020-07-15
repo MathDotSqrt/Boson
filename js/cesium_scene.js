@@ -220,8 +220,8 @@ export class Scene {
     this._viewer.scene.primitives.add(this._targetPrimitives[name]);
   }
 
-  setTargetColor(id, css_color){
-    const color = Cesium.Color.fromCssColorString(css_color).withAlpha(.5);
+  setTargetColor(id, css_color, alpha=.5){
+    const color = Cesium.Color.fromCssColorString(css_color).withAlpha(alpha);
     const primitive = this._targetPrimitives[id];
     primitive.appearance.material.uniforms.color = color;
   }

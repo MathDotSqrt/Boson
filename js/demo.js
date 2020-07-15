@@ -87,6 +87,7 @@ class TargetSet {
     this._scene.createTargetPrimitive(name, target_set);
 
     this.color = color;
+    this.alpha = 1;
     this.selectColor = selectColor;
 
   }
@@ -99,8 +100,17 @@ class TargetSet {
     return this._color;
   }
   set color(color){
-    this._scene.setTargetColor(this.name, color);
+    this._scene.setTargetColor(this.name, color, this._alpha);
     this._color = color;
+  }
+
+  get alpha(){
+    return this._alpha;
+  }
+
+  set alpha(alpha){
+    this._scene.setTargetColor(this.name, this._color, alpha);
+    this._alpha = alpha;
   }
 
   get selectColor(){
@@ -183,10 +193,11 @@ export class Simulation {
     this._currentTargetSets[name] = new TargetSet(name, "#00FF00", "#FF0000", this._scene);
   }
 
-  setTargetColor(name, color){
+  setTargetColor(name, color, alpha){
     const target_set = this._currentTargetSets[name];
     if(target_set){
       target_set.color = color;
+      if(alpha !== undefined) target_set.alpha = alpha;
     }
   }
 
