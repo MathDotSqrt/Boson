@@ -233,6 +233,9 @@ function createTargetNode(name, num_targets){
   });
   insert_field(table, "Color", color_picker);
 
+  const slider = createSlider(0, 1, .5);
+  insert_field(table, "Alpha", slider);
+
   const color_select_picker = createColorPicker(name, function(name, color){
     simulation.setTargetSelectColor(name, color);
   }, "#ff0000");
@@ -367,6 +370,21 @@ function createSensorInput(name){
   }
 
   return sensor_input;
+}
+
+function createSlider(min, max, defaultValue){
+  const slider_container = document.createElement("div");
+  slider_container.className = "slider_container";
+  const input = document.createElement("input");
+  input.className = "slider";
+  input.type="range";
+  input.min = min;
+  input.step = .01;
+  input.max = max;
+  input.value = defaultValue;
+
+  slider_container.append(input);
+  return slider_container;
 }
 
 function insertP(parent, text, className=""){
