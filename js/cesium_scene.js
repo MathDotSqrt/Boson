@@ -16,8 +16,9 @@ export class Scene {
   constructor(dom){
     this._targetPrimitives = {};
     this._start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
-    console.log(this);
     this._stop = Cesium.JulianDate.addSeconds(this._start, 36000000, new Cesium.JulianDate());
+
+    this._entityView = null;
 
     this._viewer = new Cesium.Viewer(dom.id, {
       infoBox: false, //Disable InfoBox widget
@@ -38,6 +39,26 @@ export class Scene {
 
     //Set timeline to simulation bounds
     this._viewer.timeline.zoomTo(this._start, this._stop);
+
+    const that = this;
+    this._viewer.scene.preRender.addEventListener(function(){that._updateEntityView()});
+  }
+
+  _updateEntityView(){
+    if(this._entityView){
+      this._entityView.update(this._viewer.clock.currentTime);
+    }
+  }
+
+  followEntity(name){
+    const entity = this._viewer.entities.getById(name);
+    if(entity){
+      this._entityView = new Cesium.EntityView(entity, this._viewer.scene);
+    }
+    else{
+      this._entityView = null;
+      this._viewer.scene.camera.flyHome(1);
+    }
   }
 
   addPreRenderEvent(simulation){

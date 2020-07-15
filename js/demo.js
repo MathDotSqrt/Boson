@@ -126,8 +126,13 @@ export class Simulation {
     this._currentOrbits = {};
     this._currentTargetSets = {};
     this._currentSchedule = null;
+    this._follow = null;
     console.log(this);
     this._scene.addPreRenderEvent(this);
+  }
+
+  follow(name){
+    this._scene.followEntity(name);
   }
 
   importOrbit(name, id=-1){

@@ -52,6 +52,7 @@ function createFollowSelector(names){
   select.onchange = function(event){
     const value = select.options[select.selectedIndex].value;
     console.log(value);
+    simulation.follow(value);
     //simulation.setOrbitTrail(names, value);
   }
 
