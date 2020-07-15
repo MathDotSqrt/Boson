@@ -42,8 +42,10 @@ function createGlobalControls(){
     cell1.append(field);
   }
 
-  const color_picker = createFollowSelector(["None"]);
-  insert_field(table, "Follow", color_picker);
+  const selector = createFollowSelector(["None"]);
+  insert_field(table, "Follow", selector);
+  insert_field(table, "Example", "example_control");
+  insert_field(table, "Delete All", "delete_all");
 }
 
 function createFollowSelector(names){
@@ -253,6 +255,15 @@ function createTargetNode(name, num_targets){
   return new_node;
 }
 
+function createScheduleNode(name){
+  const new_node = document.createElement("div");
+  new_node.id = name;
+  new_node.className = "element showable";
+  new_node.append(createDeleteNodeTitle(name, function(){console.log("lol");}));
+
+  return new_node;
+}
+
 function createDeleteNodeTitle(text, deleteFunc){
   const header = document.createElement("div");
   header.className = "title showable";
@@ -444,6 +455,16 @@ export function appendDropFileElementTarget(name, num_targets){
   return new_node;
 }
 
+export function appendDropFileElementSchedule(name){
+  console.log(name);
+  const new_node = createScheduleNode(name);
+  new_node.setAttribute("schedule_name", name);
+
+  const reference_node = document.querySelector('#file_drop_schedule');
+  reference_node.before(new_node);
+  return new_node;
+}
+
 function importEphemeris(name, platform){
   if("position" in platform){
     BOSON_EPHEMERIS.register_ephemeris(name, platform);
@@ -481,9 +502,10 @@ function importTargetSet(name, target){
   simulation.importTargetSet(name);
 }
 
-function importSchedule(name, schedule){
+function importSchedule(file, schedule){
   console.log(schedule);
-  simulation.importSchedule(name, schedule);
+  simulation.importSchedule(file, schedule);
+  appendDropFileElementSchedule(file.name.split('.')[0]);
 }
 
 function dragOverHandler(event){
