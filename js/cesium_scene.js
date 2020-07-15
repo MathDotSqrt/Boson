@@ -16,8 +16,8 @@ export class Scene {
   constructor(dom){
     this._targetPrimitives = {};
     this._start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
-    this._stop = Cesium.JulianDate.addSeconds(this._start, 36000000, new Cesium.JulianDate());
-
+    //this._stop = Cesium.JulianDate.addSeconds(this._start, 36000000, new Cesium.JulianDate());
+    this._stop = Cesium.JulianDate.addSeconds(this._start, 171246.075653055, new Cesium.JulianDate());
     this._entityView = null;
 
     this._viewer = new Cesium.Viewer(dom.id, {
@@ -248,29 +248,33 @@ export class Scene {
   updateSatellite(name){
     const time = this._viewer.clock.currentTime;
     const entity = this._viewer.entities.getById(name);
-    const position = entity.position.getValue(time);
-    const velocity = entity.velocity.getValue(time);
+    if(entity){
+      const position = entity.position.getValue(time);
+      const velocity = entity.velocity.getValue(time);
 
-    //this rotates the sensor with respect to the entity's
-    //position and velocity. This sensor points strait up
-    //need to rotate it to point to the surface of the earth
-    const current_orientation = entity.velOrientation.getValue(time);
-    const orientation = entity.orientation.getValue();
+      if(position === undefined) return;
 
-    //points sensor to surface of the earth
-    //rotate sensor 180 degrees along the axis of its velocity
-    const vel_axis = Cesium.Cartesian3.normalize(velocity, temp0_vec3);
-    const rotate_down_quat = Cesium.Quaternion.fromAxisAngle(vel_axis, Math.PI, temp0_quat);
-    Cesium.Quaternion.multiply(rotate_down_quat, current_orientation, orientation);
+      //this rotates the sensor with respect to the entity's
+      //position and velocity. This sensor points strait up
+      //need to rotate it to point to the surface of the earth
+      const current_orientation = entity.velOrientation.getValue(time);
+      const orientation = entity.orientation.getValue();
 
-    //not accurate in Wgs84 because it measures from center of earth not
-    //orthogonal from surface of earth
-    const pos_axis = Cesium.Cartesian3.normalize(position, temp0_vec3);
-    const offset_rotation = 0;
-    const offset_quat = Cesium.Quaternion.fromAxisAngle(pos_axis, offset_rotation, temp0_quat);
-    Cesium.Quaternion.multiply(offset_quat, orientation, orientation);
+      //points sensor to surface of the earth
+      //rotate sensor 180 degrees along the axis of its velocity
+      const vel_axis = Cesium.Cartesian3.normalize(velocity, temp0_vec3);
+      const rotate_down_quat = Cesium.Quaternion.fromAxisAngle(vel_axis, Math.PI, temp0_quat);
+      Cesium.Quaternion.multiply(rotate_down_quat, current_orientation, orientation);
 
-    //final orientation
-    entity.orientation.setValue(orientation);
+      //not accurate in Wgs84 because it measures from center of earth not
+      //orthogonal from surface of earth
+      const pos_axis = Cesium.Cartesian3.normalize(position, temp0_vec3);
+      const offset_rotation = 0;
+      const offset_quat = Cesium.Quaternion.fromAxisAngle(pos_axis, offset_rotation, temp0_quat);
+      Cesium.Quaternion.multiply(offset_quat, orientation, orientation);
+
+      //final orientation
+      entity.orientation.setValue(orientation);
+    }
   }
 }

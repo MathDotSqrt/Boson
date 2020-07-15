@@ -214,11 +214,8 @@ export class Simulation {
     }
 
     if(this._currentSchedule){
-      console.log(this._currentSchedule);
       const id1 = this._currentSchedule.getTargetID(1, seconds);
       const id2 = this._currentSchedule.getTargetID(2, seconds);
-      if(id1) console.log(id1);
-      if(id2) console.log(id2);
       for(const target_set of Object.values(this._currentTargetSets)){
         if(id1) target_set.selectTargetByID(id1);
         if(id2) target_set.selectTargetByID(id2);
