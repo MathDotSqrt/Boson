@@ -53,6 +53,7 @@ export class Scene {
   followEntity(name){
     const entity = this._viewer.entities.getById(name);
     if(entity){
+      Cesium.EntityView.defaultOffset3D = new Cesium.Cartesian3(35000, 35000, 140000);
       this._entityView = new Cesium.EntityView(entity, this._viewer.scene);
     }
     else{
