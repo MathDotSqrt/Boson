@@ -142,7 +142,7 @@ export class Scene {
       BOSON_UTIL.create_squint_sensor(entity, min, max, 55, 20, color);
     }
     else if(sensor_type === "Graze Angle"){
-      BOSON_UTIL.create_conic_sensor(entity, 40, 40, color);
+      BOSON_UTIL.create_conic_sensor(entity, 50, 50, color);
     }
   }
 

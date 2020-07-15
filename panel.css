@@ -125,6 +125,22 @@ canvas {
 .global_control p {
   color: #E0E0E0;
   margin: 0px;
+  font-weight: bold;
+}
+
+.global_controls table {
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.global_controls .data {
+  float: right;
+  color: #999;
+}
+
+.global_controls .follow_selector {
+  float: right;
 }
 
 /*
@@ -163,7 +179,6 @@ canvas {
 
 .element .title table{
   width: 100%;
-  /* background-color: #f0f; */
 }
 
 a.close {

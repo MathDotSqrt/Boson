@@ -28,12 +28,8 @@ for(const element of document.getElementsByClassName("open_btn")){
 function createGlobalControls(){
   const global_panel = document.getElementById("global");
 
-  const controls = document.createElement("div");
-  controls.className = "global_controls";
-  global_panel.append(controls);
-
   const table = document.createElement("table");
-  controls.append(table);
+  global_panel.append(table);
 
   function insert_field(table, field_name, field){
     const tr = table.insertRow(-1);
@@ -42,11 +38,36 @@ function createGlobalControls(){
     insertP(cell0, field_name);
 
     const cell1 = tr.insertCell(1);
+    cell1.className = "data";
     cell1.append(field);
   }
 
-  const color_picker = createColorPicker("CHRIS", function(name, color){});
-  insert_field(table, "Color", color_picker);
+  const color_picker = createFollowSelector(["satellite 1", 'satellite 2']);
+  insert_field(table, "Follow", color_picker);
+
+}
+
+function createFollowSelector(names){
+  const select = document.createElement("select");
+  select.className = "follow_selector";
+  select.onchange = function(event){
+    const value = select.options[select.selectedIndex].value;
+    console.log(value);
+    //simulation.setOrbitTrail(names, value);
+  }
+
+  for(const name of names){
+    insertFollorSelect(select, name);
+  }
+
+  return select;
+}
+
+function insertFollorSelect(select, name){
+  const option = document.createElement("option");
+  option.value = name;
+  insertP(option, name);
+  select.add(option);
 
 }
 createGlobalControls();
