@@ -51,7 +51,6 @@ function createFollowSelector(names){
   select.className = "follow_selector";
   select.onchange = function(event){
     const value = select.options[select.selectedIndex].value;
-    console.log(value);
     simulation.follow(value);
     //simulation.setOrbitTrail(names, value);
   }
@@ -75,14 +74,16 @@ export function removeFollowSelect(name){
   if(select){
     for(const option of select){
       if(option.value == name){
+        const value_before = select.value;
         option.remove();
+        const value_after = select.value;
+        if(value_before != value_after){
+          simulation.follow("None");
+        }
+
         break;
       }
     }
-  }
-
-  if(select.value == name){
-    select.value = 'None';
   }
 }
 

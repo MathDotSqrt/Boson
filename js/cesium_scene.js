@@ -179,6 +179,7 @@ export class Scene {
   }
 
   removeOrbit(name){
+    console.log("REMOVE ORBIT: " + name);
     this._viewer.entities.removeById(name);
   }
 
