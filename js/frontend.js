@@ -42,9 +42,8 @@ function createGlobalControls(){
     cell1.append(field);
   }
 
-  const color_picker = createFollowSelector(["satellite 1", 'satellite 2']);
+  const color_picker = createFollowSelector(["None"]);
   insert_field(table, "Follow", color_picker);
-
 }
 
 function createFollowSelector(names){
@@ -57,18 +56,40 @@ function createFollowSelector(names){
   }
 
   for(const name of names){
-    insertFollorSelect(select, name);
+    insertSelect(select, name);
   }
 
   return select;
 }
 
-function insertFollorSelect(select, name){
-  const option = document.createElement("option");
-  option.value = name;
-  insertP(option, name);
-  select.add(option);
+export function insertFollowSelect(name){
+  const select = document.getElementsByClassName("follow_selector")[0];
+  if(select){
+    insertSelect(select, name);
+  }
+}
 
+export function removeFollowSelect(name){
+  const select = document.getElementsByClassName("follow_selector")[0];
+  if(select){
+    for(const option of select){
+      if(option.value == name){
+        option.remove();
+        break;
+      }
+    }
+  }
+
+  if(select.value == name){
+    select.value = 'None';
+  }
+}
+
+function insertSelect(select, value){
+  const option = document.createElement("option");
+  option.value = value;
+  insertP(option, value);
+  select.add(option);
 }
 createGlobalControls();
 /* GLOBAL CONTROLS */
@@ -78,10 +99,13 @@ export function appendSatellite(name){
   const satellite_list = document.querySelector("#satellite_list");
   const satellite = createSatelliteNode(name);
   satellite_list.append(satellite);
+  insertFollowSelect(name);
 }
 
 function deleteSatelliteNode(name){
   document.getElementById(name).remove();
+  removeFollowSelect(name);
+
 }
 
 function createSatelliteNode(name){
@@ -419,19 +443,26 @@ export function appendDropFileElementTarget(name, num_targets){
 }
 
 function importEphemeris(name, platform){
-  console.log(platform);
-  const names = [];
-
-  for(const id of Object.keys(platform)){
-    const new_name = name + "_" + id;
-    BOSON_EPHEMERIS.register_ephemeris(new_name, platform[id]);
-    names.push(new_name);
-    simulation.importOrbit(new_name, id);
-  }
-  for(const name of names){
+  if("position" in platform){
+    BOSON_EPHEMERIS.register_ephemeris(name, platform);
+    simulation.importOrbit(name);
     appendSatellite(name);
+    appendDropFileElement(name);
   }
-  appendDropFileElementPlatform(name, names);
+  else{
+    const names = [];
+
+    for(const id of Object.keys(platform)){
+      const new_name = name + "_" + id;
+      BOSON_EPHEMERIS.register_ephemeris(new_name, platform[id]);
+      names.push(new_name);
+      simulation.importOrbit(new_name, id);
+    }
+    for(const name of names){
+      appendSatellite(name);
+    }
+    appendDropFileElementPlatform(name, names);
+  }
 }
 
 function importSensor(name, sensors){
