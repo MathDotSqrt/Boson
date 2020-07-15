@@ -225,17 +225,19 @@ export class Simulation {
     }
 
     if(this._currentSchedule){
-      const platforms = this._getPlatforms();
-      for(const platform of platforms){
-        const targetID = this._currentSchedule.getTargetID(platform.id, seconds);
+      const platformIDs = this._currentSchedule.getAllPlatformIDs();
+      for(const platformID of platformIDs){
+        const targetID = this._currentSchedule.getTargetID(platformID, seconds);
         if(targetID){
-          //this._scene.fireVector(platform.name, 0, 0);
+          const platform = this._getByPlatformID(platformID);
+          if(platform){
+            this._scene.fireVector(platform.name, 0, 0);
+          }
           for(const target_set of Object.values(this._currentTargetSets)){
             target_set.selectTargetByID(targetID);
           }
         }
       }
-
     }
   }
 

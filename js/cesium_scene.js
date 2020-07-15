@@ -262,7 +262,7 @@ export class Scene {
         polyline : {
           positions : new Cesium.PositionPropertyArray([
             new Cesium.ReferenceProperty(this._viewer.entities, name, ['position']),
-            // new Cesium.ConstantProperty(Cesium.Cartesian3.fromDegrees(lon, lat))
+            new Cesium.ConstantProperty(Cesium.Cartesian3.fromDegrees(lon, lat))
           ]),
 
           width : 5,

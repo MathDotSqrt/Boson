@@ -8,6 +8,10 @@ export default class Schedule {
     return this._schedule;
   }
 
+  getAllPlatformIDs(){
+    return Object.keys(this._schedule).filter(x => x > 0).map(x => parseInt(x));
+  }
+
   getTargetID(platformID, seconds){
     const platform_schedule = this._schedule[platformID];
     if(platform_schedule){
