@@ -214,6 +214,7 @@ export class Simulation {
     }
 
     if(this._currentSchedule){
+      console.log(this._currentSchedule);
       const id1 = this._currentSchedule.getTargetID(1, seconds);
       const id2 = this._currentSchedule.getTargetID(2, seconds);
       if(id1) console.log(id1);

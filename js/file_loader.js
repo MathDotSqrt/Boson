@@ -52,7 +52,10 @@ export function loadTargetFile(new_file, func){
   fileReader.onloadstart = function(){
   };
   fileReader.onload = function(){
-    const target = parseTarget(new_file.name, fileReader.result);
+    var target = parseSubtarget(new_file.name, fileReader.result);
+    if(target === null){
+      target = parseTarget(new_file.name, fileReader.result);
+    }
     if(target){
       func(new_file.name, target);
     }
@@ -102,11 +105,6 @@ function parseRegular(name, lines){
   }
 
   return ephemeris;
-  //
-  // BOSON_EPHEMERIS.register_ephemeris(name, ephemeris);
-  // BOSON.import_data(name);
-  // appendDropFileElement(name);
-  // appendSatellite(name);
 }
 
 function parsePlatform(name, lines){
@@ -135,24 +133,69 @@ function parsePlatform(name, lines){
   }
 
   return platform;
+}
 
-  // const names = [];
-  //
-  // for(const id of Object.keys(platform)){
-  //   const new_name = name + "_" + id;
-  //   BOSON_EPHEMERIS.register_ephemeris(new_name, platform[id]);
-  //   names.push(new_name);
-  //   console.log(id);
-  //   BOSON.import_data(new_name, id);
-  // }
-  // for(const name of names){
-  //   appendSatellite(name);
-  // }
-  // appendDropFileElementPlatform(name, names);
+function parseSubtarget(name, lines){
+  const TARGET = "TargetID";
+  const LATITUDE = "Latitude";
+  const LONGITUDE = "Longitude";
+  const ORIENTATION = "MajorAxis";
+
+  lines = lines.split('\n');
+  const header = lines[0].split(',');
+  const targetIndex = header.indexOf(TARGET);
+  const latIndex = header.indexOf(LATITUDE);
+  const lonIndex = header.indexOf(LONGITUDE);
+  const orientationIndex = header.indexOf(ORIENTATION);
+  console.log(header);
+  console.log(header.indexOf("Longitude"));
+  console.log(orientationIndex);
+
+  if([targetIndex, latIndex, lonIndex, orientationIndex].some(x => x < 0)){
+    return null;
+  }
+
+  const targets = {};
+  for(var i = 1; i < lines.length * .9; i++){
+    const split = lines[i].split(',');
+    if(split === undefined) break;
+    const targetID = split[targetIndex];
+    const lon = split[lonIndex] * 180 / 3.1415;
+    const lat = split[latIndex] * 180 / 3.1415;
+
+    const coords = [
+      lon + .1, lat + .1,
+      lon - .1, lat + .1,
+      lon - .1, lat - .1,
+      lon + .1, lat - .1,
+
+    ];
+
+    targets[targetID] = {
+      id : targetID,
+      coords : coords
+    }
+  }
+
+  return targets;
 }
 
 function parseTarget(name, lines){
+  const TARGET = "TargetID";
+  const LATITUDE = "Latitude";
+  const LONGITUDE = "Longitude";
+
   lines = lines.split('\n');
+  const header = lines[0].split(',');
+  const targetIndex = header.indexOf(TARGET);
+  const latIndex = header.indexOf(LATITUDE);
+  const lonIndex = header.indexOf(LONGITUDE);
+
+  if([targetIndex, latIndex, lonIndex].some(x => x < 0)){
+    console.log("FAIL");
+    return null;
+  }
+
   const targets = {};
 
   var target = {id: lines[1].split(',')[1], coords: []};
@@ -160,10 +203,10 @@ function parseTarget(name, lines){
     const line = lines[i];
     const split = line.split(',');
 
-    const current_target = split[1];
+    const current_target = split[targetIndex];
     //const coord = {lat: split[3], lon: split[4], alt: split[5]};
     //const coord = [Number(split[3]), Number(split[4]), Number(split[5])];
-    const coord = [Number(split[4]) * 180 / 3.1415, Number(split[3]) * 180 / 3.1415];
+    const coord = [Number(split[lonIndex]) * 180 / 3.1415, Number(split[latIndex]) * 180 / 3.1415];
 
     if(current_target !== target.id){
       targets[target.id] = target;
@@ -174,9 +217,6 @@ function parseTarget(name, lines){
   targets[target.id] = target;
 
   return targets;
-  // BOSON_TARGETS.register_target_set(name, targets);
-  // BOSON.import_target_set(name);
-  // appendDropFileElementTarget(name, Object.keys(targets).length);
 }
 
 function parseSensor(name, lines){
@@ -232,7 +272,7 @@ function parseSchedule(name, lines){
     const start = parseFloat(split[startIndex]);
     const end = parseFloat(split[endIndex]);
 
-    if(targetID && targetID.includes("stk")) continue;
+    //if(targetID && targetID.includes("stk")) continue;
 
     if(!(platformID in schedule)){
       schedule[platformID] = {

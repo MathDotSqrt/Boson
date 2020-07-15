@@ -266,7 +266,7 @@ export class Scene {
     //not accurate in Wgs84 because it measures from center of earth not
     //orthogonal from surface of earth
     const pos_axis = Cesium.Cartesian3.normalize(position, temp0_vec3);
-    const offset_rotation = Math.PI / 2;
+    const offset_rotation = 0;
     const offset_quat = Cesium.Quaternion.fromAxisAngle(pos_axis, offset_rotation, temp0_quat);
     Cesium.Quaternion.multiply(offset_quat, orientation, orientation);
 
