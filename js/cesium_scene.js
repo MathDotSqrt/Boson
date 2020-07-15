@@ -15,6 +15,8 @@ const temp1_quat = new Cesium.Quaternion();
 export class Scene {
   constructor(dom){
     this._targetPrimitives = {};
+    this._sampleLines = {};
+
     this._start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
     //this._stop = Cesium.JulianDate.addSeconds(this._start, 36000000, new Cesium.JulianDate());
     this._stop = Cesium.JulianDate.addSeconds(this._start, 171246.075653055, new Cesium.JulianDate());
@@ -41,7 +43,16 @@ export class Scene {
     this._viewer.timeline.zoomTo(this._start, this._stop);
 
     const that = this;
-    this._viewer.scene.preRender.addEventListener(function(){that._updateEntityView()});
+    this._viewer.scene.preRender.addEventListener(function(){that._preRender()});
+    this._viewer.scene.postRender.addEventListener(function(){that._postRender()});
+  }
+
+  _preRender(){
+    this._updateEntityView();
+  }
+
+  _postRender(){
+
   }
 
   _updateEntityView(){
@@ -243,6 +254,27 @@ export class Scene {
   removeTargetPrimitive(name){
     this._viewer.scene.primitives.remove(this._targetPrimitives[name]);
     delete this._targetPrimitives[name];
+  }
+
+  fireVector(name, lon, lat){
+    if(!(name in this._sampleLines)){
+      this._sampleLines[name] = this._viewer.entities.add({
+        polyline : {
+          positions : new Cesium.PositionPropertyArray([
+            new Cesium.ReferenceProperty(this._viewer.entities, name, ['position']),
+            // new Cesium.ConstantProperty(Cesium.Cartesian3.fromDegrees(lon, lat))
+          ]),
+
+          width : 5,
+          material : new Cesium.PolylineOutlineMaterialProperty({
+            color : Cesium.Color.RED,
+            outlineColor : Cesium.Color.BLACK
+          })
+        }
+      });
+
+      console.log(this._sampleLines);
+    }
   }
 
   updateSatellite(name){

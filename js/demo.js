@@ -73,7 +73,7 @@ class Satellite {
     }
   }
 
-  update(){
+  update(schedule){
     this._scene.updateSatellite(this.name);
   }
 }
@@ -125,7 +125,7 @@ class TargetSet {
     this._scene.selectTarget(this.name, id);
   }
 
-  update(schedule){
+  update(){
 
   }
 };
@@ -225,12 +225,17 @@ export class Simulation {
     }
 
     if(this._currentSchedule){
-      const id1 = this._currentSchedule.getTargetID(1, seconds);
-      const id2 = this._currentSchedule.getTargetID(2, seconds);
-      for(const target_set of Object.values(this._currentTargetSets)){
-        if(id1) target_set.selectTargetByID(id1);
-        if(id2) target_set.selectTargetByID(id2);
+      const platforms = this._getPlatforms();
+      for(const platform of platforms){
+        const targetID = this._currentSchedule.getTargetID(platform.id, seconds);
+        if(targetID){
+          //this._scene.fireVector(platform.name, 0, 0);
+          for(const target_set of Object.values(this._currentTargetSets)){
+            target_set.selectTargetByID(targetID);
+          }
+        }
       }
+
     }
   }
 
@@ -242,5 +247,9 @@ export class Simulation {
     }
 
     return null;
+  }
+
+  _getPlatforms(){
+    return Object.values(this._currentOrbits).filter(x => x.id > 0);
   }
 }
