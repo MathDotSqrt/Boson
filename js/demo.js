@@ -228,6 +228,7 @@ export class Simulation {
       const platformIDs = this._currentSchedule.getAllPlatformIDs();
 
       for(const platformID of platformIDs){
+        const out = this._currentSchedule.getScheduleEventContinuous(platformID, seconds);
         const schedule_event = this._currentSchedule.getScheduleEvent(platformID, seconds);
         const platform = this._getByPlatformID(platformID);
 
