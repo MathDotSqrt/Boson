@@ -256,6 +256,15 @@ export class Scene {
     }
   }
 
+  deselectTarget(name, target_id){
+    const primitive = this._targetPrimitives[name];
+    const attrib = primitive.getGeometryInstanceAttributes(target_id);
+    if(attrib){
+      //attrib.color.value[3] !
+      attrib.color = new Cesium.ColorGeometryInstanceAttribute(0, 0, 0, 0).value;
+    }
+  }
+
   removeTargetPrimitive(name){
     this._viewer.scene.primitives.remove(this._targetPrimitives[name]);
     delete this._targetPrimitives[name];

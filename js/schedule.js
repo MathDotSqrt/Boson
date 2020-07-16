@@ -30,9 +30,13 @@ export default class Schedule {
     const id_index = binary_search_interval(platform_schedule.interval, seconds);
     if(id_index !== -1){
       const schedule_event = this._getEvent(platform_schedule, id_index);
-      const target_ids = platform_schedule.targets.slice(lastIndex, id_index);
+
+      const minIndex = Math.min(lastIndex, id_index);
+      const maxIndex = Math.max(lastIndex, id_index);
+      const target_ids = platform_schedule.targets.slice(minIndex, maxIndex);
       this._lastEvent[platformID].lastIndex = id_index;
       return {
+        delta : id_index - lastIndex,
         event : schedule_event,
         targets : target_ids
       }

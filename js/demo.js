@@ -125,6 +125,10 @@ class TargetSet {
     this._scene.selectTarget(this.name, id);
   }
 
+  deselectTargetByID(id){
+    this._scene.deselectTarget(this.name, id);
+  }
+
   update(){
 
   }
@@ -241,7 +245,12 @@ export class Simulation {
           }
           for(const target_set of Object.values(this._currentTargetSets)){
             for(const target of targets){
-              target_set.selectTargetByID(target);
+              if(out.delta >= 0){
+                target_set.selectTargetByID(target);
+              }
+              else{
+                target_set.deselectTargetByID(target);
+              }
             }
             target_set.selectTargetByID(schedule_event.target);
 
