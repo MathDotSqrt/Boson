@@ -229,16 +229,22 @@ export class Simulation {
 
       for(const platformID of platformIDs){
         const out = this._currentSchedule.getScheduleEventContinuous(platformID, seconds);
-        const schedule_event = this._currentSchedule.getScheduleEvent(platformID, seconds);
+        //const schedule_event = this._currentSchedule.getScheduleEvent(platformID, seconds);
         const platform = this._getByPlatformID(platformID);
 
-        if(schedule_event){
+        if(out){
+          const schedule_event = out.event;
+          const targets = out.targets;
           if(platform){
             const [lon, lat] = schedule_event.coord;
             this._scene.fireVector(platform.name, lon, lat);
           }
           for(const target_set of Object.values(this._currentTargetSets)){
+            for(const target of targets){
+              target_set.selectTargetByID(target);
+            }
             target_set.selectTargetByID(schedule_event.target);
+
           }
         }
         else{

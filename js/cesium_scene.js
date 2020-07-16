@@ -251,6 +251,7 @@ export class Scene {
     const primitive = this._targetPrimitives[name];
     const attrib = primitive.getGeometryInstanceAttributes(target_id);
     if(attrib){
+      //attrib.color.value[3] !
       attrib.color = new Cesium.ColorGeometryInstanceAttribute(0, 0, 0, 1).value;
     }
   }
