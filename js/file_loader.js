@@ -156,7 +156,6 @@ function parsePlatform(name, lines){
     ephemeris.velocity.push(Number(split[indexMap.velz]) * 1000);
   }
 
-  console.log(platform);
   return platform;
 }
 
@@ -203,34 +202,31 @@ function createTargetObject(targets, vertices){
 }
 
 function parseTarget(lines){
-  const TARGET = "TargetID";
-  const TYPE = "TypeID";
-  const LATITUDE = "CentroidLatitude";
-  const LONGITUDE = "CentroidLongitude";
-  const SIZE = "Size";
-
   lines = lines.split('\n');
-  const header = lines[0].split(',').map(x => x.trim());
-  const targetIndex = header.indexOf(TARGET);
-  const typeIndex = header.indexOf(TYPE);
-  const latIndex = header.indexOf(LATITUDE);
-  const lonIndex = header.indexOf(LONGITUDE);
-  const sizeIndex = header.indexOf(SIZE);
+  const header = lines[0];
 
-  if([targetIndex, typeIndex, latIndex, lonIndex, sizeIndex].some(x => x < 0)){
+  const columnMap = {
+    target : "TargetID",
+    type : "TypeID",
+    longitude : "CentroidLongitude",
+    latitude : "CentroidLatitude",
+    size : "Size"
+  };
+  const indexMap = getHeaderIndices(header, columnMap);
+  if(indexMap === null){
     return null;
   }
 
   const targets = [];
-  for(var i = 1; i < lines.length -1; i++){
+  for(var i = 1; i < lines.length; i++){
     const split = lines[i].split(',');
     if(split === undefined) break;
 
-    const targetID = split[targetIndex];
-    const typeID = parseInt(split[typeIndex]);
-    const lon = split[lonIndex] * 180 / 3.1415;
-    const lat = split[latIndex] * 180 / 3.1415;
-    const size = split[sizeIndex];
+    const targetID = split[indexMap.target];
+    const typeID = parseInt(split[indexMap.type]);
+    const lon = split[indexMap.longitude] * 180 / 3.1415;
+    const lat = split[indexMap.latitude] * 180 / 3.1415;
+    const size = split[indexMap.switch];
 
     targets.push({
       targetID : targetID,
@@ -246,17 +242,16 @@ function parseTarget(lines){
 }
 
 function parseTargetVertex(lines){
-  const TARGET = "TargetID";
-  const LATITUDE = "Latitude";
-  const LONGITUDE = "Longitude";
-
   lines = lines.split('\n');
-  const header = lines[0].split(',');
-  const targetIndex = header.indexOf(TARGET);
-  const latIndex = header.indexOf(LATITUDE);
-  const lonIndex = header.indexOf(LONGITUDE);
+  const header = lines[0];
+  const columnMap = {
+    target : "TargetID",
+    longitude : "Longitude",
+    latitude : "Latitude"
+  }
 
-  if([targetIndex, latIndex, lonIndex].some(x => x < 0)){
+  const indexMap = getHeaderIndices(header, columnMap);
+  if(indexMap === null){
     return null;
   }
 
@@ -267,10 +262,13 @@ function parseTargetVertex(lines){
     const line = lines[i];
     const split = line.split(',');
 
-    const current_target = split[targetIndex];
+    const current_target = split[indexMap.target];
     //const coord = {lat: split[3], lon: split[4], alt: split[5]};
     //const coord = [Number(split[3]), Number(split[4]), Number(split[5])];
-    const coord = [Number(split[lonIndex]) * 180 / 3.1415, Number(split[latIndex]) * 180 / 3.1415];
+    const coord = [
+      Number(split[indexMap.longitude]) * 180 / 3.1415,
+      Number(split[indexMap.latitude]) * 180 / 3.1415
+    ];
 
     if(current_target !== target.id){
       targets[target.id] = target;
@@ -285,20 +283,30 @@ function parseTargetVertex(lines){
 
 function parseSensor(name, lines){
   lines = lines.split('\n');
+  const header = lines[0];
+
+  const columnMap = {
+    platformID : "PlatformID",
+    constraint : "Constraint Type",
+    minValue : "Min Value",
+    maxValue : "Max Value"
+  };
+
+  const indexMap = getHeaderIndices(header, columnMap);
+  if(indexMap === null){
+    return null;
+  }
+
   const sensors = [];
   for(var i = 1; i < lines.length; i++){
     const line = lines[i];
     const split = line.split(',');
-
-    if(split.length !== 4) continue;
-
     const sensor = {
-      platformID    : Number(split[0]),
-      sensorType    : split[1],
-      minValue      : Number(split[2]),
-      maxValue      : Number(split[3]),
+      platformID    : Number(split[indexMap.platformID]),
+      sensorType    : split[indexMap.constraint],
+      minValue      : Number(split[indexMap.minValue]),
+      maxValue      : Number(split[indexMap.maxValue]),
     }
-    console.log("ID: " + i);
     sensors.push(sensor);
   }
 
@@ -307,24 +315,17 @@ function parseSensor(name, lines){
 
 function parseSchedule(name, lines){
   lines = lines.split('\n');
-  const PLATFORM = "PlatformID";
-  const TARGET = "TargetID";
-  const START = "ImageStartTime";
-  const END = "ImageEndTime";
-  const LONGITUDE = "Longitude";
-  const LATITUDE = "Latitude";
-
-  const header = lines[0].split(',');
-  const platformIndex = header.indexOf(PLATFORM);
-  const targetIndex = header.indexOf(TARGET);
-  const startIndex = header.indexOf(START);
-  const endIndex = header.indexOf(END);
-  const lonIndex = header.indexOf(LONGITUDE);
-  const latIndex = header.indexOf(LATITUDE);
-
-  if([platformIndex, targetIndex,
-      startIndex, endIndex,
-      lonIndex, latIndex].some(x => x < 0)){
+  const header = lines[0];
+  const columnMap = {
+    platformID : "PlatformID",
+    target : "TargetID",
+    start : "ImageStartTime",
+    end : "ImageEndTime",
+    longitude : "Longitude",
+    latitude : "Latitude"
+  }
+  const indexMap = getHeaderIndices(header, columnMap);
+  if(indexMap === null){
     return null;
   }
 
@@ -333,12 +334,12 @@ function parseSchedule(name, lines){
   for(var i = 1; i < lines.length; i++){
     const line = lines[i];
     const split = line.split(',');
-    const platformID = parseInt(split[platformIndex]);
-    const targetID = split[targetIndex];
-    const start = parseFloat(split[startIndex]);
-    const end = parseFloat(split[endIndex]);
-    const lon = parseFloat(split[lonIndex]);
-    const lat = parseFloat(split[latIndex]);
+    const platformID = parseInt(split[indexMap.platformID]);
+    const targetID = split[indexMap.target];
+    const start = parseFloat(split[indexMap.start]);
+    const end = parseFloat(split[indexMap.end]);
+    const lon = parseFloat(split[indexMap.longitude]);
+    const lat = parseFloat(split[indexMap.latitude]);
 
     //if(targetID && targetID.includes("stk")) continue;
 

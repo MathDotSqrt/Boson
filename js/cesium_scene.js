@@ -216,7 +216,7 @@ export class Scene {
 
       const instance = new Cesium.GeometryInstance({
         geometry : polygon,
-        id : target.id,
+        id : target.targetID,
         attributes : {
           color : color0
         }
