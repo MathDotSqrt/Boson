@@ -75,17 +75,13 @@ export function loadTargetFile(file_list, func){
 }
 
 export function loadScheduleFile(new_file, func){
-  const fileReader = new FileReader();
-  fileReader.onloadstart = function(){
-  };
-  fileReader.onload = function(){
-    const schedule = parseSchedule(new_file.name, fileReader.result);
+  const promise = pFileReader(new_file);
+  promise.then(text => {
+    const schedule = parseSchedule(new_file.name, text);
     if(schedule){
       func(new_file, schedule);
     }
-  };
-
-  fileReader.readAsText(new_file);
+  })
 }
 
 function getHeaderIndices(header, columnMap){
