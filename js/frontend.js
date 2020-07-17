@@ -580,7 +580,7 @@ ephemeris.ondragenter = dragStartHandler;
 ephemeris.ondragleave = dragEndHandler;
 ephemeris.onclick = function(){
   const input = document.getElementById("ephemeris_file_input");
-  input.onchange = function(e){
+  input.oninput = function(e){
     const files = e.target.files;
     for(const file of files){
       BOSON_FILELOADER.loadEphemerisFile(file, importEphemeris);
@@ -597,7 +597,7 @@ target.ondragenter = dragStartHandler;
 target.ondragleave = dragEndHandler;
 target.onclick = function(){
   const input = document.getElementById("target_file_input");
-  input.onchange = function(e){
+  input.oninput = function(e){
     const files = e.target.files;
     for(const file of files){
       BOSON_FILELOADER.loadTargetFile(file, importTargetSet);
@@ -613,7 +613,7 @@ schedule.ondragenter = dragStartHandler;
 schedule.ondragleave = dragEndHandler;
 schedule.onclick = function(){
   const input = document.getElementById("schedule_file_input");
-  input.onchange = function(e){
+  input.oninput = function(e){
     const files = e.target.files;
     for(const file of files){
       BOSON_FILELOADER.loadScheduleFile(file, importSchedule);

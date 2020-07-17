@@ -52,6 +52,8 @@ export function loadTargetFile(new_file, func){
   fileReader.onloadstart = function(){
   };
   fileReader.onload = function(){
+    console.log(new_file);
+
     var target = parseSubtarget(new_file.name, fileReader.result);
     if(target === null){
       target = parseTarget(new_file.name, fileReader.result);
