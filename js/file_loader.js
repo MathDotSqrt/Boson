@@ -52,6 +52,8 @@ export function loadTargetFile(file_list, func){
   const TARGETS = "targets.csv";
   const TARGET_VERTICES = "target_vertices.csv";
 
+  //const dir = file_list[0].webkitRelativePath.split('/')[0];
+
   const file_array = Object.values(file_list);
   const targets = file_array.find(file => file.name === TARGETS);
   const target_vertices = file_array.find(file => file.name === TARGET_VERTICES);
@@ -66,9 +68,9 @@ export function loadTargetFile(file_list, func){
     }
 
     const [point, dsa, mcg] = createTargetObject(targets, vertices);
-    func("Point", point)
-    func("dsa", dsa)
-    func("mcg", mcg)
+    func("deck_point", point)
+    func("deck_dsa", dsa)
+    func("deck_mcg", mcg)
   });
 }
 
