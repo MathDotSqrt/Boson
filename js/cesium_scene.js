@@ -204,7 +204,6 @@ export class Scene {
     const instances = [];
     for(const target of Object.values(target_set)){
       const coords = target.coords;
-
       const polygon = Cesium.PolygonGeometry.fromPositions({
         positions: Cesium.Cartesian3.fromDegreesArray(coords),
 

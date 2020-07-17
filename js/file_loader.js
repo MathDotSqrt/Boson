@@ -4,6 +4,14 @@ import * as BOSON_EPHEMERIS from './ephemeris.js';
 import * as BOSON_TARGETS from './targets.js';
 import {appendDropFileElement, appendDropFileElementPlatform, appendDropFileElementTarget, appendSatellite} from './frontend.js';
 
+function pFileReader(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = (e) => reject(e);
+    reader.onload = () => resolve(reader.result);
+    reader.readAsText(file);
+  });
+}
 
 export function isValidFile(event){
   console.log(event.dataTransfer.items.length);
@@ -21,48 +29,47 @@ export function isValidFile(event){
 
 
 export function loadEphemerisFile(new_file, func){
-  const fileReader = new FileReader();
-  fileReader.onloadstart = function(){
-  };
-  fileReader.onload = function(){
-    const result = parseEphemerisFile(new_file.name, fileReader.result);
+  const promise = pFileReader(new_file);
+  promise.then((text) => {
+    const result = parseEphemerisFile(new_file.name, text);
     if(result){
       func(new_file.name, result);
     }
-  };
-
-  fileReader.readAsText(new_file);
+  }, (e) => console.log(e));
 }
 
 export function loadSensorFile(new_file, func){
-  const fileReader = new FileReader();
-  fileReader.onloadstart = function(){
-  };
-  fileReader.onload = function(){
-    const result = parseSensor(new_file.name, fileReader.result);
+  const promise = pFileReader(new_file);
+  promise.then((text) => {
+    const result = parseSensor(new_file.name, text);
     if(result){
       func(new_file.name, result);
     }
-  };
-  fileReader.readAsText(new_file);
+  }, (e) => console.log(e));
 }
 
-export function loadTargetFile(new_file, func){
-  const fileReader = new FileReader();
-  fileReader.onloadstart = function(){
-  };
-  fileReader.onload = function(){
-    console.log(new_file);
+export function loadTargetFile(file_list, func){
+  const TARGETS = "targets.csv";
+  const TARGET_VERTICES = "target_vertices.csv";
 
-    var target = parseSubtarget(new_file.name, fileReader.result);
-    if(target === null){
-      target = parseTarget(new_file.name, fileReader.result);
+  const file_array = Object.values(file_list);
+  const targets = file_array.find(file => file.name === TARGETS);
+  const target_vertices = file_array.find(file => file.name === TARGET_VERTICES);
+
+  const target_promise = pFileReader(targets).then(parseTarget, console.error);
+  const vertex_promise = pFileReader(target_vertices).then(parseTargetVertex, console.error);
+
+  Promise.all([target_promise, vertex_promise])
+  .then(([targets, vertices]) => {
+    if(targets === null || vertices === null){
+      throw new Error("Failed to parse target deck!");
     }
-    if(target){
-      func(new_file.name, target);
-    }
-  };
-  fileReader.readAsText(new_file);
+
+    const [point, dsa, mcg] = createTargetObject(targets, vertices);
+    func("Point", point)
+    func("dsa", dsa)
+    func("mcg", mcg)
+  });
 }
 
 export function loadScheduleFile(new_file, func){
@@ -137,52 +144,92 @@ function parsePlatform(name, lines){
   return platform;
 }
 
-function parseSubtarget(name, lines){
+function createPointVerticies(lon, lat, size){
+  size = .1;
+  return [
+    lon + size, lat + size,
+    lon - size, lat + size,
+    lon - size, lat - size,
+    lon + size, lat - size
+  ]
+}
+
+function createTargetObject(targets, vertices){
+  const point_targets = {};
+  targets.filter(t => t.typeID === 1).forEach(point => {
+    point_targets[point.targetID] = {
+      targetID : point.targetID,
+      coords : createPointVerticies(point.lon, point.lat, point.size),
+    }
+  });
+
+  const dsa_targets = {};
+  targets.filter(t => t.typeID === 3)
+  .filter(t => t.targetID in vertices)
+  .forEach(dsa => {
+    dsa_targets[dsa.targetID] = {
+      targetID : dsa.targetID,
+      coords : vertices[dsa.targetID].coords
+    }
+  });
+
+  const mcg_targets = {};
+  targets.filter(t => t.typeID === 5)
+  .filter(t => t.targetID in vertices)
+  .forEach(mcg => {
+    mcg_targets[mcg.targetID] = {
+      targetID : mcg.targetID,
+      coords : vertices[mcg.targetID].coords
+    }
+  });
+
+  return [point_targets, dsa_targets, mcg_targets];
+}
+
+function parseTarget(lines){
   const TARGET = "TargetID";
-  const LATITUDE = "Latitude";
-  const LONGITUDE = "Longitude";
-  const ORIENTATION = "MajorAxis";
+  const TYPE = "TypeID";
+  const LATITUDE = "CentroidLatitude";
+  const LONGITUDE = "CentroidLongitude";
+  const SIZE = "Size";
 
   lines = lines.split('\n');
-  const header = lines[0].split(',');
+  const header = lines[0].split(',').map(x => x.trim());
   const targetIndex = header.indexOf(TARGET);
+  const typeIndex = header.indexOf(TYPE);
   const latIndex = header.indexOf(LATITUDE);
   const lonIndex = header.indexOf(LONGITUDE);
-  const orientationIndex = header.indexOf(ORIENTATION);
-  console.log(header);
-  console.log(header.indexOf("Longitude"));
-  console.log(orientationIndex);
+  const sizeIndex = header.indexOf(SIZE);
 
-  if([targetIndex, latIndex, lonIndex, orientationIndex].some(x => x < 0)){
+  if([targetIndex, typeIndex, latIndex, lonIndex, sizeIndex].some(x => x < 0)){
     return null;
   }
 
-  const targets = {};
+  const targets = [];
   for(var i = 1; i < lines.length -1; i++){
     const split = lines[i].split(',');
     if(split === undefined) break;
+
     const targetID = split[targetIndex];
+    const typeID = parseInt(split[typeIndex]);
     const lon = split[lonIndex] * 180 / 3.1415;
     const lat = split[latIndex] * 180 / 3.1415;
+    const size = split[sizeIndex];
 
-    const coords = [
-      lon + .1, lat + .1,
-      lon - .1, lat + .1,
-      lon - .1, lat - .1,
-      lon + .1, lat - .1,
+    targets.push({
+      targetID : targetID,
+      typeID : typeID,
+      lat : lat,
+      lon : lon,
+      size : size
+    });
 
-    ];
-
-    targets[targetID] = {
-      id : targetID,
-      coords : coords
-    }
   }
 
   return targets;
 }
 
-function parseTarget(name, lines){
+function parseTargetVertex(lines){
   const TARGET = "TargetID";
   const LATITUDE = "Latitude";
   const LONGITUDE = "Longitude";
@@ -194,7 +241,6 @@ function parseTarget(name, lines){
   const lonIndex = header.indexOf(LONGITUDE);
 
   if([targetIndex, latIndex, lonIndex].some(x => x < 0)){
-    console.log("FAIL");
     return null;
   }
 

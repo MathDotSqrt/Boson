@@ -598,10 +598,7 @@ target.ondragleave = dragEndHandler;
 target.onclick = function(){
   const input = document.getElementById("target_file_input");
   input.oninput = function(e){
-    const files = e.target.files;
-    for(const file of files){
-      BOSON_FILELOADER.loadTargetFile(file, importTargetSet);
-    }
+    BOSON_FILELOADER.loadTargetFile(e.target.files, importTargetSet);
   };
   input.click();
 }
