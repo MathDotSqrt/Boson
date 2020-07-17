@@ -88,44 +88,56 @@ export function loadScheduleFile(new_file, func){
   fileReader.readAsText(new_file);
 }
 
-function parseEphemerisFile(name, fr){
-  const lines = fr.split('\n');
-  if(lines[0].trim() === "platform"){
-    return parsePlatform(name, lines);
-  }
-  else{
-    return parseRegular(name, lines);
+function getHeaderIndices(header, columnMap){
+  header = header.split(",").map(col => col.trim());
+
+  const columns = Object.entries(columnMap);
+  const indices = columns.map(([key, value]) => [key, header.indexOf(value)]);
+  if(indices.some(([key, value]) => value < 0)){
+    return null;
   }
 
+  const indexMap = {};
+  indices.forEach(([key, value]) => indexMap[key] = value);
+
+  return indexMap;
 }
 
-function parseRegular(name, lines){
-  const ephemeris = {time: [], position: [], velocity: [], id: 1};
-
-  for(const line of lines){
-    const split = line.split(',');
-    if(split.length != 7) continue;
-    ephemeris.time.push(Number(split[0]));
-    ephemeris.position.push(Number(split[1]));
-    ephemeris.position.push(Number(split[2]));
-    ephemeris.position.push(Number(split[3]));
-
-    ephemeris.velocity.push(Number(split[4]));
-    ephemeris.velocity.push(Number(split[5]));
-    ephemeris.velocity.push(Number(split[6]));
-  }
-
-  return ephemeris;
+function parseEphemerisFile(name, text){
+  return parsePlatform(name, text);
 }
 
 function parsePlatform(name, lines){
-  const platform = {};
+  lines = lines.split("\n");
+  const header = lines[0];
 
+  const columns = {
+    platformID : "PlatformID",
+    time : "Time",
+    posx : "PositionX",
+    posy : "PositionY",
+    posz : "PositionZ",
+    velx : "VelocityX",
+    vely : "VelocityY",
+    velz : "VelocityZ"
+  }
+
+  const indexMap = getHeaderIndices(header, columns);
+  console.log(indexMap);
+
+  if(indexMap === null){
+    return null;
+  }
+
+  const platform = {};
   for(const line of lines){
     const split = line.split(',');
-    if(split.length != 9) continue;
 
-    const id = line[0];
+    const id = parseInt(split[indexMap.platformID]);
+
+    if(isNaN(id)){
+      continue;
+    }
 
     if(!(id in platform)){
       console.log("NEW ID");
@@ -133,16 +145,18 @@ function parsePlatform(name, lines){
     }
 
     const ephemeris = platform[id];
-    ephemeris.time.push(Number(split[1]));
-    ephemeris.position.push(Number(split[2]));
-    ephemeris.position.push(Number(split[3]));
-    ephemeris.position.push(Number(split[4]));
+    ephemeris.time.push(Number(split[indexMap.time]));
+    //convert km to meters
+    ephemeris.position.push(Number(split[indexMap.posx]) * 1000);
+    ephemeris.position.push(Number(split[indexMap.posy]) * 1000);
+    ephemeris.position.push(Number(split[indexMap.posz]) * 1000);
 
-    ephemeris.velocity.push(Number(split[5]));
-    ephemeris.velocity.push(Number(split[6]));
-    ephemeris.velocity.push(Number(split[7]));
+    ephemeris.velocity.push(Number(split[indexMap.velx]) * 1000);
+    ephemeris.velocity.push(Number(split[indexMap.vely]) * 1000);
+    ephemeris.velocity.push(Number(split[indexMap.velz]) * 1000);
   }
 
+  console.log(platform);
   return platform;
 }
 
