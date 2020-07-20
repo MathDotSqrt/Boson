@@ -1,6 +1,7 @@
 "use strict";
 
 import * as BOSON_UTIL from './cesium_util.js';
+import * as BOSON_ORBIT from './cesium_orbit.js';
 
 const EULER_DOWN = new Cesium.HeadingPitchRoll(0, Math.PI / 2, 0);
 export const ALL = 0;
@@ -16,11 +17,13 @@ export class Scene {
   constructor(dom){
     this._targetPrimitives = {};
     this._sampleLines = {};
+    this._entityPaths = {};
 
     this._start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
     //this._stop = Cesium.JulianDate.addSeconds(this._start, 36000000, new Cesium.JulianDate());
     this._stop = Cesium.JulianDate.addSeconds(this._start, 171246.075653055, new Cesium.JulianDate());
     this._entityView = null;
+
 
     this._viewer = new Cesium.Viewer(dom.id, {
       infoBox: false, //Disable InfoBox widget
@@ -86,6 +89,8 @@ export class Scene {
   }
 
   createOrbit(name, ephemeris, color){
+    const positions = [];
+
     const pos_property = new Cesium.SampledPositionProperty();
     pos_property.setInterpolationOptions({
       interpolationAlgorithm : Cesium.LagrangePolynomialApproximation,
@@ -101,6 +106,7 @@ export class Scene {
       const cesium_pos = new Cesium.Cartesian3(pos_x, pos_y, pos_z);
       const cesium_time = Cesium.JulianDate.addSeconds(this._start, time, new Cesium.JulianDate());
       pos_property.addSample(cesium_time, cesium_pos);
+      positions.push(cesium_pos);
     }
 
     const cesium_color = Cesium.Color.fromCssColorString(color);
@@ -128,6 +134,25 @@ export class Scene {
         minimumPixelSize: 64,
       },
       //Show the path as a colored line
+      // path: {
+      //   resolution: 10000000,  //large resolution really helps with performance
+      //   material: cesium_color,
+      //   width: 1,
+      //   trailTime: 10000000,
+      //   leadTime: 0,
+      // },
+    });
+
+    const half = Cesium.JulianDate.addSeconds(this._start, 1000, new Cesium.JulianDate());;
+
+    const path1 = this._viewer.entities.add({
+      availability: new Cesium.TimeIntervalCollection([
+        new Cesium.TimeInterval({
+          start: this._start,
+          stop: half,
+        }),
+      ]),
+      position: pos_property,
       path: {
         resolution: 10000000,  //large resolution really helps with performance
         material: cesium_color,
@@ -135,17 +160,39 @@ export class Scene {
         trailTime: 10000000,
         leadTime: 0,
       },
+      // material : Cesium.Color.RED
     });
+
+    const path2 = this._viewer.entities.add({
+      availability: new Cesium.TimeIntervalCollection([
+        new Cesium.TimeInterval({
+          start: half,
+          stop: this._stop,
+        }),
+      ]),
+      position: pos_property,
+      path: {
+        resolution: 10000000,  //large resolution really helps with performance
+        material: cesium_color,
+        width: 5,
+        trailTime: 10000000,
+        leadTime: 0,
+      },
+      // material : Cesium.Color.RED
+    });
+
+    this._entityPaths[name] = [path1, path2];
+    //BOSON_ORBIT.createIWPolyline(positions, this._polylineCollection);
   }
 
   setOrbitTrail(id, trail){
     const entity = this._viewer.entities.getById(id);
 
     if(trail === ALL){
-      entity.path.trailTime = 10000000;
+      this._entityPaths[id].forEach(e => e.path.trailTime = 10000000);
     }
     else if(trail === NONE){
-      entity.path.trailTime = 0;
+      this._entityPaths[id].forEach(e => e.path.trailTime = 0);
     }
     else if(trail === ONE_REV){
       const time = this._viewer.clock.currentTime;
@@ -161,7 +208,8 @@ export class Scene {
 
       //https://en.wikipedia.org/wiki/Elliptic_orbit
       const trail_time = 2 * Math.PI * Math.sqrt(a3 / u);
-      entity.path.trailTime = trail_time;
+      this._entityPaths[id].forEach(e => e.path.trailTime = trail_time);
+
     }
   }
 
@@ -169,7 +217,8 @@ export class Scene {
     const color = Cesium.Color.fromCssColorString(css_color);
     const entity = this._viewer.entities.getById(id);
     if(!entity) return;
-    entity.path.material.color = color;
+    this._entityPaths[id].forEach(e => e.path.material.color = color);
+    //entity.path.material.color = color;
   }
 
   appendSensor(name, sensor_type, min, max){

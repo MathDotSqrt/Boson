@@ -68,6 +68,11 @@ export function create_material(){
   return appearance;
 }
 
+//https://groups.google.com/forum/#!topic/cesium-dev/FKfcfuw2TpI
+export function createIWPolyLine(entity, polylineCollection){
+
+}
+
 export function create_rectangular_sensor(entity, x_angle, y_angle, color){
   console.log('CHRIS TRENKOV');
   entity.addProperty('rectangularSensor');
