@@ -1,16 +1,23 @@
 import * as BOSON_RENDER from "./cesium_scene.js"
 
 export default class WindowInterval {
-  constructor(scene){
+  constructor(name, scene){
     this._scene = scene;
+
+    this._name = name;
 
     this._IWInterval = null;
     this._CWInterval = null;
 
-    this._complInterval = [];   //complement of IW or CW interval
-    this._mutexIWInterval = []; //mutually exclusive image window interval
-    this._mutexCWInterval = []; //mutually exclusive comm window interval
-    this._mutinInterval = [];   //mutually inclusive interval
+    this._complInterval = null;   //complement of IW or CW interval
+    this._mutexIWInterval = null; //mutually exclusive image window interval
+    this._mutexCWInterval = null; //mutually exclusive comm window interval
+    this._mutinInterval = null;   //mutually inclusive interval
+
+    this.DefaultColor = "#00ff00";
+    this.IWColor = "#ff0000";
+    this.CWColor = "#0000ff";
+    this.BothColor = "#ff00ff";
   }
 
   setIWInterval(interval){
@@ -26,6 +33,57 @@ export default class WindowInterval {
     if(this._IWInterval && this._CWInterval){
       this._compute();
     }
+  }
+
+  isComputed(){
+    return this._mutinInterval != null
+      && this._mutexIWInterval != null
+      && this._mutexCWInterval != null
+      && this._complInterval != null;
+  }
+
+  set DefaultColor(color){
+    this._defaultColor = color;
+    if(this.isComputed()){
+      this._scene.setOrbitColor(this._name, color, "default");
+    }
+  }
+
+  get DefaultColor(){
+    return this._defaultColor;
+  }
+
+  set IWColor(color){
+    this._iwColor = color;
+    if(this.isComputed()){
+      this._scene.setOrbitColor(this._name, color, "image_window");
+    }
+  }
+
+  get IWColor(){
+    return this._iwColor;
+  }
+
+  set CWColor(color){
+    this._cwColor = color;
+    if(this.isComputed()){
+      this._scene.setOrbitColor(this._name, color,  "comm_window");
+    }
+  }
+
+  get CWColor(){
+    return this._cwColor;
+  }
+
+  set BothColor(color){
+    this._bothColor = color;
+    if(this.isComputed()){
+      this._scene.setOrbitColor(this._name, color, "intersection");
+    }
+  }
+
+  get BothColor(){
+    return this._bothColor;
   }
 
   get complInterval(){
@@ -44,6 +102,8 @@ export default class WindowInterval {
     return this._mutinInterval;
   }
 
+
+
   _compute(){
     const overlap = (a, b) => a[0] <= b[1] && b[0] <= a[1];
     this._mutinInterval = findIntersection(this._IWInterval, this._CWInterval);
@@ -53,8 +113,19 @@ export default class WindowInterval {
     const union = findUnion([this._mutinInterval, this._mutexIWInterval, this._mutexCWInterval]);
     const interval = [union[0][0], union.slice(-1)[0][1]];
     this._complInterval = findComplement([interval], union);
+
+    this._scene.setOrbitWindows(this._name, this._complInterval, this._mutexIWInterval, this._mutexCWInterval, this._mutinInterval);
+    this._updateColors();
   }
 
+  _updateColors(){
+    if(this.isComputed()){
+      this._scene.setOrbitColor(this._name, this._defaultColor, "default");
+      this._scene.setOrbitColor(this._name, this._iwColor, "image_window");
+      this._scene.setOrbitColor(this._name, this._cwColor, "comm_window");
+      this._scene.setOrbitColor(this._name, this._bothColor, "intersection");
+    }
+  }
 }
 
 function findUnion(interval_sets){

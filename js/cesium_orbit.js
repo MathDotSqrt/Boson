@@ -1,23 +1,24 @@
 
 //https://groups.google.com/forum/#!topic/cesium-dev/FKfcfuw2TpI
-export function createIWPolyline(positions, polylineCollection){
-  const color = Cesium.Color.RED;
-  const colors = [];
-  for(var i = 0; i < positions.length-1; i++){
-    colors.push(color);
-  }
-  console.log(colors);
-
-  polylineCollection.add({
-    positions : positions,
-    vertexFormat : Cesium.PolylineColorAppearance.VERTEX_FORMAT,
-    colors : colors,
-    colorsPerVertex: false
+export function createIntervalPolyline(intervals, positions, viewer){
+  const polylines = intervals.map(([start, stop]) => {
+    return viewer.entities.add({
+      availability: new Cesium.TimeIntervalCollection([
+        new Cesium.TimeInterval({
+          start: start,
+          stop: stop,
+        }),
+      ]),
+      position: positions,
+      path: {
+        resolution: 10000000,  //large resolution really helps with performance
+        material: Cesium.Color.RED,
+        width: 1,
+        trailTime: 10000000,
+        leadTime: 0,
+      },
+    });
   });
-  colors.length = 1;
-  console.log(colors);
 
-  colors.length = 3;
-  console.log(colors);
-
+  return polylines;
 }

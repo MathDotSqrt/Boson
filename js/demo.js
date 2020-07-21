@@ -34,7 +34,7 @@ class Satellite {
     this._name = name;
     this._id = id;
     this._sensor = null;
-    this._window = new WindowInterval(scene);
+    this._window = new WindowInterval(name, scene);
     this._scene = scene;
 
     this._scene.createOrbit(name, ephemeris, color);

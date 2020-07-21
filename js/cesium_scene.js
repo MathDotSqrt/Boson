@@ -134,48 +134,51 @@ export class Scene {
         uri: "./res/model/Satellite/Satellite.glb",
         minimumPixelSize: 64,
       },
-      //Show the path as a colored line
-      // path: {
-      //   resolution: 10000000,  //large resolution really helps with performance
-      //   material: cesium_color,
-      //   width: 1,
-      //   trailTime: 10000000,
-      //   leadTime: 0,
-      // },
     });
 
-    const half1 = Cesium.JulianDate.addSeconds(this._start, 1000, new Cesium.JulianDate());
-    const half2 = Cesium.JulianDate.addSeconds(this._start, 2000, new Cesium.JulianDate());
-
-    const path = this._viewer.entities.add({
-      availability: new Cesium.TimeIntervalCollection([
-        new Cesium.TimeInterval({
-          start: this._start,
-          stop: half1,
-        }),
-        // new Cesium.TimeInterval({  //this should work >:(
-        //   start: half2,
-        //   stop: this._stop,
-        // }),
-      ]),
-      position: pos_property,
-      path: {
-        resolution: 10000000,  //large resolution really helps with performance
-        material: cesium_color,
-        width: 1,
-        trailTime: 10000000,
-        leadTime: 0,
-      },
-      // material : Cesium.Color.RED
-    });
+    const interval = [this._start, this._stop];
+    //const paths = BOSON_ORBIT.createIntervalPolyline([interval], pos_property, this._viewer);
 
     this._entityPaths[name] = {
-      default: [path],
+      default: [],
       image_window : [],
       comm_window : [],
       intersection : []
     };
     //BOSON_ORBIT.createIWPolyline(positions, this._polylineCollection);
+  }
+
+  setOrbitWindows(name, none, onlyIW, onlyCW, both){
+    const entity = this._viewer.entities.getById(name);
+    if(entity){
+      const to_julian = time => Cesium.JulianDate.addSeconds(this._start, time, new Cesium.JulianDate());
+      const to_julian_interval = interval => interval.map(to_julian);
+      const to_path_entity = inter => BOSON_ORBIT.createIntervalPolyline(inter, entity.position, this._viewer);
+
+      const julianNoneInterval = none.map(to_julian_interval);
+      const julianIWInterval = onlyIW.map(to_julian_interval);
+      const julianCWInterval = onlyCW.map(to_julian_interval);
+      const julianBothInterval = both.map(to_julian_interval);
+
+      const dispose = entity => this._viewer.entities.remove(entity);
+      Object.values(this._entityPaths[name]).flat().forEach(dispose);
+
+      this._entityPaths[name].default = to_path_entity(julianNoneInterval);
+      this._entityPaths[name].image_window = to_path_entity(julianIWInterval);
+      this._entityPaths[name].comm_window = to_path_entity(julianCWInterval);
+      this._entityPaths[name].intersection = to_path_entity(julianBothInterval);
+    }
+  }
+
+  setOrbitColor(name, csscolor, type){
+    if(!type){
+      type = "default";
+    }
+    const entity = this._viewer.entities.getById(name);
+    if(entity){
+      const color = Cesium.Color.fromCssColorString(csscolor);
+      this._entityPaths[name][type].forEach(e => e.path.material.color = color);
+    }
   }
 
   setOrbitTrail(id, trail){
@@ -205,14 +208,6 @@ export class Scene {
       const trail_time = 2 * Math.PI * Math.sqrt(a3 / u);
       Object.values(this._entityPaths[id]).flat().forEach(e => e.path.trailTime = trail_time);
     }
-  }
-
-  setOrbitColor(id, css_color){
-    const color = Cesium.Color.fromCssColorString(css_color);
-    const entity = this._viewer.entities.getById(id);
-    if(!entity) return;
-    this._entityPaths[id].default.forEach(e => e.path.material.color = color);
-    //entity.path.material.color = color;
   }
 
   appendSensor(name, sensor_type, min, max){
