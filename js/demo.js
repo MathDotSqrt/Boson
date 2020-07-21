@@ -5,6 +5,8 @@ import * as BOSON_EPHEMERIS from './ephemeris.js';
 import * as BOSON_TARGETS from './targets.js';
 
 import Schedule from './schedule.js'
+import WindowInterval from './WindowInterval.js'
+
 
 class Sensor {
   constructor(name, type, min_value, max_value, scene){
@@ -32,10 +34,10 @@ class Satellite {
     this._name = name;
     this._id = id;
     this._sensor = null;
+    this._window = new WindowInterval(scene);
     this._scene = scene;
 
     this._scene.createOrbit(name, ephemeris, color);
-
     this.color = color;
     this.orbit_trail = BOSON_RENDER.ALL;
   }
@@ -71,6 +73,10 @@ class Satellite {
       this._sensor = sensor;
       this.color = this._color; //force sensor to change color
     }
+  }
+
+  get window(){
+    return this._window;
   }
 
   update(schedule){
@@ -165,6 +171,22 @@ export class Simulation {
       const max = sensor_parameter.maxValue;
 
       satellite.sensor = new Sensor(name, type, min, max, this._scene);
+    }
+  }
+
+  importWindow(windows, isIW=true){
+    const satellites = Object.keys(windows)
+      .map(x => parseInt(x))
+      .map(x => this._getByPlatformID(x))
+      .filter(x => x);
+
+    console.log(satellites);
+
+    if(isIW){
+      satellites.forEach(s => s.window.setIWInterval(windows[s.id]));
+    }
+    else{
+      satellites.forEach(s => s.window.setCWInterval(windows[s.id]));
     }
   }
 

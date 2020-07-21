@@ -48,6 +48,16 @@ export function loadSensorFile(new_file, func){
   }, (e) => console.log(e));
 }
 
+export function loadWindowFile(new_file, func){
+  const promise = pFileReader(new_file);
+  promise.then((text) => {
+    const result = parseWindow(new_file, text);
+    if(result){
+      func(new_file.name, result);
+    }
+  }, e => console.log(e));
+}
+
 export function loadTargetFile(file_list, func){
   const TARGETS = "targets.csv";
   const TARGET_VERTICES = "target_vertices.csv";
@@ -153,6 +163,75 @@ function parsePlatform(name, lines){
   }
 
   return platform;
+}
+
+function parseSensor(name, lines){
+  lines = lines.split('\n');
+  const header = lines[0];
+
+  const columnMap = {
+    platformID : "PlatformID",
+    constraint : "Constraint Type",
+    minValue : "Min Value",
+    maxValue : "Max Value"
+  };
+
+  const indexMap = getHeaderIndices(header, columnMap);
+  if(indexMap === null){
+    return null;
+  }
+
+  const sensors = [];
+  for(var i = 1; i < lines.length; i++){
+    const line = lines[i];
+    const split = line.split(',');
+    const sensor = {
+      platformID    : Number(split[indexMap.platformID]),
+      sensorType    : split[indexMap.constraint],
+      minValue      : Number(split[indexMap.minValue]),
+      maxValue      : Number(split[indexMap.maxValue]),
+    }
+    sensors.push(sensor);
+  }
+
+  return sensors;
+}
+
+function parseWindow(name, lines){
+  lines = lines.split('\n');
+  const header = lines[0];
+
+  const columnMap = {
+    platformID : "PlatformID",
+    start : "StartTime",
+    end : "EndTime"
+  };
+
+  const indexMap = getHeaderIndices(header, columnMap);
+  if(indexMap === null){
+    return null;
+  }
+
+  const windows = {};
+
+  for(var i = 1; i < lines.length; i++){
+    const line = lines[i];
+    const split = line.split(",");
+
+    const platformID = parseInt(split[indexMap.platformID]);
+    const start = Number(split[indexMap.start]);
+    const end = Number(split[indexMap.end]);
+
+    if(platformID === undefined || isNaN(platformID)) continue;
+
+    if(!(platformID in windows)){
+      windows[platformID] = [];
+    }
+
+    windows[platformID].push([start, end]);
+  }
+
+  return windows;
 }
 
 function createPointVerticies(lon, lat, size){
@@ -275,38 +354,6 @@ function parseTargetVertex(lines){
   targets[target.id] = target;
 
   return targets;
-}
-
-function parseSensor(name, lines){
-  lines = lines.split('\n');
-  const header = lines[0];
-
-  const columnMap = {
-    platformID : "PlatformID",
-    constraint : "Constraint Type",
-    minValue : "Min Value",
-    maxValue : "Max Value"
-  };
-
-  const indexMap = getHeaderIndices(header, columnMap);
-  if(indexMap === null){
-    return null;
-  }
-
-  const sensors = [];
-  for(var i = 1; i < lines.length; i++){
-    const line = lines[i];
-    const split = line.split(',');
-    const sensor = {
-      platformID    : Number(split[indexMap.platformID]),
-      sensorType    : split[indexMap.constraint],
-      minValue      : Number(split[indexMap.minValue]),
-      maxValue      : Number(split[indexMap.maxValue]),
-    }
-    sensors.push(sensor);
-  }
-
-  return sensors;
 }
 
 function parseSchedule(name, lines){

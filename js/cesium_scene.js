@@ -111,6 +111,7 @@ export class Scene {
 
     const cesium_color = Cesium.Color.fromCssColorString(color);
 
+
     const entity = this._viewer.entities.add({
       id: name,
       //Set the entity availability to the same interval as the simulation time.
@@ -143,14 +144,19 @@ export class Scene {
       // },
     });
 
-    const half = Cesium.JulianDate.addSeconds(this._start, 1000, new Cesium.JulianDate());;
+    const half1 = Cesium.JulianDate.addSeconds(this._start, 1000, new Cesium.JulianDate());
+    const half2 = Cesium.JulianDate.addSeconds(this._start, 2000, new Cesium.JulianDate());
 
-    const path1 = this._viewer.entities.add({
+    const path = this._viewer.entities.add({
       availability: new Cesium.TimeIntervalCollection([
         new Cesium.TimeInterval({
           start: this._start,
-          stop: half,
+          stop: half1,
         }),
+        // new Cesium.TimeInterval({  //this should work >:(
+        //   start: half2,
+        //   stop: this._stop,
+        // }),
       ]),
       position: pos_property,
       path: {
@@ -163,25 +169,12 @@ export class Scene {
       // material : Cesium.Color.RED
     });
 
-    const path2 = this._viewer.entities.add({
-      availability: new Cesium.TimeIntervalCollection([
-        new Cesium.TimeInterval({
-          start: half,
-          stop: this._stop,
-        }),
-      ]),
-      position: pos_property,
-      path: {
-        resolution: 10000000,  //large resolution really helps with performance
-        material: cesium_color,
-        width: 5,
-        trailTime: 10000000,
-        leadTime: 0,
-      },
-      // material : Cesium.Color.RED
-    });
-
-    this._entityPaths[name] = [path1, path2];
+    this._entityPaths[name] = {
+      default: [path],
+      image_window : [],
+      comm_window : [],
+      intersection : []
+    };
     //BOSON_ORBIT.createIWPolyline(positions, this._polylineCollection);
   }
 
@@ -189,10 +182,12 @@ export class Scene {
     const entity = this._viewer.entities.getById(id);
 
     if(trail === ALL){
-      this._entityPaths[id].forEach(e => e.path.trailTime = 10000000);
+      Object.values(this._entityPaths[id]).flat().forEach(e => e.path.trailTime = 10000000);
     }
     else if(trail === NONE){
-      this._entityPaths[id].forEach(e => e.path.trailTime = 0);
+      Object.values(this._entityPaths[id]).flat().forEach(e => e.path.trailTime = 0);
+
+      //this._entityPaths[id].forEach(e => e.path.trailTime = 0);
     }
     else if(trail === ONE_REV){
       const time = this._viewer.clock.currentTime;
@@ -208,8 +203,7 @@ export class Scene {
 
       //https://en.wikipedia.org/wiki/Elliptic_orbit
       const trail_time = 2 * Math.PI * Math.sqrt(a3 / u);
-      this._entityPaths[id].forEach(e => e.path.trailTime = trail_time);
-
+      Object.values(this._entityPaths[id]).flat().forEach(e => e.path.trailTime = trail_time);
     }
   }
 
@@ -217,7 +211,7 @@ export class Scene {
     const color = Cesium.Color.fromCssColorString(css_color);
     const entity = this._viewer.entities.getById(id);
     if(!entity) return;
-    this._entityPaths[id].forEach(e => e.path.material.color = color);
+    this._entityPaths[id].default.forEach(e => e.path.material.color = color);
     //entity.path.material.color = color;
   }
 

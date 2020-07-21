@@ -9,7 +9,7 @@ const colors = ["#34b1eb", "#00FFFF", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00"
 const simulation = new BOSON.Simulation(document.getElementById('view'));
 /* PANEL */
 export function openNav(){
-  document.getElementById("side_panel_1").style.width = "275px";
+  document.getElementById("side_panel_1").style.width = "285px";
 }
 export function closeNav(){
   document.getElementById("side_panel_1").style.width = "0px";
@@ -192,8 +192,26 @@ function createEphemerisNode(name, satellite_names){
   const orbit_selector = createOrbitSelector(satellite_names);
   insert_field(table, "Orbit Trail", orbit_selector);
 
-  const sensor_input = createSensorInput();
+  const sensor_input = createPlatformInput("SENSOR FILE", function(file){
+    BOSON_FILELOADER.loadSensorFile(file, function(name, result){
+      importSensor(name, result);
+    });
+  });
   insert_field(table, "Sensor File", sensor_input)
+
+  const iw_input = createPlatformInput("IW FILE", function (file){
+    BOSON_FILELOADER.loadWindowFile(file, function(name, result){
+      importWindow(name, result, true);
+    });
+  });
+  insert_field(table, "IW File", iw_input)
+
+  const cw_input = createPlatformInput("CW FILE", function (file){
+    BOSON_FILELOADER.loadWindowFile(file, function(name, result){
+      importWindow(name, result, false);
+    });
+  });
+  insert_field(table, "CW File", cw_input)
 
   new_node.append(controls);
 
@@ -337,42 +355,37 @@ function createColorPicker(id, set_color_func, default_color){
   return color_picker;
 }
 
-function createSensorInput(name){
-  const sensor_input = document.createElement("div");
-  sensor_input.className = "sensor_input";
-  insertP(sensor_input, "SENSOR FILE");
-
-  const id = name + "_sensor_file_input";
+function createPlatformInput(text, func){
+  const input = document.createElement("div");
+  input.className = "sensor_input";
+  insertP(input, text);
 
   const file_input = document.createElement("input");
   file_input.className = "file_input";
   file_input.type = "file";
-  file_input.id = id;
-  sensor_input.append(file_input);
 
-  function appendSensor(name){
-    sensor_input.classList.add("selected");
-    const p = sensor_input.getElementsByTagName("p");
+  input.append(file_input);
+
+  function appendInput(name){
+    input.classList.add("selected");
+    const p = input.getElementsByTagName("p");
     if(p){
       p[0].innerHTML = name.split('.')[0];
     }
   }
 
-  sensor_input.onclick = function(){
-    const file_input = document.getElementById(id);
+  input.onclick = function(){
     file_input.onchange = function(e){
       const files = e.target.files;
       for(const file of files){
-        BOSON_FILELOADER.loadSensorFile(file, function(name, result){
-          appendSensor(name);
-          importSensor(name, result);
-        });
+        appendInput(file.name);
+        func(file)
       }
     };
     file_input.click();
   }
 
-  return sensor_input;
+  return input;
 }
 
 function createSlider(min, max, defaultValue, func){
@@ -515,6 +528,11 @@ function importSensor(name, sensors){
   for(const sensor of sensors){
     simulation.importSensor(sensor);
   }
+}
+
+function importWindow(name, windows, isIW=true){
+  console.log(windows);
+  simulation.importWindow(windows, isIW);
 }
 
 function importTargetSet(name, target){
