@@ -1,10 +1,12 @@
 import * as BOSON_RENDER from "./cesium_scene.js"
 
 export default class WindowInterval {
-  constructor(name, scene){
+  constructor(parent, scene){
     this._scene = scene;
 
-    this._name = name;
+    this._parent = parent;
+    console.log(this._parent);
+    this._name = this._parent.name;
 
     this._IWInterval = null;
     this._CWInterval = null;
@@ -21,7 +23,6 @@ export default class WindowInterval {
   }
 
   setIWInterval(interval){
-    console.log(interval);
     this._IWInterval = interval;
     if(this._IWInterval && this._CWInterval){
       this._compute();
@@ -120,7 +121,8 @@ export default class WindowInterval {
 
   _updateColors(){
     if(this.isComputed()){
-      this._scene.setOrbitColor(this._name, this._defaultColor, "default");
+      this._parent.color = this._parent._color; //this is really bad
+      //this._scene.setOrbitColor(this._name, this._defaultColor, "default");
       this._scene.setOrbitColor(this._name, this._iwColor, "image_window");
       this._scene.setOrbitColor(this._name, this._cwColor, "comm_window");
       this._scene.setOrbitColor(this._name, this._bothColor, "intersection");

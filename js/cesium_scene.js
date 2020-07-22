@@ -137,10 +137,10 @@ export class Scene {
     });
 
     const interval = [this._start, this._stop];
-    //const paths = BOSON_ORBIT.createIntervalPolyline([interval], pos_property, this._viewer);
+    const paths = BOSON_ORBIT.createIntervalPolyline([interval], pos_property, this._viewer);
 
     this._entityPaths[name] = {
-      default: [],
+      default: paths,
       image_window : [],
       comm_window : [],
       intersection : []
@@ -235,6 +235,9 @@ export class Scene {
   removeOrbit(name){
     console.log("REMOVE ORBIT: " + name);
     this._viewer.entities.removeById(name);
+    const dispose = entity => this._viewer.entities.remove(entity);
+    Object.values(this._entityPaths[name]).flat().forEach(dispose);
+    delete this._entityPaths[name];
   }
 
   createTargetPrimitive(name, target_set){

@@ -34,12 +34,13 @@ class Satellite {
     this._name = name;
     this._id = id;
     this._sensor = null;
-    this._window = new WindowInterval(name, scene);
     this._scene = scene;
 
     this._scene.createOrbit(name, ephemeris, color);
     this.color = color;
     this.orbit_trail = BOSON_RENDER.ALL;
+
+    this._window = new WindowInterval(this, scene);
   }
 
   get name() { return this._name }
