@@ -1,6 +1,5 @@
 "use strict";
 import * as BOSON from './demo.js'
-import * as BOSON_EPHEMERIS from './ephemeris.js'
 import * as BOSON_TARGETS from './targets.js'
 import * as BOSON_FILELOADER from './file_loader.js';
 
@@ -436,7 +435,7 @@ function onDeleteHandeler(event){
   parentElement.remove();
 
   for(const name of names){
-    BOSON_EPHEMERIS.delete_ephemeris(name);
+    //BOSON_EPHEMERIS.delete_ephemeris(name);
     deleteSatelliteNode(name);
   }
 
@@ -501,26 +500,18 @@ export function appendDropFileElementSchedule(name){
 }
 
 function importEphemeris(name, platform){
-  if("position" in platform){
-    BOSON_EPHEMERIS.register_ephemeris(name, platform);
-    simulation.importOrbit(name);
-    appendSatellite(name);
-    appendDropFileElement(name);
-  }
-  else{
-    const names = [];
+  const names = [];
 
-    for(const id of Object.keys(platform)){
-      const new_name = name + "_" + id;
-      BOSON_EPHEMERIS.register_ephemeris(new_name, platform[id]);
-      names.push(new_name);
-      simulation.importOrbit(new_name, id);
-    }
-    for(const name of names){
-      appendSatellite(name);
-    }
-    appendDropFileElementPlatform(name, names);
+  for(const id of Object.keys(platform)){
+    const new_name = name + "_" + id;
+    const ephemeris = platform[id];
+    names.push(new_name);
+    simulation.importOrbit(new_name, ephemeris, id);
   }
+  for(const name of names){
+    appendSatellite(name);
+  }
+  appendDropFileElementPlatform(name, names);
 }
 
 function importSensor(name, sensors){

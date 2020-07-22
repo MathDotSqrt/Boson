@@ -1,7 +1,6 @@
 "use strict";
 
 import * as BOSON_RENDER from './cesium_scene.js';
-import * as BOSON_EPHEMERIS from './ephemeris.js';
 import * as BOSON_TARGETS from './targets.js';
 
 import Schedule from './schedule.js'
@@ -33,13 +32,14 @@ class Satellite {
   constructor(name, id, color, ephemeris, scene){
     this._name = name;
     this._id = id;
-    this._sensor = null;
-    this._scene = scene;
+    this._ephemeris = ephemeris;
 
+    this._scene = scene;
     this._scene.createOrbit(name, ephemeris, color);
     this.color = color;
     this.orbit_trail = BOSON_RENDER.ALL;
 
+    this._sensor = null;
     this._window = new WindowInterval(this, scene);
   }
 
@@ -155,9 +155,9 @@ export class Simulation {
     this._scene.followEntity(name);
   }
 
-  importOrbit(name, id=-1){
+  importOrbit(name, ephemeris, id=-1){
     const color = "#fff";
-    const ephemeris = BOSON_EPHEMERIS.get_ephemeris(name);
+    //const ephemeris = BOSON_EPHEMERIS.get_ephemeris(name);
     this._currentOrbits[name] = new Satellite(name, parseInt(id), color, ephemeris, this._scene);
   }
 
