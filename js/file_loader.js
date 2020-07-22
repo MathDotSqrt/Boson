@@ -115,7 +115,7 @@ function parsePlatform(name, lines){
   lines = lines.split("\n");
   const header = lines[0];
 
-  const columns = {
+  const columnMap = {
     platformID : "PlatformID",
     time : "Time",
     posx : "PositionX",
@@ -126,7 +126,7 @@ function parsePlatform(name, lines){
     velz : "VelocityZ"
   }
 
-  const indexMap = getHeaderIndices(header, columns);
+  const indexMap = getHeaderIndices(header, columnMap);
   console.log(indexMap);
 
   if(indexMap === null){

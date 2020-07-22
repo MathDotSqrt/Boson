@@ -28,9 +28,7 @@ export class Simulation {
   }
 
   importSensor(sensor_parameter){
-    console.log(sensor_parameter);
     const satellite = this._getByPlatformID(sensor_parameter.platformID);
-    console.log(satellite);
     if(satellite){
       const name = satellite.name;
       const type = sensor_parameter.sensorType;

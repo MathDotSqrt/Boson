@@ -15,14 +15,14 @@ const temp1_quat = new Cesium.Quaternion();
 
 export class Scene {
   constructor(dom){
-    this._targetPrimitives = {};
-    this._sampleLines = {};
-    this._entityPaths = {};
+    this._targetPrimitives = {};      //Object of target primitives
+    this._sampleLines = {};           //Object of collection "laser" visualizer
+    this._entityPaths = {};           //Object of all the polylines in the scene
+    this._entityView = null;          //Pointer to the satellite being followed
 
     this._start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
-    //this._stop = Cesium.JulianDate.addSeconds(this._start, 36000000, new Cesium.JulianDate());
+    // TODO: Dont hard code this!!
     this._stop = Cesium.JulianDate.addSeconds(this._start, 171246.075653055, new Cesium.JulianDate());
-    this._entityView = null;
 
 
     this._viewer = new Cesium.Viewer(dom.id, {
@@ -64,6 +64,7 @@ export class Scene {
 
   _updateEntityView(){
     if(this._entityView){
+      //cesium needs to update this every frame
       this._entityView.update(this._viewer.clock.currentTime);
     }
   }
@@ -75,6 +76,7 @@ export class Scene {
       this._entityView = new Cesium.EntityView(entity, this._viewer.scene);
     }
     else{
+      //If the entity doesnt exist, fly home
       this._entityView = null;
       this._viewer.scene.camera.flyHome(1);
     }
@@ -88,9 +90,7 @@ export class Scene {
     });
   }
 
-  createOrbit(name, ephemeris, color){
-    const positions = [];
-
+  createOrbit(name, ephemeris){
     const pos_property = new Cesium.SampledPositionProperty();
     pos_property.setInterpolationOptions({
       interpolationAlgorithm : Cesium.LagrangePolynomialApproximation,
@@ -106,11 +106,7 @@ export class Scene {
       const cesium_pos = new Cesium.Cartesian3(pos_x, pos_y, pos_z);
       const cesium_time = Cesium.JulianDate.addSeconds(this._start, time, new Cesium.JulianDate());
       pos_property.addSample(cesium_time, cesium_pos);
-      positions.push(cesium_pos);
     }
-
-    const cesium_color = Cesium.Color.fromCssColorString(color);
-
 
     const entity = this._viewer.entities.add({
       id: name,
@@ -136,6 +132,9 @@ export class Scene {
       },
     });
 
+
+    //Create default polyline for entire orbit interval.
+    //This will be replaced when user loads iw/cw file.
     const interval = [this._start, this._stop];
     const paths = BOSON_ORBIT.createIntervalPolyline([interval], pos_property, this._viewer);
 
@@ -145,7 +144,6 @@ export class Scene {
       comm_window : [],
       intersection : []
     };
-    //BOSON_ORBIT.createIWPolyline(positions, this._polylineCollection);
   }
 
   setOrbitWindows(name, none, onlyIW, onlyCW, both){
@@ -153,28 +151,27 @@ export class Scene {
     if(entity){
       const to_julian = time => Cesium.JulianDate.addSeconds(this._start, time, new Cesium.JulianDate());
       const to_julian_interval = interval => interval.map(to_julian);
-      const to_path_entity = inter => BOSON_ORBIT.createIntervalPolyline(inter, entity.position, this._viewer);
-      //const to_path_entity_glow = inter => BOSON_ORBIT.createIntervalPolyline(inter, entity.position, this._viewer, true);
 
       const julianNoneInterval = none.map(to_julian_interval);
       const julianIWInterval = onlyIW.map(to_julian_interval);
       const julianCWInterval = onlyCW.map(to_julian_interval);
       const julianBothInterval = both.map(to_julian_interval);
 
+      //Clean up all of the previous polylines
       const dispose = entity => this._viewer.entities.remove(entity);
       Object.values(this._entityPaths[name]).flat().forEach(dispose);
 
-      this._entityPaths[name].default = to_path_entity(julianNoneInterval);
-      this._entityPaths[name].image_window = to_path_entity(julianIWInterval);
-      this._entityPaths[name].comm_window = to_path_entity(julianCWInterval);
-      this._entityPaths[name].intersection = to_path_entity(julianBothInterval);
+      const to_polyline = interval => BOSON_ORBIT.createIntervalPolyline(interval, entity.position, this._viewer);
+      this._entityPaths[name].default = to_polyline(julianNoneInterval);
+      this._entityPaths[name].image_window = to_polyline(julianIWInterval);
+      this._entityPaths[name].comm_window = to_polyline(julianCWInterval);
+      this._entityPaths[name].intersection = to_polyline(julianBothInterval);
     }
   }
 
   setOrbitColor(name, csscolor, type){
-    if(!type){
-      type = "default";
-    }
+    type = type ? type : "default";
+
     const entity = this._viewer.entities.getById(name);
     if(entity){
       const color = Cesium.Color.fromCssColorString(csscolor);
@@ -184,14 +181,14 @@ export class Scene {
 
   setOrbitTrail(id, trail){
     const entity = this._viewer.entities.getById(id);
+    const entityPaths = Object.values(this._entityPaths[id]).flat();
+    const set_trail = trailTime => entityPaths.forEach(e => e.path.trailTime = trailTime);
 
     if(trail === ALL){
-      Object.values(this._entityPaths[id]).flat().forEach(e => e.path.trailTime = 10000000);
+      set_trail(10000000);
     }
     else if(trail === NONE){
-      Object.values(this._entityPaths[id]).flat().forEach(e => e.path.trailTime = 0);
-
-      //this._entityPaths[id].forEach(e => e.path.trailTime = 0);
+      set_trail(0);
     }
     else if(trail === ONE_REV){
       const time = this._viewer.clock.currentTime;
@@ -207,7 +204,7 @@ export class Scene {
 
       //https://en.wikipedia.org/wiki/Elliptic_orbit
       const trail_time = 2 * Math.PI * Math.sqrt(a3 / u);
-      Object.values(this._entityPaths[id]).flat().forEach(e => e.path.trailTime = trail_time);
+      set_trail(trail_time);
     }
   }
 
@@ -236,6 +233,7 @@ export class Scene {
   removeOrbit(name){
     console.log("REMOVE ORBIT: " + name);
     this._viewer.entities.removeById(name);
+    //Clean up the polylines 
     const dispose = entity => this._viewer.entities.remove(entity);
     Object.values(this._entityPaths[name]).flat().forEach(dispose);
     delete this._entityPaths[name];

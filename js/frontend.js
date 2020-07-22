@@ -2,9 +2,11 @@
 import * as BOSON from './demo.js'
 import * as BOSON_FILELOADER from './file_loader.js';
 
-const colors = ["#34b1eb", "#00FFFF", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#C02B9A"];
+const colors = ["#C02B9A", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#00ffff", "#34b1eb"];
 
 const simulation = new BOSON.Simulation(document.getElementById('view'));
+
+
 /* PANEL */
 export function openNav(){
   document.getElementById("side_panel_1").style.width = "285px";
