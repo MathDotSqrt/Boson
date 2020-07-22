@@ -1,6 +1,10 @@
 
 //https://groups.google.com/forum/#!topic/cesium-dev/FKfcfuw2TpI
-export function createIntervalPolyline(intervals, positions, viewer){
+export function createIntervalPolyline(intervals, positions, viewer, glow=false){
+  // const material = glow ? new Cesium.PolylineOutlineMaterialProperty({
+  //   color : Cesium.Color.RED
+  // }) : Cesium.Color.RED;
+
   const polylines = intervals.map(([start, stop]) => {
     return viewer.entities.add({
       availability: new Cesium.TimeIntervalCollection([

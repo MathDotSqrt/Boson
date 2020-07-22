@@ -154,6 +154,7 @@ export class Scene {
       const to_julian = time => Cesium.JulianDate.addSeconds(this._start, time, new Cesium.JulianDate());
       const to_julian_interval = interval => interval.map(to_julian);
       const to_path_entity = inter => BOSON_ORBIT.createIntervalPolyline(inter, entity.position, this._viewer);
+      //const to_path_entity_glow = inter => BOSON_ORBIT.createIntervalPolyline(inter, entity.position, this._viewer, true);
 
       const julianNoneInterval = none.map(to_julian_interval);
       const julianIWInterval = onlyIW.map(to_julian_interval);

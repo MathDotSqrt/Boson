@@ -1,7 +1,5 @@
 "use strict";
 import * as BOSON from './demo.js';
-import * as BOSON_EPHEMERIS from './ephemeris.js';
-import * as BOSON_TARGETS from './targets.js';
 import {appendDropFileElement, appendDropFileElementPlatform, appendDropFileElementTarget, appendSatellite} from './frontend.js';
 
 function pFileReader(file){

@@ -1,7 +1,6 @@
 "use strict";
 
 import * as BOSON_RENDER from './cesium_scene.js';
-import * as BOSON_TARGETS from './targets.js';
 
 import Schedule from './schedule.js'
 import WindowInterval from './WindowInterval.js'
