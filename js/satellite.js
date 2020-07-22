@@ -1,5 +1,5 @@
 import Sensor from './sensor.js'
-import WindowInterval from './WindowInterval.js'
+import WindowInterval from './windowinterval.js'
 import * as BOSON_RENDER from './cesium_scene.js';
 
 

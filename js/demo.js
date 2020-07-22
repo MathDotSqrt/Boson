@@ -5,7 +5,7 @@ import * as BOSON_RENDER from './cesium_scene.js';
 import Sensor from './sensor.js'
 import Satellite from './satellite.js'
 import Schedule from './schedule.js'
-import WindowInterval from './WindowInterval.js'
+import WindowInterval from './windowinterval.js'
 import TargetSet from './targetset.js'
 
 export class Simulation {
