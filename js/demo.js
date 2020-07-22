@@ -86,12 +86,13 @@ class Satellite {
 }
 
 class TargetSet {
-  constructor(name, color, selectColor, scene){
+  constructor(name, color, selectColor, targetSet, scene){
     this._name = name;
     this._scene = scene;
 
-    const target_set = BOSON_TARGETS.get_target_set(name);
-    this._scene.createTargetPrimitive(name, target_set);
+    this._targetSet = targetSet;
+    //const target_set = BOSON_TARGETS.get_target_set(name);
+    this._scene.createTargetPrimitive(name, this._targetSet);
 
     this.color = color;
     this.alpha = 1;
@@ -216,8 +217,8 @@ export class Simulation {
     }
   }
 
-  importTargetSet(name){
-    this._currentTargetSets[name] = new TargetSet(name, "#00FF00", "#FF0000", this._scene);
+  importTargetSet(name, targetSet){
+    this._currentTargetSets[name] = new TargetSet(name, "#00FF00", "#FF0000", targetSet, this._scene);
   }
 
   setTargetColor(name, color, alpha){

@@ -1,6 +1,5 @@
 "use strict";
 import * as BOSON from './demo.js'
-import * as BOSON_TARGETS from './targets.js'
 import * as BOSON_FILELOADER from './file_loader.js';
 
 const colors = ["#34b1eb", "#00FFFF", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#C02B9A"];
@@ -456,7 +455,6 @@ function onDeleteTargetHandler(event){
   parentElement.remove();
 
   for(const name of names){
-    BOSON_TARGETS.delete_target_set(name);
     simulation.removeTargetSet(name);
   }
 
@@ -529,8 +527,8 @@ function importWindow(name, windows, isIW=true){
 function importTargetSet(name, target){
   console.log(target);
   appendDropFileElementTarget(name, Object.values(target).length);
-  BOSON_TARGETS.register_target_set(name, target);
-  simulation.importTargetSet(name);
+
+  simulation.importTargetSet(name, target);
 }
 
 function importSchedule(file, schedule){
