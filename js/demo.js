@@ -2,144 +2,11 @@
 
 import * as BOSON_RENDER from './cesium_scene.js';
 
+import Sensor from './sensor.js'
+import Satellite from './satellite.js'
 import Schedule from './schedule.js'
 import WindowInterval from './WindowInterval.js'
-
-
-class Sensor {
-  constructor(name, type, min_value, max_value, scene){
-    this._sensor_type = type;
-    this._min_value = min_value;
-    this._max_value = max_value;
-    this._scene = scene;
-
-    this._scene.appendSensor(name, type, min_value, max_value);
-  }
-  get sensor_type(){
-    return this._sensor_type;
-  }
-
-  get min_value() {
-    return this._min_value;
-  }
-  get max_value() {
-    return this._max_value;
-  }
-}
-
-class Satellite {
-  constructor(name, id, color, ephemeris, scene){
-    this._name = name;
-    this._id = id;
-    this._ephemeris = ephemeris;
-
-    this._scene = scene;
-    this._scene.createOrbit(name, ephemeris, color);
-    this.color = color;
-    this.orbit_trail = BOSON_RENDER.ALL;
-
-    this._sensor = null;
-    this._window = new WindowInterval(this, scene);
-  }
-
-  get name() { return this._name }
-
-  get id() { return this._id }
-
-  get color() { return this._color }
-  set color(new_color) {
-    this._scene.setOrbitColor(this.name, new_color);
-    if(this._sensor)
-      this._scene.setSensorColor(this.name, this.sensor.sensor_type, new_color);
-    this._color = new_color;
-  }
-
-  get orbit_trail(){ return this._orbit_trail }
-  set orbit_trail(trail_type){
-    if(trail_type === "all") trail_type = BOSON_RENDER.ALL;
-    else if(trail_type === "one_rev") trail_type = BOSON_RENDER.ONE_REV;
-    else if(trail_type === "none") trail_type = BOSON_RENDER.NONE;
-    else if(typeof trail_type !== "number") return; //invalid input
-
-    this._scene.setOrbitTrail(this.name, trail_type);
-    this._orbit_trail = trail_type;
-  }
-
-  get sensor(){
-    return this._sensor;
-  }
-  set sensor(sensor){
-    if(sensor instanceof Sensor){
-      this._sensor = sensor;
-      this.color = this._color; //force sensor to change color
-    }
-  }
-
-  get window(){
-    return this._window;
-  }
-
-  update(schedule){
-    this._scene.updateSatellite(this.name);
-  }
-}
-
-class TargetSet {
-  constructor(name, color, selectColor, targetSet, scene){
-    this._name = name;
-    this._scene = scene;
-
-    this._targetSet = targetSet;
-    //const target_set = BOSON_TARGETS.get_target_set(name);
-    this._scene.createTargetPrimitive(name, this._targetSet);
-
-    this.color = color;
-    this.alpha = 1;
-    this.selectColor = selectColor;
-
-  }
-
-  get name(){
-    return this._name;
-  }
-
-  get color(){
-    return this._color;
-  }
-  set color(color){
-    this._scene.setTargetColor(this.name, color, this._alpha);
-    this._color = color;
-  }
-
-  get alpha(){
-    return this._alpha;
-  }
-
-  set alpha(alpha){
-    this._scene.setTargetColor(this.name, this._color, alpha);
-    this._alpha = alpha;
-  }
-
-  get selectColor(){
-    return this._selectColor;
-  }
-  set selectColor(selectColor){
-    this._scene.setTargetSelectColor(this.name, selectColor);
-    this._selectColor = selectColor;
-  }
-
-  selectTargetByID(id){
-    this._scene.selectTarget(this.name, id);
-  }
-
-  deselectTargetByID(id){
-    this._scene.deselectTarget(this.name, id);
-  }
-
-  update(){
-
-  }
-};
+import TargetSet from './targetset.js'
 
 export class Simulation {
   constructor(dom){
@@ -147,7 +14,6 @@ export class Simulation {
     this._currentOrbits = {};
     this._currentTargetSets = {};
     this._currentSchedule = null;
-    console.log(this);
     this._scene.addPreRenderEvent(this);
   }
 
