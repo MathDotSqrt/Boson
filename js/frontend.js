@@ -518,7 +518,7 @@ function importSensor(ephemeris_name, sensor_name, sensors){
 
 function importWindow(ephemeris_name, window_name, windows, isIW=true){
   console.log(ephemeris_name, windows);
-  simulation.importWindow(ephemeris_name, windows, isIW);
+  simulation.importWindow(ephemeris_name, window_name, windows, isIW);
 }
 
 function importTargetSet(name, target){

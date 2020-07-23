@@ -12,9 +12,9 @@ class Platform{
   constructor(name, platform, scene){
     this._name = name;
     this._scene = scene;
-
     this._satellites = {};
     this._sensors = {};
+    this._windows = {};
 
     const satellites = Object.entries(platform)
       .map(([name, s]) => new Satellite(name, s.id, "#0000ff", s, this._scene));
@@ -50,6 +50,24 @@ class Platform{
 
   setAllOrbitTrail(value){
     Object.values(this._satellites).forEach(s => s.orbit_trail = value);
+  }
+
+  setWindow(window_name, windows, isIW){
+    this._windows[window_name] = windows;
+    const satellites = Object.keys(windows)
+      .map(x => parseInt(x))
+      .map(x => this.getSatelliteByID(x))
+      .filter(x => x);
+
+    console.log(Object.keys(windows).map(x => parseInt(x)));
+    console.log(satellites);
+
+    if(isIW){
+      satellites.forEach(s => s.window.setIWInterval(windows[s.id]));
+    }
+    else{
+      satellites.forEach(s => s.window.setCWInterval(windows[s.id]));
+    }
   }
 
   getSatelliteByName(name){
@@ -100,23 +118,10 @@ export class Simulation {
     this._platforms[ephemeris_name].addSensors(sensor_name, sensors);
   }
 
-  importWindow(ephemeris_name, windows, isIW=true){
+  importWindow(ephemeris_name, window_name, windows, isIW=true){
     const platform = this._platforms[ephemeris_name];
     if(platform){
-      
-    }
-    const satellites = Object.keys(windows)
-      .map(x => parseInt(x))
-      .map(x => this._getByPlatformID(x))
-      .filter(x => x);
-
-    console.log(satellites);
-
-    if(isIW){
-      satellites.forEach(s => s.window.setIWInterval(windows[s.id]));
-    }
-    else{
-      satellites.forEach(s => s.window.setCWInterval(windows[s.id]));
+      platform.setWindow(window_name, windows, isIW);
     }
   }
 
