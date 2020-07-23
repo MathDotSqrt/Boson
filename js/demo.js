@@ -13,7 +13,7 @@ class Platform{
     this._name = name;
     this._scene = scene;
     this._satellites = {};
-    this._sensors = {};
+    this._sensors = null;
     this._windows = {};
 
     const satellites = Object.entries(platform)
@@ -24,12 +24,18 @@ class Platform{
   }
 
   addSensors(name, sensors){
+    console.log(sensors);
     sensors.map(sensor => [this.getSatelliteByID(sensor.platformID), sensor])
       .filter(([satellite, sensor]) => satellite)
       .forEach(([satellite, sensor]) => {
         satellite.sensor
           = new Sensor(satellite.name, sensor.sensorType, sensor.minValue, sensor.maxValue, this._scene);
       });
+
+    this._sensors = {
+      name: name,
+      parameters : sensors
+    }
   }
 
   setOrbitColor(name, color){
@@ -59,9 +65,6 @@ class Platform{
       .map(x => this.getSatelliteByID(x))
       .filter(x => x);
 
-    console.log(Object.keys(windows).map(x => parseInt(x)));
-    console.log(satellites);
-
     if(isIW){
       satellites.forEach(s => s.window.setIWInterval(windows[s.id]));
     }
@@ -86,6 +89,20 @@ class Platform{
     return this._name;
   }
 
+  toJSON(){
+    const satellites = Object.values(this._satellites).map(s => s.toJSON());
+    const sensors = this._sensors;
+    const windows = this._windows;
+    const json = {
+      name : this.name,
+      satellites : satellites,
+      sensors : sensors,
+      windows : windows,
+    };
+
+    return json;
+  }
+
   update(){
     Object.values(this._satellites).forEach(s => s.update());
   }
@@ -108,12 +125,6 @@ export class Simulation {
     this._platforms[name] = new Platform(name, platform, this._scene);
   }
 
-  // importOrbit(name, ephemeris, id=-1){
-  //   const color = "#fff";
-  //   //const ephemeris = BOSON_EPHEMERIS.get_ephemeris(name);
-  //   this._currentOrbits[name] = new Satellite(name, parseInt(id), color, ephemeris, this._scene);
-  // }
-
   importSensors(ephemeris_name, sensor_name, sensors){
     this._platforms[ephemeris_name].addSensors(sensor_name, sensors);
   }
@@ -125,11 +136,14 @@ export class Simulation {
     }
   }
 
+
   setOrbitColor(name, color){
+    // TODO: Change this
     Object.values(this._platforms).forEach(p => p.setOrbitColor(name, color));
   }
 
   setOrbitTrail(names, value){
+    // TODO: Change this
     Object.values(this._platforms).forEach(p => p.setOrbitTrail(names, value));
   }
 
@@ -164,8 +178,21 @@ export class Simulation {
 
   importSchedule(name, schedule){
     if(!this._currentSchedule){
-      this._currentSchedule = new Schedule(schedule);
+      this._currentSchedule = new Schedule(name, schedule);
     }
+  }
+
+  toJSON(){
+    const platform = Object.values(this._platforms).map(p => p.toJSON());
+    const targets = Object.values(this._currentTargetSets).map(t => t.toJSON());
+    const schedule = this._currentSchedule ? this._currentSchedule.toJSON() : null;
+    const json = {
+      platform : platform,
+      targets : targets,
+      schedule : schedule
+    };
+
+    return json;
   }
 
   update(seconds){

@@ -136,11 +136,31 @@ canvas {
 
 .global_controls .data {
   float: right;
+  width: 100%;
   color: #999;
 }
 
 .global_controls .follow_selector {
   float: right;
+}
+
+.global_controls .preset_button {
+  float: right;
+
+  with: auto;
+
+  /* margin-top: 2px;
+  margin-bottom: 2px; */
+
+  height: auto;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: double;
+  border-color: #fff;
+
+  padding-top: 4px;
+  padding-bottom: 4px;
+  background-color: #1d272b;
 }
 
 /*
@@ -236,7 +256,7 @@ a.close {
   float: right;
 }
 
-.element_controls .sensor_input {
+.sensor_input {
   float: right;
   width: 90%;
   height: 20px;
@@ -249,25 +269,25 @@ a.close {
 
 }
 
-.element_controls .sensor_input:not(.selected) {
+.sensor_input:not(.selected) {
   border-style: dashed;
   border-width: 2px;
   border-radius: 5px;
   border-color: #AA510E;
 }
 
-.element_controls .sensor_input p {
+.sensor_input p {
   margin: 0px;
   text-align: center;
   color: #818181;
   font-size: 10px;
 }
 
-.element_controls .sensor_input input {
+.sensor_input input {
   display: none;
 }
 
-.element_controls .sensor_input.selected {
+.sensor_input.selected {
   border-style: solid;
   border-width: 2px;
   border-radius: 5px;

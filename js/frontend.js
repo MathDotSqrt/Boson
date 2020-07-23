@@ -44,8 +44,12 @@ function createGlobalControls(){
 
   const selector = createFollowSelector(["None"]);
   insert_field(table, "Follow", selector);
-  insert_field(table, "Collapse All", "collapse");
-  insert_field(table, "Delete All", "delete_all");
+
+  const button = createPresetButton();
+  insert_field(table, "Save Preset", button);
+
+  const input = createPlatformInput("Load Preset", function(){console.log("load");});
+  insert_field(table, "Load Preset", input);
 }
 
 function createFollowSelector(names){
@@ -95,6 +99,18 @@ function insertSelect(select, value){
   insertP(option, value);
   select.add(option);
 }
+function createPresetButton(){
+  const button = document.createElement("button");
+  button.className = "preset_button";
+  button.onclick = function(){
+    const json = JSON.stringify(simulation.toJSON());
+    const blob = new Blob([json], {type: "text/plain;"});
+    saveAs(blob, "preset.json");
+  }
+  insertP(button, "Save preset");
+  return button;
+}
+
 createGlobalControls();
 /* GLOBAL CONTROLS */
 
@@ -530,7 +546,7 @@ function importTargetSet(name, target){
 
 function importSchedule(file, schedule){
   console.log(schedule);
-  simulation.importSchedule(file, schedule);
+  simulation.importSchedule(file.name, schedule);
   appendDropFileElementSchedule(file.name.split('.')[0]);
 }
 

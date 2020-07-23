@@ -1,6 +1,5 @@
 export default class Sensor {
   constructor(name, type, min_value, max_value, scene){
-
     this._sensor_type = type;
     this._min_value = min_value;
     this._max_value = max_value;
@@ -18,4 +17,16 @@ export default class Sensor {
   get max_value() {
     return this._max_value;
   }
+
+  // toJSON(){
+  //   const json = {
+  //     type : this._sensor_type,
+  //     constraint : {
+  //       min : this._min_value,
+  //       max : this._max_value,
+  //     }
+  //   }
+  //
+  //   return json;
+  // }
 }

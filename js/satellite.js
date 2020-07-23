@@ -55,6 +55,20 @@ export default class Satellite {
     return this._window;
   }
 
+  toJSON(){
+    //NOTE: we do not add sensor/window data to this
+    //that will be stored in the platforms json
+    const json = {
+      name : this.name,
+      id : this.id,
+      color : this.color,
+      orbitTrail : this.orbit_trail,
+      ephemeris : this._ephemeris
+    }
+
+    return json;
+  }
+
   update(schedule){
     this._scene.updateSatellite(this.name);
   }

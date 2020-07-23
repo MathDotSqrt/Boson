@@ -52,6 +52,18 @@ export default class TargetSet {
     this._scene.deselectTarget(this.name, id);
   }
 
+  toJSON(){
+    const json = {
+      name : this.name,
+      color : this.color,
+      alpha : this.alpha,
+      selectColor : this.selectColor,
+      targetSet : this._targetSet
+    }
+
+    return json;
+  }
+
   update(){
 
   }

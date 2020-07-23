@@ -1,6 +1,7 @@
 
 export default class Schedule {
-  constructor(schedule){
+  constructor(name, schedule){
+    this._name = name;
     this._schedule = schedule;
     this._lastEvent = {};
   }
@@ -70,6 +71,15 @@ export default class Schedule {
       }
     }
     return null;
+  }
+
+  toJSON(){
+    const json = {
+      name : this._name,
+      schedule : this._schedule
+    };
+
+    return json;
   }
 }
 
