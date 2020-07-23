@@ -8,10 +8,75 @@ import Schedule from './schedule.js'
 import WindowInterval from './windowinterval.js'
 import TargetSet from './targetset.js'
 
+class Platform{
+  constructor(name, platform, scene){
+    this._name = name;
+    this._scene = scene;
+
+    this._satellites = {};
+    this._sensors = {};
+
+    const satellites = Object.entries(platform)
+      .map(([name, s]) => new Satellite(name, s.id, "#0000ff", s, this._scene));
+
+    satellites.forEach(s => this._satellites[s.name] = s);
+    console.log(this);
+  }
+
+  addSensors(name, sensors){
+    sensors.map(sensor => [this.getSatelliteByID(sensor.platformID), sensor])
+      .filter(([satellite, sensor]) => satellite)
+      .forEach(([satellite, sensor]) => {
+        satellite.sensor
+          = new Sensor(satellite.name, sensor.sensorType, sensor.minValue, sensor.maxValue, this._scene);
+      });
+  }
+
+  setOrbitColor(name, color){
+    const orbit = this._satellites[name];
+    if(orbit){
+      orbit.color = color;
+    }
+  }
+
+  setOrbitTrail(names, value){
+    for(const name of names){
+      const orbit = this._satellites[name];
+      if(orbit){
+        orbit.orbit_trail = value;
+      }
+    }
+  }
+
+  setAllOrbitTrail(value){
+    Object.values(this._satellites).forEach(s => s.orbit_trail = value);
+  }
+
+  getSatelliteByName(name){
+    return this._satellites[name];
+  }
+
+  getSatelliteByID(id){
+    return Object.values(this._satellites).find(s => s.id === id);
+  }
+
+  removeAll(){
+    Object.values(this._satellites).forEach(s => this._scene.removeOrbit(s.name));
+  }
+
+  get name(){
+    return this._name;
+  }
+
+  update(){
+    Object.values(this._satellites).forEach(s => s.update());
+  }
+}
+
 export class Simulation {
   constructor(dom){
     this._scene = new BOSON_RENDER.Scene(dom);
-    this._currentOrbits = {};
+    this._platforms = {};
     this._currentTargetSets = {};
     this._currentSchedule = null;
     this._scene.addPreRenderEvent(this);
@@ -21,25 +86,25 @@ export class Simulation {
     this._scene.followEntity(name);
   }
 
-  importOrbit(name, ephemeris, id=-1){
-    const color = "#fff";
-    //const ephemeris = BOSON_EPHEMERIS.get_ephemeris(name);
-    this._currentOrbits[name] = new Satellite(name, parseInt(id), color, ephemeris, this._scene);
+  importPlatform(name, platform){
+    this._platforms[name] = new Platform(name, platform, this._scene);
   }
 
-  importSensor(sensor_parameter){
-    const satellite = this._getByPlatformID(sensor_parameter.platformID);
-    if(satellite){
-      const name = satellite.name;
-      const type = sensor_parameter.sensorType;
-      const min = sensor_parameter.minValue;
-      const max = sensor_parameter.maxValue;
+  // importOrbit(name, ephemeris, id=-1){
+  //   const color = "#fff";
+  //   //const ephemeris = BOSON_EPHEMERIS.get_ephemeris(name);
+  //   this._currentOrbits[name] = new Satellite(name, parseInt(id), color, ephemeris, this._scene);
+  // }
 
-      satellite.sensor = new Sensor(name, type, min, max, this._scene);
+  importSensors(ephemeris_name, sensor_name, sensors){
+    this._platforms[ephemeris_name].addSensors(sensor_name, sensors);
+  }
+
+  importWindow(ephemeris_name, windows, isIW=true){
+    const platform = this._platforms[ephemeris_name];
+    if(platform){
+      
     }
-  }
-
-  importWindow(windows, isIW=true){
     const satellites = Object.keys(windows)
       .map(x => parseInt(x))
       .map(x => this._getByPlatformID(x))
@@ -56,28 +121,16 @@ export class Simulation {
   }
 
   setOrbitColor(name, color){
-    const orbit = this._currentOrbits[name];
-    if(orbit){
-      orbit.color = color;
-    }
+    Object.values(this._platforms).forEach(p => p.setOrbitColor(name, color));
   }
 
   setOrbitTrail(names, value){
-    for(const name of names){
-      const orbit = this._currentOrbits[name];
-      if(orbit){
-        orbit.orbit_trail = value;
-      }
-    }
+    Object.values(this._platforms).forEach(p => p.setOrbitTrail(names, value));
   }
 
-  removeOrbit(names){
-    if(!Array.isArray(names)) names = [names];
-
-    for(const name of names){
-      this._scene.removeOrbit(name);
-      delete this._currentOrbits[name];
-    }
+  removeOrbit(name){
+    this._platforms[name].removeAll();
+    delete this._platforms[name];
   }
 
   importTargetSet(name, targetSet){
@@ -111,9 +164,7 @@ export class Simulation {
   }
 
   update(seconds){
-    for(const satellite of Object.values(this._currentOrbits)){
-      satellite.update();
-    }
+    Object.values(this._platforms).forEach(p => p.update());
 
     if(this._currentSchedule){
       const platformIDs = this._currentSchedule.getAllPlatformIDs();
@@ -121,14 +172,16 @@ export class Simulation {
       for(const platformID of platformIDs){
         const out = this._currentSchedule.getScheduleEventContinuous(platformID, seconds);
         //const schedule_event = this._currentSchedule.getScheduleEvent(platformID, seconds);
-        const platform = this._getByPlatformID(platformID);
+        const satellite = this._getByPlatformID(platformID);
 
         if(out){
           const schedule_event = out.event;
           const targets = out.targets;
-          if(platform){
+          if(satellite){
             const [lon, lat] = schedule_event.coord;
-            this._scene.fireVector(platform.name, lon, lat);
+            console.log(satellite);
+            console.log(satellite.name);
+            this._scene.fireVector(satellite.name, lon, lat);
           }
           for(const target_set of Object.values(this._currentTargetSets)){
             for(const target of targets){
@@ -144,8 +197,8 @@ export class Simulation {
           }
         }
         else{
-          if(platform){
-            this._scene.iceVector(platform.name);
+          if(satellite){
+            this._scene.iceVector(satellite.name);
           }
         }
       }
@@ -153,13 +206,9 @@ export class Simulation {
   }
 
   _getByPlatformID(id){
-    for(const satellite of Object.values(this._currentOrbits)){
-      if(satellite.id === id){
-        return satellite;
-      }
-    }
-
-    return null;
+    return Object.values(this._platforms)
+      .map(p => p.getSatelliteByID(id))
+      .find(s => s.id === id);
   }
 
   _getPlatforms(){

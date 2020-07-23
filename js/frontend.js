@@ -2,7 +2,7 @@
 import * as BOSON from './demo.js'
 import * as BOSON_FILELOADER from './file_loader.js';
 
-const colors = ["#C02B9A", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#00ffff", "#34b1eb"];
+const colors = ["#C02B9A", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#ffDD00", "#34b1eb"];
 
 const simulation = new BOSON.Simulation(document.getElementById('view'));
 
@@ -193,22 +193,22 @@ function createEphemerisNode(name, satellite_names){
   insert_field(table, "Orbit Trail", orbit_selector);
 
   const sensor_input = createPlatformInput("SENSOR FILE", function(file){
-    BOSON_FILELOADER.loadSensorFile(file, function(name, result){
-      importSensor(name, result);
+    BOSON_FILELOADER.loadSensorFile(file, function(sensor_name, result){
+      importSensor(name, sensor_name, result);
     });
   });
   insert_field(table, "Sensor File", sensor_input)
 
   const iw_input = createPlatformInput("IW FILE", function (file){
-    BOSON_FILELOADER.loadWindowFile(file, function(name, result){
-      importWindow(name, result, true);
+    BOSON_FILELOADER.loadWindowFile(file, function(window_name, result){
+      importWindow(name, window_name, result, true);
     });
   });
   insert_field(table, "IW File", iw_input)
 
   const cw_input = createPlatformInput("CW FILE", function (file){
-    BOSON_FILELOADER.loadWindowFile(file, function(name, result){
-      importWindow(name, result, false);
+    BOSON_FILELOADER.loadWindowFile(file, function(window_name, result){
+      importWindow(name, window_name, result, false);
     });
   });
   insert_field(table, "CW File", cw_input)
@@ -439,8 +439,7 @@ function onDeleteHandeler(event){
     //BOSON_EPHEMERIS.delete_ephemeris(name);
     deleteSatelliteNode(name);
   }
-
-  simulation.removeOrbit(names);
+  simulation.removeOrbit(parentElement.id);
   //BOSON.remove_simulation(names);
 }
 
@@ -500,30 +499,26 @@ export function appendDropFileElementSchedule(name){
 }
 
 function importEphemeris(name, platform){
-  const names = [];
+  console.log(platform);
 
-  for(const id of Object.keys(platform)){
-    const new_name = name + "_" + id;
-    const ephemeris = platform[id];
-    names.push(new_name);
-    simulation.importOrbit(new_name, ephemeris, id);
-  }
-  for(const name of names){
-    appendSatellite(name);
-  }
+  simulation.importPlatform(name, platform);
+  const names = Object.keys(platform);
+  names.forEach(appendSatellite);
   appendDropFileElementPlatform(name, names);
 }
 
-function importSensor(name, sensors){
-  console.log(sensors);
-  for(const sensor of sensors){
-    simulation.importSensor(sensor);
-  }
+function importSensor(ephemeris_name, sensor_name, sensors){
+  simulation.importSensors(ephemeris_name, sensor_name, sensors);
+  // console.log(name);
+  // console.log(sensors);
+  // for(const sensor of sensors){
+  //   simulation.importSensor(sensor);
+  // }
 }
 
-function importWindow(name, windows, isIW=true){
-  console.log(windows);
-  simulation.importWindow(windows, isIW);
+function importWindow(ephemeris_name, window_name, windows, isIW=true){
+  console.log(ephemeris_name, windows);
+  simulation.importWindow(ephemeris_name, windows, isIW);
 }
 
 function importTargetSet(name, target){
@@ -564,7 +559,7 @@ function dropHandlerSensor(event){
 
   const file = event.dataTransfer.items[0].getAsFile();
   // appendDropFileElement(file.name);
-  BOSON_FILELOADER.loadSensorFile(file, importSensor);
+  //BOSON_FILELOADER.loadSensorFile(file, importSensor);
 }
 
 function dropHandlerTarget(event){

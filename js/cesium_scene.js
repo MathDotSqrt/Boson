@@ -211,6 +211,7 @@ export class Scene {
   appendSensor(name, sensor_type, min, max){
     const color = Cesium.Color.fromCssColorString("#FFF");
     const entity = this._viewer.entities.getById(name);
+    console.log(name);
     if(sensor_type === "Doppler Cone Angle"){
       BOSON_UTIL.create_squint_sensor(entity, min, max, 55, 20, color);
     }
@@ -233,7 +234,7 @@ export class Scene {
   removeOrbit(name){
     console.log("REMOVE ORBIT: " + name);
     this._viewer.entities.removeById(name);
-    //Clean up the polylines 
+    //Clean up the polylines
     const dispose = entity => this._viewer.entities.remove(entity);
     Object.values(this._entityPaths[name]).flat().forEach(dispose);
     delete this._entityPaths[name];
@@ -314,9 +315,7 @@ export class Scene {
       new Cesium.ReferenceProperty(this._viewer.entities, name, ['position']),
       new Cesium.ConstantPositionProperty(Cesium.Cartesian3.fromDegrees(lon, lat))
     ]);
-
     if(!(name in this._sampleLines)){
-      console.log();
       this._sampleLines[name] = this._viewer.entities.add({
         polyline : {
           positions : pos,
@@ -328,6 +327,8 @@ export class Scene {
           })
         }
       });
+
+      console.log(this._sampleLines);
     }
     else{
       //console.log(this._sampleLines[name].polyline);

@@ -143,12 +143,13 @@ function parsePlatform(name, lines){
       continue;
     }
 
-    if(!(id in platform)){
+    const ephemeris_name = name + "_" + id;
+    if(!(ephemeris_name in platform)){
       console.log("NEW ID");
-      platform[id] = {time: [], position: [], velocity: [], id: id};
+      platform[ephemeris_name] = {time: [], position: [], velocity: [], id: id};
     }
 
-    const ephemeris = platform[id];
+    const ephemeris = platform[ephemeris_name];
     ephemeris.time.push(Number(split[indexMap.time]));
     //convert km to meters
     ephemeris.position.push(Number(split[indexMap.posx]) * 1000);
