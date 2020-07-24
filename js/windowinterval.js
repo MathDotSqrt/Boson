@@ -104,14 +104,16 @@ export default class WindowInterval {
   }
 
   _compute(){
-    console.log("COMPUTE");
+    const iwInterval = JSON.parse(JSON.stringify(this._IWInterval));
+    const cwInterval = JSON.parse(JSON.stringify(this._CWInterval));
+
     const overlap = (a, b) => a[0] <= b[1] && b[0] <= a[1];
-    this._mutinInterval = findIntersection(this._IWInterval, this._CWInterval);
-    this._mutexIWInterval = findComplement(this._IWInterval, this._mutinInterval);
-    this._mutexCWInterval = findComplement(this._CWInterval, this._mutinInterval);
+    this._mutinInterval = findIntersection(iwInterval, cwInterval);
+    this._mutexIWInterval = findComplement(iwInterval, this._mutinInterval);
+    this._mutexCWInterval = findComplement(cwInterval, this._mutinInterval);
 
     const union = findUnion([this._mutinInterval, this._mutexIWInterval, this._mutexCWInterval]);
-    const interval = [union[0][0], union.slice(-1)[0][1]];
+    const interval = [0, union.slice(-1)[0][1]];
     this._complInterval = findComplement([interval], union);
 
     this._scene.setOrbitWindows(this._name, this._complInterval, this._mutexIWInterval, this._mutexCWInterval, this._mutinInterval);
