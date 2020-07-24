@@ -24,7 +24,17 @@ export function isValidFile(event){
   return true;
 }
 
+export function loadPresetJSON(new_file, func){
+  const promise = pFileReader(new_file);
+  promise.then((text) => {
+    var result = null;
+    try{
+      result = JSON.parse(text);
+    } catch(err){console.log("Error, could not parse");}
 
+    func(new_file.name, result);
+  });
+}
 
 export function loadEphemerisFile(new_file, func){
   const promise = pFileReader(new_file);
@@ -127,7 +137,6 @@ function parsePlatform(name, lines){
   }
 
   const indexMap = getHeaderIndices(header, columnMap);
-  console.log(indexMap);
 
   if(indexMap === null){
     return null;
@@ -145,11 +154,17 @@ function parsePlatform(name, lines){
 
     const ephemeris_name = name + "_" + id;
     if(!(ephemeris_name in platform)){
-      console.log("NEW ID");
-      platform[ephemeris_name] = {time: [], position: [], velocity: [], id: id};
+      const ephemeris = { time: [], position: [], velocity: [] };
+      platform[ephemeris_name] = {
+        name: ephemeris_name,
+        id: id,
+        color: "#00ff00",
+        orbitTrail: 0,
+        ephemeris: ephemeris
+      };
     }
 
-    const ephemeris = platform[ephemeris_name];
+    const ephemeris = platform[ephemeris_name].ephemeris;
     ephemeris.time.push(Number(split[indexMap.time]));
     //convert km to meters
     ephemeris.position.push(Number(split[indexMap.posx]) * 1000);
@@ -244,29 +259,37 @@ function createPointVerticies(lon, lat, size){
 }
 
 function createTargetObject(targets, vertices){
-  const point_targets = {};
+  const make_targets = name => {return {
+    name: name,
+    color: "#00ff00",
+    selectColor: "#ff0000",
+    alpha: 1,
+    targetSet: {}
+  }};
+
+  const point_targets = make_targets("deck_point");
   targets.filter(t => t.typeID === 1).forEach(point => {
-    point_targets[point.targetID] = {
+    point_targets.targetSet[point.targetID] = {
       targetID : point.targetID,
       coords : createPointVerticies(point.lon, point.lat, point.size),
     }
   });
 
-  const dsa_targets = {};
+  const dsa_targets = make_targets("deck_dsa");
   targets.filter(t => t.typeID === 3)
   .filter(t => t.targetID in vertices)
   .forEach(dsa => {
-    dsa_targets[dsa.targetID] = {
+    dsa_targets.targetSet[dsa.targetID] = {
       targetID : dsa.targetID,
       coords : vertices[dsa.targetID].coords
     }
   });
 
-  const mcg_targets = {};
+  const mcg_targets = make_targets("deck_mcg");
   targets.filter(t => t.typeID === 5)
   .filter(t => t.targetID in vertices)
   .forEach(mcg => {
-    mcg_targets[mcg.targetID] = {
+    mcg_targets.targetSet[mcg.targetID] = {
       targetID : mcg.targetID,
       coords : vertices[mcg.targetID].coords
     }

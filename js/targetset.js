@@ -1,17 +1,17 @@
 
 
 export default class TargetSet {
-  constructor(name, color, selectColor, targetSet, scene){
-    this._name = name;
+  constructor(targets, scene){
+    this._name = targets.name;
     this._scene = scene;
 
-    this._targetSet = targetSet;
+    this._targetSet = targets.targetSet;
     //const target_set = BOSON_TARGETS.get_target_set(name);
-    this._scene.createTargetPrimitive(name, this._targetSet);
+    this._scene.createTargetPrimitive(targets.name, this._targetSet);
 
-    this.color = color;
-    this.alpha = 1;
-    this.selectColor = selectColor;
+    this.color = targets.color;
+    this.alpha = targets.alpha;
+    this.selectColor = targets.selectColor;
 
   }
 

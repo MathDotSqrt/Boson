@@ -4,15 +4,15 @@ import * as BOSON_RENDER from './cesium_scene.js';
 
 
 export default class Satellite {
-  constructor(name, id, color, ephemeris, scene){
-    this._name = name;
-    this._id = id;
-    this._ephemeris = ephemeris;
+  constructor(satellite, scene){
+    this._name = satellite.name;
+    this._id = satellite.id;
+    this._ephemeris = satellite.ephemeris;
 
     this._scene = scene;
-    this._scene.createOrbit(name, ephemeris, color);
-    this.color = color;
-    this.orbit_trail = BOSON_RENDER.ALL;
+    this._scene.createOrbit(this.name, satellite.ephemeris, satellite.color);
+    this.color = satellite.color;
+    this.orbit_trail = satellite.orbitTrail;
 
     this._sensor = null;
     this._window = new WindowInterval(this, scene);

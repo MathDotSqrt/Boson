@@ -48,7 +48,12 @@ function createGlobalControls(){
   const button = createPresetButton();
   insert_field(table, "Save Preset", button);
 
-  const input = createPlatformInput("Load Preset", function(){console.log("load");});
+  const input = createPlatformInput("Load Preset", function(file){
+    console.log(file);
+    BOSON_FILELOADER.loadPresetJSON(file, function(name, json){
+      importPreset(name, json);
+    });
+  });
   insert_field(table, "Load Preset", input);
 }
 
@@ -514,6 +519,33 @@ export function appendDropFileElementSchedule(name){
   return new_node;
 }
 
+function importPreset(name, json){
+  console.log(json);
+
+  const platforms = json.platform;
+  platforms.forEach(p => {
+    const name = p.name;
+    const satellites = p.satellites;
+
+    const satellite_names = Object.values(satellites).map(s => s.name);
+    satellite_names.forEach(appendSatellite);
+    appendDropFileElementPlatform(name, satellite_names);
+
+    simulation.importPlatform(name, satellites);
+  });
+
+  const targets = json.targets;
+  targets.forEach(t => {
+    appendDropFileElementTarget(t.name, Object.values(t).length);
+    simulation.importTargetSet(t.name, t);
+  });
+
+  const schedule = json.schedule;
+  if(schedule){
+    appendDropFileElementSchedule(schedule.name.split('.')[0]);
+  }
+}
+
 function importEphemeris(name, platform){
   console.log(platform);
 
@@ -525,11 +557,6 @@ function importEphemeris(name, platform){
 
 function importSensor(ephemeris_name, sensor_name, sensors){
   simulation.importSensors(ephemeris_name, sensor_name, sensors);
-  // console.log(name);
-  // console.log(sensors);
-  // for(const sensor of sensors){
-  //   simulation.importSensor(sensor);
-  // }
 }
 
 function importWindow(ephemeris_name, window_name, windows, isIW=true){
@@ -539,7 +566,7 @@ function importWindow(ephemeris_name, window_name, windows, isIW=true){
 
 function importTargetSet(name, target){
   console.log(target);
-  appendDropFileElementTarget(name, Object.values(target).length);
+  appendDropFileElementTarget(name, Object.values(target.targetSet).length);
 
   simulation.importTargetSet(name, target);
 }

@@ -16,8 +16,7 @@ class Platform{
     this._sensors = null;
     this._windows = {};
 
-    const satellites = Object.entries(platform)
-      .map(([name, s]) => new Satellite(name, s.id, "#0000ff", s, this._scene));
+    const satellites = Object.values(platform).map(s=>new Satellite(s, this._scene));
 
     satellites.forEach(s => this._satellites[s.name] = s);
     console.log(this);
@@ -90,12 +89,15 @@ class Platform{
   }
 
   toJSON(){
+    const satelliteMap = {};
     const satellites = Object.values(this._satellites).map(s => s.toJSON());
+    satellites.forEach(s => satelliteMap[s.name] = s);  //convert array to map
+
     const sensors = this._sensors;
     const windows = this._windows;
     const json = {
       name : this.name,
-      satellites : satellites,
+      satellites : satelliteMap,
       sensors : sensors,
       windows : windows,
     };
@@ -122,6 +124,7 @@ export class Simulation {
   }
 
   importPlatform(name, platform){
+    console.log(platform);
     this._platforms[name] = new Platform(name, platform, this._scene);
   }
 
@@ -152,8 +155,8 @@ export class Simulation {
     delete this._platforms[name];
   }
 
-  importTargetSet(name, targetSet){
-    this._currentTargetSets[name] = new TargetSet(name, "#00FF00", "#FF0000", targetSet, this._scene);
+  importTargetSet(name, targets){
+    this._currentTargetSets[name] = new TargetSet(targets, this._scene);
   }
 
   setTargetColor(name, color, alpha){
