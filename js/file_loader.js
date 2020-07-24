@@ -59,7 +59,7 @@ export function loadSensorFile(new_file, func){
 export function loadWindowFile(new_file, func){
   const promise = pFileReader(new_file);
   promise.then((text) => {
-    const result = parseWindow(new_file, text);
+    const result = parseWindow(new_file.name, text);
     if(result){
       func(new_file.name, result);
     }
@@ -226,7 +226,7 @@ function parseWindow(name, lines){
     return null;
   }
 
-  const windows = {};
+  const intervals = {};
 
   for(var i = 1; i < lines.length; i++){
     const line = lines[i];
@@ -238,14 +238,18 @@ function parseWindow(name, lines){
 
     if(platformID === undefined || isNaN(platformID)) continue;
 
-    if(!(platformID in windows)){
-      windows[platformID] = [];
+    if(!(platformID in intervals)){
+      intervals[platformID] = [];
     }
 
-    windows[platformID].push([start, end]);
+    intervals[platformID].push([start, end]);
   }
 
-  return windows;
+  const window = {
+    name: name,
+    intervals: intervals
+  }
+  return window;
 }
 
 function createPointVerticies(lon, lat, size){

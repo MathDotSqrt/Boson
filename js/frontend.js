@@ -222,14 +222,14 @@ function createEphemerisNode(name, satellite_names){
 
   const iw_input = createPlatformInput("IW FILE", function (file){
     BOSON_FILELOADER.loadWindowFile(file, function(window_name, result){
-      importWindow(name, window_name, result, true);
+      importWindow(name, result, true);
     });
   });
   insert_field(table, "IW File", iw_input)
 
   const cw_input = createPlatformInput("CW FILE", function (file){
     BOSON_FILELOADER.loadWindowFile(file, function(window_name, result){
-      importWindow(name, window_name, result, false);
+      importWindow(name, result, false);
     });
   });
   insert_field(table, "CW File", cw_input)
@@ -531,7 +531,12 @@ function importPreset(name, json){
     satellite_names.forEach(appendSatellite);
     appendDropFileElementPlatform(name, satellite_names);
 
+    console.log("CHRIS TRENKOV");
+    console.log(p.sensors.parameters);
     simulation.importPlatform(name, satellites);
+    simulation.importSensors(name, p.sensors.name, p.sensors.parameters);
+    simulation.importWindow(name, p.iwWindow, true);
+    simulation.importWindow(name, p.cwWindow, false);
   });
 
   const targets = json.targets;
@@ -543,6 +548,7 @@ function importPreset(name, json){
   const schedule = json.schedule;
   if(schedule){
     appendDropFileElementSchedule(schedule.name.split('.')[0]);
+    simulation.importSchedule(schedule.name, schedule.schedule);
   }
 }
 
@@ -559,9 +565,9 @@ function importSensor(ephemeris_name, sensor_name, sensors){
   simulation.importSensors(ephemeris_name, sensor_name, sensors);
 }
 
-function importWindow(ephemeris_name, window_name, windows, isIW=true){
-  console.log(ephemeris_name, windows);
-  simulation.importWindow(ephemeris_name, window_name, windows, isIW);
+function importWindow(ephemeris_name, window, isIW=true){
+  console.log(ephemeris_name, window);
+  simulation.importWindow(ephemeris_name, window, isIW);
 }
 
 function importTargetSet(name, target){

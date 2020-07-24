@@ -14,12 +14,12 @@ class Platform{
     this._scene = scene;
     this._satellites = {};
     this._sensors = null;
-    this._windows = {};
+    this._iwWindow = null;
+    this._cwWindow = null;
+    console.log(this);
 
     const satellites = Object.values(platform).map(s=>new Satellite(s, this._scene));
-
     satellites.forEach(s => this._satellites[s.name] = s);
-    console.log(this);
   }
 
   addSensors(name, sensors){
@@ -57,18 +57,27 @@ class Platform{
     Object.values(this._satellites).forEach(s => s.orbit_trail = value);
   }
 
-  setWindow(window_name, windows, isIW){
-    this._windows[window_name] = windows;
-    const satellites = Object.keys(windows)
+  setWindow(window_name, intervals, isIW){
+    const windows = {
+      name : window_name,
+      intervals: intervals
+    };
+    //this._windows[window_name] = windows;
+    const satellites = Object.keys(windows.intervals)
       .map(x => parseInt(x))
       .map(x => this.getSatelliteByID(x))
       .filter(x => x);
 
     if(isIW){
-      satellites.forEach(s => s.window.setIWInterval(windows[s.id]));
+      this._iwWindow = windows;
+      console.log(windows);
+      satellites.forEach(s => s.window.setIWInterval(windows.intervals[s.id]));
     }
     else{
-      satellites.forEach(s => s.window.setCWInterval(windows[s.id]));
+      this._cwWindow = windows;
+      console.log(windows);
+      
+      satellites.forEach(s => s.window.setCWInterval(windows.intervals[s.id]));
     }
   }
 
@@ -94,12 +103,13 @@ class Platform{
     satellites.forEach(s => satelliteMap[s.name] = s);  //convert array to map
 
     const sensors = this._sensors;
-    const windows = this._windows;
+    //const windows = this._windows;
     const json = {
       name : this.name,
       satellites : satelliteMap,
       sensors : sensors,
-      windows : windows,
+      iwWindow : this._iwWindow,
+      cwWindow : this._cwWindow,
     };
 
     return json;
@@ -132,10 +142,10 @@ export class Simulation {
     this._platforms[ephemeris_name].addSensors(sensor_name, sensors);
   }
 
-  importWindow(ephemeris_name, window_name, windows, isIW=true){
+  importWindow(ephemeris_name, window, isIW=true){
     const platform = this._platforms[ephemeris_name];
-    if(platform){
-      platform.setWindow(window_name, windows, isIW);
+    if(platform && window){
+      platform.setWindow(window.name, window.intervals, isIW);
     }
   }
 
@@ -214,8 +224,6 @@ export class Simulation {
           const targets = out.targets;
           if(satellite){
             const [lon, lat] = schedule_event.coord;
-            console.log(satellite);
-            console.log(satellite.name);
             this._scene.fireVector(satellite.name, lon, lat);
           }
           for(const target_set of Object.values(this._currentTargetSets)){

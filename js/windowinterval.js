@@ -104,6 +104,7 @@ export default class WindowInterval {
   }
 
   _compute(){
+    console.log("COMPUTE");
     const overlap = (a, b) => a[0] <= b[1] && b[0] <= a[1];
     this._mutinInterval = findIntersection(this._IWInterval, this._CWInterval);
     this._mutexIWInterval = findComplement(this._IWInterval, this._mutinInterval);
