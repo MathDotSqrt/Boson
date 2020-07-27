@@ -97,43 +97,46 @@ export class Simulation {
     return json;
   }
 
+
+  //callback on cesiums update loop
   update(seconds){
+    //orient all satellites to face the earth
     Object.values(this._platforms).forEach(p => p.update());
 
+    //if we have a schedule loaded
     if(this._currentSchedule){
+      //gets all events from prev seconds to current seconds
+      const getEvent = (id) => this._currentSchedule.getScheduleEventContinuous(id, seconds);
+
+      //gets all platformIDs defined in schedule
       const platformIDs = this._currentSchedule.getAllPlatformIDs();
+      const events = platformIDs.map(id => [this._getByPlatformID(id), getEvent(id)]);
 
-      for(const platformID of platformIDs){
-        const out = this._currentSchedule.getScheduleEventContinuous(platformID, seconds);
-        //const schedule_event = this._currentSchedule.getScheduleEvent(platformID, seconds);
-        const satellite = this._getByPlatformID(platformID);
+      //fires red vector to visualize target collection
+      const fire_events = events
+        .filter(([p, e]) => p && e)
+        .map(([p, e]) => [p.name, e.event.coord])
+        .forEach(([name, [lon, lat]]) => this._scene.fireVector(name, lon, lat));
 
-        if(out){
-          const schedule_event = out.event;
-          const targets = out.targets;
-          if(satellite){
-            const [lon, lat] = schedule_event.coord;
-            this._scene.fireVector(satellite.name, lon, lat);
-          }
-          for(const target_set of Object.values(this._currentTargetSets)){
-            for(const target of targets){
-              if(out.delta >= 0){
-                target_set.selectTargetByID(target);
-              }
-              else{
-                target_set.deselectTargetByID(target);
-              }
-            }
-            target_set.selectTargetByID(schedule_event.target);
+      //removes red vector when no target is being collected
+      const ice_events = events
+        .filter(([p, e]) => p && !e)
+        .forEach(([p, e]) => this._scene.iceVector(p.name));
 
-          }
-        }
-        else{
-          if(satellite){
-            this._scene.iceVector(satellite.name);
-          }
-        }
+      //gets all loaded target sets
+      const target_sets = Object.values(this._currentTargetSets);
+      const select_by_id   = (id) => target_sets.forEach(t => t.selectTargetByID(id));
+      const deselect_by_id = (id) => target_sets.forEach(t => t.deselectTargetByID(id));
+      const select_target = (delta, events, targetIDs) => {
+        const select_func = delta >= 0 ? select_by_id : deselect_by_id;
+        targetIDs.forEach(select_func);
+        select_by_id(events.target)
       }
+
+      const select_events = events
+        .filter(([p, e]) => e)
+        .map(([p, e]) => [e.delta, e.event, e.targets])
+        .forEach(([delta, event, targets]) => select_target(delta, event, targets));
     }
   }
 
