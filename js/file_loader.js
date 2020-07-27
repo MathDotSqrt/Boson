@@ -79,6 +79,7 @@ export function loadTargetFile(file_list, func){
   const target_promise = pFileReader(targets).then(parseTarget, console.error);
   const vertex_promise = pFileReader(target_vertices).then(parseTargetVertex, console.error);
 
+  //when both target and vertex data gets parsed
   Promise.all([target_promise, vertex_promise])
   .then(([targets, vertices]) => {
     if(targets === null || vertices === null){
