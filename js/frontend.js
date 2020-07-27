@@ -56,83 +56,9 @@ function createGlobalControls(){
   });
   insert_field(table, "Load Preset", input);
 }
-
-function createFollowSelector(names){
-  const select = document.createElement("select");
-  select.className = "follow_selector";
-  select.onchange = function(event){
-    const value = select.options[select.selectedIndex].value;
-    simulation.follow(value);
-    //simulation.setOrbitTrail(names, value);
-  }
-
-  for(const name of names){
-    insertSelect(select, name);
-  }
-
-  return select;
-}
-
-export function insertFollowSelect(name){
-  const select = document.getElementsByClassName("follow_selector")[0];
-  if(select){
-    insertSelect(select, name);
-  }
-}
-
-export function removeFollowSelect(name){
-  const select = document.getElementsByClassName("follow_selector")[0];
-  if(select){
-    for(const option of select){
-      if(option.value == name){
-        const value_before = select.value;
-        option.remove();
-        const value_after = select.value;
-        if(value_before != value_after){
-          simulation.follow("None");
-        }
-
-        break;
-      }
-    }
-  }
-}
-
-function insertSelect(select, value){
-  const option = document.createElement("option");
-  option.value = value;
-  insertP(option, value);
-  select.add(option);
-}
-function createPresetButton(){
-  const button = document.createElement("button");
-  button.className = "preset_button";
-  button.onclick = function(){
-    const json = JSON.stringify(simulation.toJSON());
-    const blob = new Blob([json], {type: "text/plain;"});
-    saveAs(blob, "preset.json");
-  }
-  insertP(button, "Save preset");
-  return button;
-}
-
-createGlobalControls();
 /* GLOBAL CONTROLS */
 
-/* SATELLITE */
-export function appendSatellite(name){
-  const satellite_list = document.querySelector("#satellite_list");
-  const satellite = createSatelliteNode(name);
-  satellite_list.append(satellite);
-  insertFollowSelect(name);
-}
-
-function deleteSatelliteNode(name){
-  document.getElementById(name).remove();
-  removeFollowSelect(name);
-
-}
-
+/* SATELLITE NODE */
 function createSatelliteNode(name){
   const new_node = document.createElement("div");
   new_node.id = name;
@@ -182,6 +108,9 @@ function createSatelliteNode(name){
   }
   return new_node;
 }
+
+/* SATELLITE NODE */
+/* EPHEMERIS NODE */
 
 function createEphemerisNode(name, satellite_names){
   const new_node = document.createElement("div");
@@ -246,6 +175,9 @@ function createEphemerisNode(name, satellite_names){
   return new_node;
 }
 
+/* EPHEMERIS NODE */
+/* TARGET NODE */
+
 function createTargetNode(name, num_targets){
   const new_node = document.createElement("div");
   new_node.id = name;
@@ -300,6 +232,9 @@ function createTargetNode(name, num_targets){
   return new_node;
 }
 
+/* TARGET NODE */
+/* SCHEDULE NODE */
+
 function createScheduleNode(name){
   const new_node = document.createElement("div");
   new_node.id = name;
@@ -307,6 +242,68 @@ function createScheduleNode(name){
   new_node.append(createDeleteNodeTitle(name, function(){console.log("lol");}));
 
   return new_node;
+}
+
+/* SCHEDULE NODE */
+/* WIDGETS */
+
+function createFollowSelector(names){
+  const select = document.createElement("select");
+  select.className = "follow_selector";
+  select.onchange = function(event){
+    const value = select.options[select.selectedIndex].value;
+    simulation.follow(value);
+    //simulation.setOrbitTrail(names, value);
+  }
+
+  for(const name of names){
+    insertSelect(select, name);
+  }
+
+  return select;
+}
+
+export function insertFollowSelect(name){
+  const select = document.getElementsByClassName("follow_selector")[0];
+  if(select){
+    insertSelect(select, name);
+  }
+}
+
+export function removeFollowSelect(name){
+  const select = document.getElementsByClassName("follow_selector")[0];
+  if(select){
+    for(const option of select){
+      if(option.value == name){
+        const value_before = select.value;
+        option.remove();
+        const value_after = select.value;
+        if(value_before != value_after){
+          simulation.follow("None");
+        }
+
+        break;
+      }
+    }
+  }
+}
+
+function insertSelect(select, value){
+  const option = document.createElement("option");
+  option.value = value;
+  insertP(option, value);
+  select.add(option);
+}
+function createPresetButton(){
+  const button = document.createElement("button");
+  button.className = "preset_button";
+  button.onclick = function(){
+    const json = JSON.stringify(simulation.toJSON(), null, ' ');
+    const blob = new Blob([json], {type: "text/plain;"});
+    saveAs(blob, "preset.json"); //from FileSaver.js
+  }
+  insertP(button, "Save preset");
+  return button;
 }
 
 function createDeleteNodeTitle(text, deleteFunc){
@@ -433,14 +430,12 @@ function insertP(parent, text, className=""){
   return parent;
 }
 
-/* SATELLITE */
+/* WIDGETS */
+/* DELETE WIDGETS */
 
-/* FILE DROP */
-
-function onToggleHandler(event){
-  // const parentElement = event.target.parentElement;
-  // const names = parentElement.getAttribute("ephemeris_name").split(',');
-  // BOSON.make_trail_visible(names);
+function deleteSatelliteNode(name){
+  document.getElementById(name).remove();
+  removeFollowSelect(name);
 }
 
 function onDeleteHandeler(event){
@@ -483,6 +478,16 @@ function onDeleteTargetHandler(event){
   //BOSON.delete_target_set(names);
 }
 
+/* DELETE WIDGETS */
+/* APPEND */
+
+export function appendSatellite(name){
+  const satellite_list = document.querySelector("#satellite_list");
+  const satellite = createSatelliteNode(name);
+  satellite_list.append(satellite);
+  insertFollowSelect(name);
+}
+
 export function appendDropFileElement(name, satellite_names){
   if(satellite_names === undefined){
     satellite_names = [name];
@@ -518,6 +523,9 @@ export function appendDropFileElementSchedule(name){
   reference_node.before(new_node);
   return new_node;
 }
+
+/* APPEND */
+/* IMPORT DATA */
 
 function importPreset(name, json){
   console.log(json);
@@ -582,6 +590,9 @@ function importSchedule(file, schedule){
   simulation.importSchedule(file.name, schedule);
   appendDropFileElementSchedule(file.name.split('.')[0]);
 }
+
+/* IMPORT DATA */
+/* FILE DROP */
 
 function dragOverHandler(event){
   event.preventDefault();
@@ -673,3 +684,6 @@ schedule.onclick = function(){
   input.click();
 }
 /* FILE DROP */
+
+//load global controls
+createGlobalControls();

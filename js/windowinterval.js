@@ -104,6 +104,7 @@ export default class WindowInterval {
   }
 
   _compute(){
+    //hack to clone object, not really that slow but not optimal either
     const iwInterval = JSON.parse(JSON.stringify(this._IWInterval));
     const cwInterval = JSON.parse(JSON.stringify(this._CWInterval));
 
