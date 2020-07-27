@@ -211,7 +211,7 @@ export class Scene {
   appendSensor(name, sensor_type, min, max){
     const color = Cesium.Color.fromCssColorString("#FFF");
     const entity = this._viewer.entities.getById(name);
-    console.log(name);
+
     if(sensor_type === "Doppler Cone Angle"){
       BOSON_UTIL.create_squint_sensor(entity, min, max, 55, 20, color);
     }
@@ -327,8 +327,6 @@ export class Scene {
           })
         }
       });
-
-      console.log(this._sampleLines);
     }
     else{
       //console.log(this._sampleLines[name].polyline);

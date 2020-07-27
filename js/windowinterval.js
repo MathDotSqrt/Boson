@@ -5,7 +5,6 @@ export default class WindowInterval {
     this._scene = scene;
 
     this._parent = parent;
-    console.log(this._parent);
     this._name = this._parent.name;
 
     this._IWInterval = null;

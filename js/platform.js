@@ -10,14 +10,12 @@ export default class Platform{
     this._sensors = null;
     this._iwWindow = null;
     this._cwWindow = null;
-    console.log(this);
 
     const satellites = Object.values(platform).map(s=>new Satellite(s, this._scene));
     satellites.forEach(s => this._satellites[s.name] = s);
   }
 
   addSensors(name, sensors){
-    console.log(sensors);
     sensors.map(sensor => [this.getSatelliteByID(sensor.platformID), sensor])
       .filter(([satellite, sensor]) => satellite)
       .forEach(([satellite, sensor]) => {
@@ -64,12 +62,10 @@ export default class Platform{
 
     if(isIW){
       this._iwWindow = windows;
-      console.log(windows);
       satellites.forEach(s => s.window.setIWInterval(windows.intervals[s.id]));
     }
     else{
       this._cwWindow = windows;
-      console.log(windows);
 
       satellites.forEach(s => s.window.setCWInterval(windows.intervals[s.id]));
     }

@@ -1,6 +1,5 @@
 "use strict";
 import * as BOSON from './demo.js';
-import {appendDropFileElement, appendDropFileElementPlatform, appendDropFileElementTarget, appendSatellite} from './frontend.js';
 
 function pFileReader(file){
   return new Promise((resolve, reject) => {

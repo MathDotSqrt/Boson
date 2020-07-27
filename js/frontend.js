@@ -49,7 +49,6 @@ function createGlobalControls(){
   insert_field(table, "Save Preset", button);
 
   const input = createPlatformInput("Load Preset", function(file){
-    console.log(file);
     BOSON_FILELOADER.loadPresetJSON(file, function(name, json){
       importPreset(name, json);
     });
@@ -515,7 +514,6 @@ export function appendDropFileElementTarget(name, num_targets){
 }
 
 export function appendDropFileElementSchedule(name){
-  console.log(name);
   const new_node = createScheduleNode(name);
   new_node.setAttribute("schedule_name", name);
 
@@ -528,7 +526,7 @@ export function appendDropFileElementSchedule(name){
 /* IMPORT DATA */
 
 function importPreset(name, json){
-  console.log(json);
+  console.log("Import JSON:", json);
 
   const platforms = json.platform;
   platforms.forEach(p => {
@@ -539,8 +537,6 @@ function importPreset(name, json){
     satellite_names.forEach(appendSatellite);
     appendDropFileElementPlatform(name, satellite_names);
 
-    console.log("CHRIS TRENKOV");
-    console.log(p.sensors.parameters);
     simulation.importPlatform(name, satellites);
     simulation.importSensors(name, p.sensors.name, p.sensors.parameters);
     simulation.importWindow(name, p.iwWindow, true);
@@ -561,7 +557,7 @@ function importPreset(name, json){
 }
 
 function importEphemeris(name, platform){
-  console.log(platform);
+  console.log("Import Ephemeris:", platform);
 
   simulation.importPlatform(name, platform);
   const names = Object.keys(platform);
@@ -570,23 +566,24 @@ function importEphemeris(name, platform){
 }
 
 function importSensor(ephemeris_name, sensor_name, sensors){
+  console.log("Import Sensor:", sensors);
   simulation.importSensors(ephemeris_name, sensor_name, sensors);
 }
 
 function importWindow(ephemeris_name, window, isIW=true){
-  console.log(ephemeris_name, window);
+  console.log("Import Window:", window);
   simulation.importWindow(ephemeris_name, window, isIW);
 }
 
 function importTargetSet(name, target){
-  console.log(target);
+  console.log("Import Target:", target);
   appendDropFileElementTarget(name, Object.values(target.targetSet).length);
 
   simulation.importTargetSet(name, target);
 }
 
 function importSchedule(file, schedule){
-  console.log(schedule);
+  console.log("Import Schedule:", schedule);
   simulation.importSchedule(file.name, schedule);
   appendDropFileElementSchedule(file.name.split('.')[0]);
 }
@@ -662,7 +659,6 @@ target.ondragleave = dragEndHandler;
 target.onclick = function(){
   const input = document.getElementById("target_file_input");
   input.oninput = function(e){
-    console.log(e);
     BOSON_FILELOADER.loadTargetFile(e.target.files, importTargetSet);
   };
   input.click();

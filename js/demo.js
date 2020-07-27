@@ -23,7 +23,6 @@ export class Simulation {
   }
 
   importPlatform(name, platform){
-    console.log(platform);
     this._platforms[name] = new Platform(name, platform, this._scene);
   }
 
