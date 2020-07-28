@@ -7,8 +7,8 @@ export default class WindowInterval {
     this._parent = parent;
     this._name = this._parent.name;
 
-    this._IWInterval = null;
-    this._CWInterval = null;
+    this._IWInterval = [];
+    this._CWInterval = [];
 
     this._complInterval = null;   //complement of IW or CW interval
     this._mutexIWInterval = null; //mutually exclusive image window interval
@@ -23,16 +23,16 @@ export default class WindowInterval {
 
   setIWInterval(interval){
     this._IWInterval = interval;
-    if(this._IWInterval && this._CWInterval){
+    //if(this._IWInterval.length && this._CWInterval.length){
       this._compute();
-    }
+    //}
   }
 
   setCWInterval(interval){
     this._CWInterval = interval;
-    if(this._IWInterval && this._CWInterval){
+    //if(this._IWInterval.length && this._CWInterval.length){
       this._compute();
-    }
+    //}
   }
 
   isComputed(){
@@ -109,12 +109,15 @@ export default class WindowInterval {
 
     const overlap = (a, b) => a[0] <= b[1] && b[0] <= a[1];
     this._mutinInterval = findIntersection(iwInterval, cwInterval);
-    this._mutexIWInterval = findComplement(iwInterval, this._mutinInterval);
-    this._mutexCWInterval = findComplement(cwInterval, this._mutinInterval);
+    this._mutexIWInterval = findComplementOf(iwInterval, this._mutinInterval);
+    this._mutexCWInterval = findComplementOf(cwInterval, this._mutinInterval);
+
+    console.log(this);
 
     const union = findUnion([this._mutinInterval, this._mutexIWInterval, this._mutexCWInterval]);
+    console.log(union);
     const interval = [0, union.slice(-1)[0][1]];
-    this._complInterval = findComplement([interval], union);
+    this._complInterval = findComplementOf([interval], union);
 
     this._scene.setOrbitWindows(this._name, this._complInterval, this._mutexIWInterval, this._mutexCWInterval, this._mutinInterval);
     this._updateColors();
@@ -138,7 +141,7 @@ function findUnion(interval_sets){
 }
 
 function findIntersection(iw, cw){
-  const union = [];
+  const intersection = [];
   var i = 0;
   var j = 0;
 
@@ -146,7 +149,7 @@ function findIntersection(iw, cw){
     const l = Math.max(iw[i][0], cw[j][0]);
     const r = Math.min(iw[i][1], cw[j][1]);
     if(l <= r){
-      union.push([l, r]);
+      intersection.push([l, r]);
     }
 
     if(iw[i][1] < cw[j][1]){
@@ -156,10 +159,14 @@ function findIntersection(iw, cw){
       j += 1;
     }
   }
-  return union;
+  return intersection;
 }
 
-function findComplement(intervals, union){
+function findComplementOf(intervals, union){
+  if(union.length === 0){
+    return intervals;
+  }
+
   const complement = [];
   var i = 0;
   var j = 0;

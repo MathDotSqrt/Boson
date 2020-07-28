@@ -297,7 +297,7 @@ function createPresetButton(){
   const button = document.createElement("button");
   button.className = "preset_button";
   button.onclick = function(){
-    const json = JSON.stringify(simulation.toJSON(), null, ' ');
+    const json = JSON.stringify(simulation.toJSON());
     const blob = new Blob([json], {type: "text/plain;"});
     saveAs(blob, "preset.json"); //from FileSaver.js
   }

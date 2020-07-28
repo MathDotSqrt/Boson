@@ -38,7 +38,7 @@ export function loadPresetJSON(new_file, func){
 export function loadEphemerisFile(new_file, func){
   const promise = pFileReader(new_file);
   promise.then((text) => {
-    const result = parseEphemerisFile(new_file.name, text);
+    const result = parsePlatform(new_file.name, text);
     if(result){
       func(new_file.name, result);
     }
@@ -115,10 +115,6 @@ function getHeaderIndices(header, columnMap){
   indices.forEach(([key, value]) => indexMap[key] = value);
 
   return indexMap;
-}
-
-function parseEphemerisFile(name, text){
-  return parsePlatform(name, text);
 }
 
 function parsePlatform(name, lines){
