@@ -538,9 +538,15 @@ function importPreset(name, json){
     appendDropFileElementPlatform(name, satellite_names);
 
     simulation.importPlatform(name, satellites);
-    simulation.importSensors(name, p.sensors.name, p.sensors.parameters);
-    simulation.importWindow(name, p.iwWindow, true);
-    simulation.importWindow(name, p.cwWindow, false);
+    if(p.sensors){
+      simulation.importSensors(name, p.sensors.name, p.sensors.parameters);
+    }
+    if(p.iwWindow){
+      simulation.importWindow(name, p.iwWindow, true);
+    }
+    if(p.cwWindow){
+      simulation.importWindow(name, p.cwWindow, false);
+    }
   });
 
   const targets = json.targets;

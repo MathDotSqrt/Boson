@@ -323,7 +323,7 @@ function parseTarget(lines){
     const typeID = parseInt(split[indexMap.type]);
     const lon = split[indexMap.longitude] * 180 / 3.1415;
     const lat = split[indexMap.latitude] * 180 / 3.1415;
-    const size = split[indexMap.switch];
+    const size = split[indexMap.size];
 
     targets.push({
       targetID : targetID,
