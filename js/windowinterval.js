@@ -112,10 +112,7 @@ export default class WindowInterval {
     this._mutexIWInterval = findComplementOf(iwInterval, this._mutinInterval);
     this._mutexCWInterval = findComplementOf(cwInterval, this._mutinInterval);
 
-    console.log(this);
-
     const union = findUnion([this._mutinInterval, this._mutexIWInterval, this._mutexCWInterval]);
-    console.log(union);
     const interval = [0, union.slice(-1)[0][1]];
     this._complInterval = findComplementOf([interval], union);
 

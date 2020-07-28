@@ -533,7 +533,7 @@ function importPreset(name, json){
     const name = p.name;
     const satellites = p.satellites;
 
-    const satellite_names = Object.values(satellites).map(s => s.name);
+    const satellite_names = Object.values(satellites).map(s => s.name).sort();
     satellite_names.forEach(appendSatellite);
     appendDropFileElementPlatform(name, satellite_names);
 
@@ -560,7 +560,7 @@ function importEphemeris(name, platform){
   console.log("Import Ephemeris:", platform);
 
   simulation.importPlatform(name, platform);
-  const names = Object.keys(platform);
+  const names = Object.keys(platform).sort();
   names.forEach(appendSatellite);
   appendDropFileElementPlatform(name, names);
 }
