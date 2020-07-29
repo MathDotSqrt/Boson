@@ -2,7 +2,7 @@
 import * as BOSON from './demo.js'
 import * as BOSON_FILELOADER from './file_loader.js';
 
-const colors = ["#C02B9A", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#ffDD00", "#34b1eb"];
+const colors = ["#C02B9A", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#ffDD00", "#34b1eb","#C02B9A", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#ffDD00", "#34b1eb","#C02B9A", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#ffDD00", "#34b1eb"];
 
 const simulation = new BOSON.Simulation(document.getElementById('view'));
 
