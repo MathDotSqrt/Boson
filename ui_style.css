@@ -37,7 +37,7 @@ canvas {
   overflow-x: hidden;
   overflow-y: auto;
 
-  padding-top: 60px;
+  padding-top: 50px;
   position: fixed;
 
   background-color: #1d272b;
@@ -52,7 +52,7 @@ canvas {
   top: 0px;
   right: 25px;
 
-  padding: 8px 8px 8px 8px;
+  padding: 0px 8px 0px 8px;
 
   text-decoration: none;
   font-size: 36px;
