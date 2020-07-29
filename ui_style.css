@@ -1,5 +1,5 @@
-/*BACKGROUND COLOR: #1d272b*/
-/*BACKGROUND COLOR: #1d272b*/
+/*DARK BACKGROUND COLOR: #1d272b*/
+/*LIGHT BACKGROUND COLOR: #303c42*/
 /*ORANGE ACCENT COLOR: #AA510E*/
 
 body {
@@ -21,6 +21,14 @@ canvas {
   text-overflow: clip;
 }
 
+/* .center {
+  position: relative;
+  display: inline-block;
+  left: 50%;
+  transform: translate(-50%);
+} */
+
+/* PANEL */
 .side_panel {
   top: 0;
   left: 0;
@@ -67,3 +75,57 @@ canvas {
   cursor: pointer;
   z-index: 10;
 }
+/* PANEL */
+
+/* SELECTOR */
+.side_panel_selector_list {
+  display: flex;
+  width: 100%;
+  height: 40px;
+}
+
+.side_panel_selector_list .selector {
+  flex: 1;
+
+  margin: 0px;
+  border-radius: 5px;
+
+  background-color: #1d272b;
+}
+
+.side_panel_selector_list .selector:hover{
+  background-color: #303c42;
+}
+
+.side_panel_selector_list .selected{
+  background-color: #303c42;
+}
+
+.side_panel_selector_list .selector img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 100%;
+  width: auto;
+
+  /* margin: auto; */
+}
+/* SELECTOR */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*  */

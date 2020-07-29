@@ -11,21 +11,38 @@
   <body>
     <div id="side_panel_1" class="side_panel">
       <a href="javascript:void(0)" class="close_btn">&times;</a>
-      <div class="side_panel_element" >
-        <div class="global_controls" id="global">
-          <h3 class="no_overflow">Global Controls</h3>
+
+      <div class="side_panel_selector_list no_overflow">
+        <div class="selector no_overflow selected">
+          <img src="./res/icon/satellite2.png">
+        </div>
+        <div class="selector no_overflow">
+          <img src="./res/icon/satellite2.png">
+        </div>
+        <div class="selector no_overflow">
+          <img src="./res/icon/satellite2.png">
+        </div>
+        <div class="selector no_overflow">
+          <img src="./res/icon/satellite2.png">
         </div>
       </div>
 
-      <div class="side_panel_element">
+
+      <div class="side_panel_element no_overflow" >
+        <div class="global_controls" id="global">
+          <h3>Global Controls</h3>
+        </div>
+      </div>
+
+      <div class="side_panel_element no_overflow">
         <div class="element_list" id="satellite_list">
           <h3>Active Satellites</h3>
         </div>
       </div>
 
-      <div class="side_panel_element">
+      <div class="side_panel_element no_overflow">
         <div class="element_list" id="ephemeris_list">
-          <h3>Ephemeris Files</h3>
+          <h3 class="no_overflow">Ephemeris Files</h3>
           <div class="file_drop" id="file_drop_ephemeris">
             <input type="file" class="file_input" id="ephemeris_file_input" multiple/>
             <p>EPHEMERIS FILE</p>
@@ -33,9 +50,9 @@
         </div>
       </div>
 
-      <div class="side_panel_element">
+      <div class="side_panel_element no_overflow">
         <div class="element_list" id="ephemeris_list">
-          <h3>Target Files</h3>
+          <h3 class="no_overflow">Target Files</h3>
           <div class="file_drop" id="file_drop_target">
             <input type="file" class="file_input" id="target_file_input" webkitdirectory directory multiple/>
             <p>TARGET FILE</p>
@@ -43,9 +60,9 @@
         </div>
       </div>
 
-      <div class="side_panel_element">
+      <div class="side_panel_element no_overflow">
         <div class="element_list" id="schedule_list">
-          <h3>Schedule Files</h3>
+          <h3 class="no_overflow">Schedule Files</h3>
           <div class="file_drop" id="file_drop_schedule">
             <input type="file" class="file_input" id="schedule_file_input" multiple/>
             <p>SCHEDULE FILE</p>
