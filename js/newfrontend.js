@@ -15,7 +15,7 @@ function initPanel(){
 }
 
 function openNav(){
-  document.getElementById("side_panel_1").style.width = "285px";
+  document.getElementById("side_panel_1").style.width = "275px";
 }
 function closeNav(){
   document.getElementById("side_panel_1").style.width = "0px";
@@ -32,7 +32,6 @@ function selectTab(id){
     }
 
     tab.classList.add(SELECTED);
-
 
     const side_panel_elements = document.getElementsByClassName("side_panel_element");
     const tab_content = document.querySelector("[tabID='" + id + "']");

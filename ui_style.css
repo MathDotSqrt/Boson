@@ -16,10 +16,12 @@ canvas {
 }
 
 h3 {
+  margin: 0px;
   color: white;
 }
 
 p {
+  margin: 0px;
   color: white;
 }
 
@@ -32,12 +34,6 @@ p {
 .hide {
   display: none;
 }
-/* .center {
-  position: relative;
-  display: inline-block;
-  left: 50%;
-  transform: translate(-50%);
-} */
 
 /* PANEL */
 .side_panel {
@@ -48,11 +44,13 @@ p {
   overflow-x: hidden;
   overflow-y: auto;
 
+  border-radius: 5px;
+
   padding-top: 50px;
   position: fixed;
 
   background-color: #1d272b;
-  transition: .6s;
+  transition: .3s;
   z-index: 1;
 }
 
@@ -61,7 +59,7 @@ p {
   position: absolute;
 
   top: 0px;
-  right: 25px;
+  right: 10px;  /*TODO: hard coded value for close button*/
 
   padding: 0px 8px 0px 8px;
 
@@ -88,7 +86,7 @@ p {
 }
 /* PANEL */
 
-/* SELECTOR */
+/* TABS */
 .side_panel_tab_list {
   display: flex;
   width: 100%;
@@ -118,10 +116,38 @@ p {
   margin-right: auto;
   height: 100%;
   width: auto;
-
-  /* margin: auto; */
 }
-/* SELECTOR */
+/* TABS */
+
+
+/* CONTENT */
+.side_panel_element {
+  padding-left: 15px;
+  padding-right: 15px;
+
+  background-color: #303c42;
+}
+
+.file_drop {
+  margin: 0px;
+  padding: 10px;
+
+  border-style: dashed;
+  border-radius: 5px;
+  border-color: #AA510E;
+  background-color: #1d272b;
+}
+
+.file_drop p {
+  margin: 0px;
+  text-align: center;
+  white-space: pre;
+
+  font-size: 15px;
+  color: #818181;
+}
+
+/* CONTENT */
 
 
 

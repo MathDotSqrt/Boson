@@ -14,31 +14,31 @@
 
       <div class="side_panel_tab_list no_overflow">
         <div id="controls" class="tab no_overflow selected">
-          <img src="./res/icon/satellite_white.png">
+          <img src="./res/icon/control.png">
         </div>
         <div id="platform" class="tab no_overflow">
           <img src="./res/icon/satellite_white.png">
         </div>
         <div id="target" class="tab no_overflow">
-          <img src="./res/icon/satellite_white.png">
+          <img src="./res/icon/target.png">
         </div>
         <div id="schedule" class="tab no_overflow">
-          <img src="./res/icon/satellite_white.png">
+          <img src="./res/icon/schedule.png">
         </div>
       </div>
 
 
-      <div tabID="controls" class="side_panel_element no_overflow hide" >
+      <div tabID="controls" class="side_panel_element no_overflow" >
         <div class="global_controls" id="global">
           <h3>Global Controls</h3>
         </div>
       </div>
 
-      <div tabID="platform" class="side_panel_element no_overflow">
+      <div tabID="platform" class="side_panel_element no_overflow hide">
         <div class="element_list" id="ephemeris_list">
           <h3 class="no_overflow">Ephemeris Files</h3>
           <div class="file_drop" id="file_drop_ephemeris">
-            <input type="file" class="file_input" id="ephemeris_file_input" multiple/>
+            <input type="file" class="file_input hide" id="ephemeris_file_input" multiple/>
             <p>EPHEMERIS FILE</p>
           </div>
         </div>
@@ -48,7 +48,7 @@
         <div class="element_list" id="ephemeris_list">
           <h3 class="no_overflow">Target Files</h3>
           <div class="file_drop" id="file_drop_target">
-            <input type="file" class="file_input" id="target_file_input" webkitdirectory directory multiple/>
+            <input type="file" class="file_input hide" id="target_file_input" webkitdirectory directory multiple/>
             <p>TARGET FILE</p>
           </div>
         </div>
@@ -58,7 +58,7 @@
         <div class="element_list" id="schedule_list">
           <h3 class="no_overflow">Schedule Files</h3>
           <div class="file_drop" id="file_drop_schedule">
-            <input type="file" class="file_input" id="schedule_file_input" multiple/>
+            <input type="file" class="file_input hide" id="schedule_file_input" multiple/>
             <p>SCHEDULE FILE</p>
           </div>
         </div>
