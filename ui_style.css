@@ -1,6 +1,6 @@
 /*BACKGROUND COLOR: #1d272b*/
 /*BACKGROUND COLOR: #1d272b*/
-/*BACKGROUND COLOR: #1d272b*/
+/*ORANGE ACCENT COLOR: #AA510E*/
 
 body {
   margin: 0;
@@ -15,6 +15,12 @@ canvas {
   z-index: 2;
 }
 
+.no_overflow {
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: clip;
+}
+
 .side_panel {
   top: 0;
   left: 0;
@@ -27,6 +33,37 @@ canvas {
   position: fixed;
 
   background-color: #1d272b;
-  transition: .3s;
+  transition: .6s;
   z-index: 1;
+}
+
+.side_panel .close_btn {
+  display: block;
+  position: absolute;
+
+  top: 0px;
+  right: 25px;
+
+  padding: 8px 8px 8px 8px;
+
+  text-decoration: none;
+  font-size: 36px;
+  color: #AA510E;
+}
+
+.side_panel .close_btn:hover {
+  color: #f1f1f1;
+}
+
+.open_btn {
+  position: absolute;
+  border: none;
+  padding: 10px 15px;
+
+  font-size: 20px;
+  color: white;
+  background-color: #1d272b;
+
+  cursor: pointer;
+  z-index: 10;
 }
