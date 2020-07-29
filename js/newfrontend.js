@@ -8,7 +8,7 @@ function initPanel(){
     element.onclick = openNav;
   }
 
-  const tabs = document.getElementsByClassName("selector");
+  const tabs = document.getElementsByClassName("tab");
   for(const tab of tabs){
     tab.onclick = () => selectTab(tab.id);
   }
@@ -26,12 +26,21 @@ function selectTab(id){
 
   const tab = document.getElementById(id);
   if(tab){
-    const tabs = document.getElementsByClassName("selector");
+    const tabs = document.getElementsByClassName("tab");
     for(const tab of tabs){
       tab.classList.remove(SELECTED);
     }
 
     tab.classList.add(SELECTED);
+
+
+    const side_panel_elements = document.getElementsByClassName("side_panel_element");
+    const tab_content = document.querySelector("[tabID='" + id + "']");
+
+    for(const element of side_panel_elements){
+      element.classList.add("hide");
+    }
+    tab_content.classList.remove("hide");
   }
 }
 

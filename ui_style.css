@@ -15,12 +15,23 @@ canvas {
   z-index: 2;
 }
 
+h3 {
+  color: white;
+}
+
+p {
+  color: white;
+}
+
 .no_overflow {
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: clip;
 }
 
+.hide {
+  display: none;
+}
 /* .center {
   position: relative;
   display: inline-block;
@@ -78,13 +89,13 @@ canvas {
 /* PANEL */
 
 /* SELECTOR */
-.side_panel_selector_list {
+.side_panel_tab_list {
   display: flex;
   width: 100%;
   height: 40px;
 }
 
-.side_panel_selector_list .selector {
+.side_panel_tab_list .tab {
   flex: 1;
 
   margin: 0px;
@@ -93,15 +104,15 @@ canvas {
   background-color: #1d272b;
 }
 
-.side_panel_selector_list .selector:hover{
+.side_panel_tab_list .tab:hover{
   background-color: #303c42;
 }
 
-.side_panel_selector_list .selected{
+.side_panel_tab_list .selected{
   background-color: #303c42;
 }
 
-.side_panel_selector_list .selector img {
+.side_panel_tab_list .tab img {
   display: block;
   margin-left: auto;
   margin-right: auto;

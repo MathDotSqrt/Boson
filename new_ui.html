@@ -12,35 +12,29 @@
     <div id="side_panel_1" class="side_panel">
       <a href="javascript:void(0)" class="close_btn">&times;</a>
 
-      <div class="side_panel_selector_list no_overflow">
-        <div id="controls" class="selector no_overflow selected">
+      <div class="side_panel_tab_list no_overflow">
+        <div id="controls" class="tab no_overflow selected">
           <img src="./res/icon/satellite_white.png">
         </div>
-        <div id="platform" class="selector no_overflow">
+        <div id="platform" class="tab no_overflow">
           <img src="./res/icon/satellite_white.png">
         </div>
-        <div id="target" class="selector no_overflow">
+        <div id="target" class="tab no_overflow">
           <img src="./res/icon/satellite_white.png">
         </div>
-        <div id="schedule" class="selector no_overflow">
+        <div id="schedule" class="tab no_overflow">
           <img src="./res/icon/satellite_white.png">
         </div>
       </div>
 
 
-      <div class="side_panel_element no_overflow" >
+      <div tabID="controls" class="side_panel_element no_overflow hide" >
         <div class="global_controls" id="global">
           <h3>Global Controls</h3>
         </div>
       </div>
 
-      <div class="side_panel_element no_overflow">
-        <div class="element_list" id="satellite_list">
-          <h3>Active Satellites</h3>
-        </div>
-      </div>
-
-      <div class="side_panel_element no_overflow">
+      <div tabID="platform" class="side_panel_element no_overflow">
         <div class="element_list" id="ephemeris_list">
           <h3 class="no_overflow">Ephemeris Files</h3>
           <div class="file_drop" id="file_drop_ephemeris">
@@ -50,7 +44,7 @@
         </div>
       </div>
 
-      <div class="side_panel_element no_overflow">
+      <div tabID="target" class="side_panel_element no_overflow hide">
         <div class="element_list" id="ephemeris_list">
           <h3 class="no_overflow">Target Files</h3>
           <div class="file_drop" id="file_drop_target">
@@ -60,7 +54,7 @@
         </div>
       </div>
 
-      <div class="side_panel_element no_overflow">
+      <div tabID="schedule" class="side_panel_element no_overflow hide">
         <div class="element_list" id="schedule_list">
           <h3 class="no_overflow">Schedule Files</h3>
           <div class="file_drop" id="file_drop_schedule">
