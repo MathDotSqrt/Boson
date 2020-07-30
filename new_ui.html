@@ -28,13 +28,36 @@
       </div>
 
 
-      <div tabID="controls" class="side_panel_element no_overflow" >
-        <div class="global_controls" id="global">
-          <h3>Global Controls</h3>
+      <div tabID="controls" class="side_panel_element light_container no_overflow" >
+        <h3>Global Controls</h3>
+        <div class="control_grid light_container" id="global">
+          <div class="title">
+            <p class="bold">this is test</p>
+          </div>
+          <div class="control">
+            <button type="button" name="button">test</button>
+          </div>
+
+          <div class="title">
+            <p class="bold">this is test2</p>
+          </div>
+          <div class="control">
+            <button type="button" name="button">test</button>
+          </div>
+
+          <div class="title">
+            <p class="bold">Load Preset</p>
+          </div>
+          <div class="control">
+            <div class="file_drop_small" id="file_drop_target">
+              <input type="file" class="file_input hide" id="target_file_input" multiple/>
+              <p>Load Preset</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div tabID="platform" class="side_panel_element no_overflow hide">
+      <div tabID="platform" class="side_panel_element light_container no_overflow hide">
         <div class="element_list" id="ephemeris_list">
           <h3 class="no_overflow">Ephemeris Files</h3>
           <div class="file_drop" id="file_drop_ephemeris">
@@ -44,7 +67,7 @@
         </div>
       </div>
 
-      <div tabID="target" class="side_panel_element no_overflow hide">
+      <div tabID="target" class="side_panel_element light_container no_overflow hide">
         <div class="element_list" id="ephemeris_list">
           <h3 class="no_overflow">Target Files</h3>
           <div class="file_drop" id="file_drop_target">
@@ -54,7 +77,7 @@
         </div>
       </div>
 
-      <div tabID="schedule" class="side_panel_element no_overflow hide">
+      <div tabID="schedule" class="side_panel_element light_container no_overflow hide">
         <div class="element_list" id="schedule_list">
           <h3 class="no_overflow">Schedule Files</h3>
           <div class="file_drop" id="file_drop_schedule">
