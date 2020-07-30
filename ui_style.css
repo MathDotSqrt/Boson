@@ -1,6 +1,7 @@
 /*DARK BACKGROUND COLOR: #1d272b*/
 /*LIGHT BACKGROUND COLOR: #303c42*/
 /*ORANGE ACCENT COLOR: #AA510E*/
+/*GRAY TEXT COLOR: #999*/
 
 body {
   margin: 0;
@@ -11,8 +12,16 @@ body {
 
 canvas {
   width: 100%;
-  height: 100%;
+  height: 200%;
   z-index: 2;
+}
+
+#view {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
 }
 
 h3 {
@@ -27,6 +36,10 @@ p {
 
 p.bold {
   font-weight: bold;
+}
+
+button {
+  /* background-color: #1d272b; */
 }
 
 .no_overflow {
@@ -166,13 +179,34 @@ p.bold {
 
 .control_grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 5px 0px;
+  grid-template-columns: auto 1fr;
+  grid-gap: 5px 20px;
 }
 
+.control_grid > * {
+  min-width: 0;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.control{
+}
 
 .control > * {
   float: right;
+}
+
+.data {
+  /* float: right; */
+}
+
+.data p{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 15px;
+  color: #999;
 }
 
 .file_drop {
@@ -196,14 +230,17 @@ p.bold {
 
 
 .file_drop_small {
-  padding-top: 3px;
+  padding-top: 7px;
   padding-left: 15px;
   padding-right: 15px;
-  padding-bottom: 3px;
+  padding-bottom: 7px;
   border-width: 2px;
   border-style: dashed;
   border-radius: 5px;
   border-color: #AA510E;
+
+  width: 80%;
+
   background-color: #1d272b;
 }
 

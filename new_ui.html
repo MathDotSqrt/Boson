@@ -36,22 +36,24 @@
               <p class="bold">Follow:</p>
             </div>
             <div class="control">
-              <button type="button" name="button">None</button>
+              <select class="" name="" id="follow_select">
+                <option value="none">None</option>
+              </select>
             </div>
 
             <div class="title">
               <p class="bold">Save State:</p>
             </div>
             <div class="control">
-              <button type="button" name="button">Save</button>
+              <button type="button" name="save" id="save_button">Save</button>
             </div>
 
             <div class="title">
               <p class="bold">Load Preset:</p>
             </div>
             <div class="control">
-              <div class="file_drop_small" id="file_drop_target">
-                <input type="file" class="file_input hide" id="target_file_input" multiple/>
+              <div class="file_drop_small" id="preset_file_drop">
+                <input type="file" class="file_input hide" id="preset_file_input" multiple/>
                 <p>Load Preset</p>
               </div>
             </div>
@@ -60,13 +62,49 @@
 
         <div tabID="platform" class="side_panel_element no_overflow hide">
           <div class="light_container">
-            <h3 class="no_overflow">Ephemeris Files</h3>
+            <h3 class="no_overflow">Platform File</h3>
 
             <div class="line"></div>
 
-            <div class="file_drop" id="file_drop_ephemeris">
+            <div class="file_drop hide" id="ephemeris_file_drop">
               <input type="file" class="file_input hide" id="ephemeris_file_input" multiple/>
               <p>EPHEMERIS FILE</p>
+            </div>
+
+            <div class="control_grid" id="platform_control_grid">
+              <div class="title">
+                <p>Name: </p>
+              </div>
+              <div class="data">
+                <p>reallylongsuper.csv</p>
+              </div>
+              <div class="title">
+                <p>Sensor File: </p>
+              </div>
+              <div class="control">
+                <div class="file_drop_small" id="sensor_file_drop">
+                  <input type="file" class="file_input hide" id="sensor_file_input" multiple/>
+                  <p>Load Sensor</p>
+                </div>
+              </div>
+              <div class="title">
+                <p>IW File: </p>
+              </div>
+              <div class="control">
+                <div class="file_drop_small" id="iw_file_drop">
+                  <input type="file" class="file_input hide" id="iw_file_input" multiple/>
+                  <p>Load IW</p>
+                </div>
+              </div>
+              <div class="title">
+                <p>CW File: </p>
+              </div>
+              <div class="control">
+                <div class="file_drop_small" id="cw_file_drop">
+                  <input type="file" class="file_input hide" id="cw_file_input" multiple/>
+                  <p>Load CW</p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -84,7 +122,7 @@
 
         <div tabID="target" class="side_panel_element light_container no_overflow hide">
           <div class="element_list" id="ephemeris_list">
-            <h3 class="no_overflow">Target Files</h3>
+            <h3 class="no_overflow">Target Folder</h3>
 
             <div class="line"></div>
 
@@ -97,10 +135,10 @@
 
         <div tabID="schedule" class="side_panel_element light_container no_overflow hide">
           <div class="element_list" id="schedule_list">
-            <h3 class="no_overflow">Schedule Files</h3>
+            <h3 class="no_overflow">Schedule File</h3>
 
             <div class="line"></div>
-            
+
             <div class="file_drop" id="file_drop_schedule">
               <input type="file" class="file_input hide" id="schedule_file_input" multiple/>
               <p>SCHEDULE FILE</p>
@@ -111,7 +149,14 @@
     </div>
     <button class="open_btn" onclick="">&#9776; Toggle Controls</button>
 
+    <div id="view"></div>
+
+
     <script type="module" src="./js/newfrontend.js"></script>
+    <script type="text/javascript" src="./js/cesium/Cesium.js"></script>
+    <script type="text/javascript" src="./js/build/CesiumSensors.js"></script>
+    <script type="module" src="./js/cesium_scene.js"></script>
+
 
 
   </body>

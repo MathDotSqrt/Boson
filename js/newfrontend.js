@@ -1,3 +1,8 @@
+import * as BOSON from './demo.js'
+import * as BOSON_FILELOADER from './file_loader.js';
+
+const simulation = new BOSON.Simulation(document.getElementById('view'));
+
 /* PANEL */
 function initPanel(){
   for(const element of document.getElementsByClassName("close_btn")){
@@ -47,3 +52,96 @@ function selectTab(id){
 
 initPanel();
 /* PANEL */
+
+/* WIDGETS */
+function insertSelect(select, value){
+  const option = document.createElement("option");
+  option.value = value;
+  option.text = value;
+  select.add(option);
+  return option;
+}
+
+function removeSelect(select, value){
+  for(const option of select){
+    if(option.value === value){
+      option.remove();
+      return true;
+    }
+  }
+  return false;
+}
+
+function hideContainer(element, hide=true){
+  if(hide){
+    element.classList.add("hide");
+  }
+  else{
+    element.classList.remove("hide");
+  }
+}
+/* WIDGETS */
+
+
+
+/* NODES */
+function linkGlobalControls(){
+  const select = document.getElementById("follow_select");
+  const save = document.getElementById("save_button");
+  const preset = document.getElementById("preset_file_input");
+}
+
+function linkFileDrop(element, load_file_func){
+  const prevent_default = (e)=>e.preventDefault();
+  const load_file = (e) => {if(e.target.files.length > 0) load_file_func(e.target.files);};
+
+  const input = element.getElementsByTagName("input")[0];
+  input.oninput = load_file;
+
+  element.ondrop = load_file;
+  element.ondragover = prevent_default;
+  element.ondragenter = prevent_default;
+  element.ondragleave = prevent_default;
+  element.onclick = () => {
+    input.click();
+  }
+}
+
+function linkPlatformNode(){
+  const platform_filedrop = document.getElementById("ephemeris_file_drop");
+  linkFileDrop(platform_filedrop, (e) => {
+    BOSON_FILELOADER.loadEphemerisFile(e[0], importPlatformFile);
+  });
+}
+
+linkGlobalControls();
+linkPlatformNode();
+/* NODES */
+
+function importPlatformFile(name, platform){
+  console.log(name, platform);
+  simulation.importPlatform(name, platform);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
