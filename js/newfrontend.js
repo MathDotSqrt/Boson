@@ -16,7 +16,7 @@ function initPanel(){
 
 function openNav(){
   const panel = document.getElementById("side_panel_1");
-  panel.style.width = "275px";
+  panel.style.width = "300px";
 }
 function closeNav(){
   const panel = document.getElementById("side_panel_1");

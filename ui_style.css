@@ -50,7 +50,7 @@ p.bold {
 
   border-radius: 5px;
 
-  padding-top: 50px;
+  padding-top: 35px;
 
   position: fixed;
 
@@ -96,9 +96,6 @@ p.bold {
   display: flex;
   width: auto;
   height: 40px;
-
-  margin-left: 15px;
-  margin-right: 15px;
 }
 
 .side_panel_tab_list .tab {
@@ -138,16 +135,13 @@ p.bold {
 } */
 
 .light_container {
-  margin-left: 15px;
-  margin-right: 15px;
-
+  padding: 15px;
   border-radius: 5px;
   background-color: #303c42;
 }
 
 .dark_container {
-  margin-left: 15px;
-  margin-right: 15px;
+  padding: 15px;
 
   border-radius: 5px;
   background-color: #1d272b;
