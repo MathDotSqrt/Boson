@@ -102,6 +102,8 @@ p.bold {
   flex: 1;
 
   margin: 0px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   border-radius: 5px;
 
   background-color: #1d272b;
@@ -147,6 +149,21 @@ p.bold {
   background-color: #1d272b;
 }
 
+.dark_border {
+  border-style: solid;
+  border-width: 10px;
+}
+
+.line {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-width: 1px;
+
+  height: 0px;
+  border-style: solid;
+  border-color: #B7BDBB;
+}
+
 .control_grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -187,7 +204,7 @@ p.bold {
   border-style: dashed;
   border-radius: 5px;
   border-color: #AA510E;
-  background-color: #303c42;
+  background-color: #1d272b;
 }
 
 .file_drop_small p {
