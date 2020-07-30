@@ -108,7 +108,9 @@ function linkFileDrop(element, load_file_func){
 }
 
 function linkPlatformNode(){
+  const platform_controls = document.getElementById("platform_control_grid");
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
+
   linkFileDrop(platform_filedrop, (e) => {
     BOSON_FILELOADER.loadEphemerisFile(e[0], importPlatformFile);
   });
@@ -120,6 +122,11 @@ linkPlatformNode();
 
 function importPlatformFile(name, platform){
   console.log(name, platform);
+  const platform_controls = document.getElementById("platform_control_grid");
+  const platform_filedrop = document.getElementById("ephemeris_file_drop");
+
+  hideContainer(platform_filedrop, true);
+  hideContainer(platform_controls, false);
   simulation.importPlatform(name, platform);
 }
 

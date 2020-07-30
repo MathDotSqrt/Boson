@@ -183,6 +183,10 @@ button {
   grid-gap: 5px 20px;
 }
 
+.hide.control_grid{
+  display: none;
+}
+
 .control_grid > * {
   min-width: 0;
 }
