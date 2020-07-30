@@ -50,7 +50,7 @@ p.bold {
 
   border-radius: 5px;
 
-  padding-top: 35px;
+  padding-top: 40px;
 
   position: fixed;
 
@@ -135,14 +135,14 @@ p.bold {
 } */
 
 .light_container {
-  padding: 15px;
+  margin-top: 10px;
+  padding: 10px;
   border-radius: 5px;
   background-color: #303c42;
 }
 
 .dark_container {
-  padding: 15px;
-
+  padding: 10px;
   border-radius: 5px;
   background-color: #1d272b;
 }
@@ -187,7 +187,7 @@ p.bold {
   border-style: dashed;
   border-radius: 5px;
   border-color: #AA510E;
-  background-color: #1d272b;
+  background-color: #303c42;
 }
 
 .file_drop_small p {
