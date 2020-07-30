@@ -15,10 +15,12 @@ function initPanel(){
 }
 
 function openNav(){
-  document.getElementById("side_panel_1").style.width = "275px";
+  const panel = document.getElementById("side_panel_1");
+  panel.style.width = "275px";
 }
 function closeNav(){
-  document.getElementById("side_panel_1").style.width = "0px";
+  const panel = document.getElementById("side_panel_1");
+  panel.style.width = "0px"
 }
 
 function selectTab(id){
