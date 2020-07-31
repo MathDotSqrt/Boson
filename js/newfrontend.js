@@ -42,6 +42,8 @@ function selectTab(id){
     const tab_content = document.querySelector("[tabID='" + id + "']");
 
     for(const element of side_panel_elements){
+      //TODO: add sticky mode
+      //if(element.getAttribute("tabid")==="controls") continue;
       element.classList.add("hide");
     }
     tab_content.classList.remove("hide");
@@ -196,6 +198,14 @@ function linkPlatformNode(){
   });
 }
 
+function linkTargetNode(){
+  const target_filedrop = document.getElementById("target_file_drop");
+
+  linkFileDrop(target_filedrop, (e) => {
+    BOSON_FILELOADER.loadTargetFile(e, importTargetSet);
+  });
+}
+
 function createAndLinkSatellite(name, platform){
   const satellite_scroll_box = document.getElementById("satellite_scroll_box");
   const dummy_satellite = document.getElementById("dummy_satellite_node");
@@ -230,8 +240,27 @@ function createAndLinkSatellite(name, platform){
   satellite_scroll_box.appendChild(satellite);
 }
 
+function createAndLinkTargetSet(name, target_set){
+  const target_scroll_box = document.getElementById("target_scroll_box");
+  const dummy_target = document.getElementById("dummy_target_node");
+  const target = dummy_target.cloneNode(true);
+  const control = target.getElementsByClassName("light_container")[0];
+  target.classList.remove("hide");
+
+  setName(target, name);
+
+  target.onclick = (e) => {
+    if(e.target.classList.contains("showable")){
+      control.classList.toggle("hide");
+    }
+  };
+
+  target_scroll_box.appendChild(target);
+}
+
 linkGlobalControls();
 linkPlatformNode();
+linkTargetNode();
 /* NODES */
 
 
@@ -294,6 +323,17 @@ function importWindow(name, window, isIW=true){
 
   fileDropSelected(file_drop, name);
   simulation.importWindow(window, isIW);
+}
+
+function importTargetSet(name, target_set){
+  const target_filedrop = document.getElementById("target_file_drop");
+
+  console.log(name, target_set);
+
+  createAndLinkTargetSet(name, target_set);
+  hideContainer(target_filedrop, true);
+
+  simulation.importTargetSet(name, target_set);
 }
 /* IMPORT */
 
