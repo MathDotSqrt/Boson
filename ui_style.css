@@ -197,43 +197,6 @@ select {
 /* CONTENT */
 
 
-/* GRID LAYOUT */
-.control_grid {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-gap: 5px 20px;
-}
-
-.hide.control_grid{
-  display: none;
-}
-
-.control_grid > * {
-  min-width: 0;
-}
-
-.title {
-  font-weight: bold;
-}
-
-.control{
-}
-
-.control > * {
-  float: right;
-}
-
-.data {
-  /* float: right; */
-}
-
-.data p{
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 15px;
-  color: #999;
-}
-/* GRID LAYOUT */
 
 /* FILE DROP */
 .file_drop {
@@ -284,6 +247,46 @@ select {
   color: #818181;
 }
 /* FILE DROP */
+
+
+/* GRID LAYOUT */
+.control_grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: 5px 20px;
+}
+
+.hide.control_grid{
+  display: none;
+}
+
+.control_grid > * {
+  min-width: 0;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.title_small {
+  font-weight: normal;
+}
+
+.control{
+}
+
+.control > * {
+  float: right;
+}
+
+.control > p {
+  color: #999;
+}
+
+.control > p.name {
+  float: none;
+}
+/* GRID LAYOUT */
 
 /* width */
 ::-webkit-scrollbar {
