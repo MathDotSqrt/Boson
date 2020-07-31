@@ -72,6 +72,13 @@ function removeSelect(select, value){
   return false;
 }
 
+function fileDropSelected(element, name){
+  element.classList.add("selected");
+  const p = element.getElementsByTagName("p")[0];
+  console.log(p);
+  p.innerHTML = name;
+}
+
 function hideContainer(element, hide=true){
   if(hide){
     element.classList.add("hide");
@@ -119,9 +126,7 @@ function linkPlatformNode(){
   });
 
   linkFileDrop(sensor_filedrop, (e) => {
-    BOSON_FILELOADER.loadSensorFile(e[0], function(sensor_name, sensor){
-      importSensors();
-    });
+    BOSON_FILELOADER.loadSensorFile(e[0], importSensors);
   });
 }
 
@@ -130,23 +135,22 @@ linkPlatformNode();
 /* NODES */
 
 function importPlatform(name, platform){
-  console.log(name, platform);
   const platform_controls = document.getElementById("platform_control_grid");
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
+
+  console.log(name, platform);
 
   hideContainer(platform_filedrop, true);
   hideContainer(platform_controls, false);
   simulation.importPlatform(name, platform);
 }
 
-function importSensors(platform_name, sensor_name, sensors){
-  console.log(platform_name, sensor_name, sensors);
-  //const platform_controls = document.getElementById("platform_control_grid");
-  //const platform_filedrop = document.getElementById("ephemeris_file_drop");
+function importSensors(name, sensors){
+  const sensor_file_drop = document.getElementById("sensor_file_drop");
 
-  //hideContainer(platform_filedrop, true);
-  //hideContainer(platform_controls, false);
-  simulation.importSensors(platform_name, sensor_name, sensors);
+  console.log(name, sensors);
+  fileDropSelected(sensor_file_drop, name);
+  simulation.importSensors(name, sensors);
 }
 
 

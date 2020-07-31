@@ -248,6 +248,10 @@ button {
   background-color: #1d272b;
 }
 
+.file_drop_small.selected{
+  border-style: solid;
+}
+
 .file_drop_small p {
   margin: 0px;
   text-align: center;
