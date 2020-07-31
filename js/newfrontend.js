@@ -55,9 +55,12 @@ initPanel();
 
 /* WIDGETS */
 function insertSelect(select, value){
+  const p = document.createElement("p");
+  p.innerHTML = value;
+
   const option = document.createElement("option");
   option.value = value;
-  option.text = value;
+  option.appendChild(p);
   select.add(option);
   return option;
 }
@@ -70,6 +73,11 @@ function removeSelect(select, value){
     }
   }
   return false;
+}
+
+function setName(element, name){
+  const p = element.getElementsByClassName("name")[0];
+  p.innerHTML = name;
 }
 
 function fileDropSelected(element, name){
@@ -89,6 +97,23 @@ function hideContainer(element, hide=true){
 }
 /* WIDGETS */
 
+/* EXPORTS */
+
+export function insertFollowSelect(value){
+  const select = document.getElementById("follow_select");
+  insertSelect(select, value);
+}
+
+export function removeFollowSelect(value){
+  const select = document.getElementById("follow_select");
+  removeSelect(select, value);
+}
+
+export function setSatelliteColor(){
+
+}
+/* EXPORTS */
+
 
 
 /* NODES */
@@ -96,6 +121,10 @@ function linkGlobalControls(){
   const select = document.getElementById("follow_select");
   const save = document.getElementById("save_button");
   const preset = document.getElementById("preset_file_input");
+
+  select.onchange = (e) => {
+    simulation.follow(select.value);
+  };
 }
 
 function linkFileDrop(element, load_file_func){
@@ -128,18 +157,44 @@ function linkPlatformNode(){
   linkFileDrop(sensor_filedrop, (e) => {
     BOSON_FILELOADER.loadSensorFile(e[0], importSensors);
   });
+
+  linkFileDrop(iw_filedrop, (e) => {
+    BOSON_FILELOADER.loadWindowFile(e[0], (name, window)=>importWindow(name, window, true));
+  });
+
+  linkFileDrop(cw_filedrop, (e) => {
+    BOSON_FILELOADER.loadWindowFile(e[0], (name, window)=>importWindow(name, window, false));
+  });
+}
+
+function createAndLinkSatellite(name){
+  const satellite_scroll_box = document.getElementById("satellite_scroll_box");
+  const dummy_satellite = document.getElementById("dummy_satellite_node");
+  const satellite = dummy_satellite.cloneNode(true);
+
+
+  setName(satellite, name);
+
+  satellite.classList.remove("hide");
+  satellite_scroll_box.appendChild(satellite);
 }
 
 linkGlobalControls();
 linkPlatformNode();
 /* NODES */
 
+
+/* IMPORT */
 function importPlatform(name, platform){
   const platform_controls = document.getElementById("platform_control_grid");
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
 
+  const platforms = Object.keys(platform).sort();
   console.log(name, platform);
 
+  platforms.forEach(createAndLinkSatellite);
+  platforms.forEach(insertFollowSelect);
+  setName(platform_controls, name);
   hideContainer(platform_filedrop, true);
   hideContainer(platform_controls, false);
   simulation.importPlatform(name, platform);
@@ -149,9 +204,20 @@ function importSensors(name, sensors){
   const sensor_file_drop = document.getElementById("sensor_file_drop");
 
   console.log(name, sensors);
+
   fileDropSelected(sensor_file_drop, name);
   simulation.importSensors(name, sensors);
 }
+
+function importWindow(name, window, isIW=true){
+  const file_drop = document.getElementById(isIW ? "iw_file_drop" : "cw_file_drop");
+
+  console.log(name, window);
+
+  fileDropSelected(file_drop, name);
+  simulation.importWindow(window, isIW);
+}
+/* IMPORT */
 
 
 

@@ -42,10 +42,20 @@ button {
   /* background-color: #1d272b; */
 }
 
+select {
+  width: 100%;
+  max-width: 100%;
+}
+
 .no_overflow {
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: clip;
+}
+
+.no_overflow p{
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hide {
@@ -162,9 +172,22 @@ button {
   background-color: #1d272b;
 }
 
+.listable_container {
+  margin-bottom: 5px;
+}
+
 .dark_border {
   border-style: solid;
   border-width: 10px;
+}
+
+.scroll_box {
+  /* padding-top: 10px; */
+  /* padding-left: 10px; */
+  padding-right: 10px;
+
+  max-height: 250px;
+  overflow-y: scroll;
 }
 
 .line {
@@ -176,6 +199,8 @@ button {
   border-style: solid;
   border-color: #B7BDBB;
 }
+
+
 
 .control_grid {
   display: grid;
@@ -266,6 +291,28 @@ button {
 
 
 
+/* width */
+::-webkit-scrollbar {
+  display: block;
+  position: absolute;
+  margin-left: -10px;
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #1d272b;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #AA510E;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #AA510E;
+}
 
 
 
