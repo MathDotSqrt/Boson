@@ -3,6 +3,7 @@
 /*ORANGE ACCENT COLOR: #AA510E*/
 /*GRAY TEXT COLOR: #999*/
 
+/* GENERAL */
 body {
   margin: 0;
   /* font-family: "Lato", sans-serif; */
@@ -61,6 +62,8 @@ select {
 .hide {
   display: none;
 }
+/* GENERAL */
+
 
 /* PANEL */
 .side_panel {
@@ -151,14 +154,6 @@ select {
 
 
 /* CONTENT */
-/* .side_panel_element {
-  padding-top: 15px;
-  padding-left: 15px;
-  padding-right: 15px;
-
-  background-color: #303c42;
-} */
-
 .light_container {
   margin-top: 10px;
   padding: 10px;
@@ -199,9 +194,10 @@ select {
   border-style: solid;
   border-color: #B7BDBB;
 }
+/* CONTENT */
 
 
-
+/* GRID LAYOUT */
 .control_grid {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -237,7 +233,9 @@ select {
   font-size: 15px;
   color: #999;
 }
+/* GRID LAYOUT */
 
+/* FILE DROP */
 .file_drop {
   margin-top: 15px;
   padding: 10px;
@@ -285,11 +283,7 @@ select {
   font-size: 10px;
   color: #818181;
 }
-/* CONTENT */
-
-
-
-
+/* FILE DROP */
 
 /* width */
 ::-webkit-scrollbar {
@@ -312,6 +306,23 @@ select {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #AA510E;
+}
+
+
+
+input[type=color] {
+  -webkit-appearance: none;
+  float: right;
+  width: 35px;
+  height: 15px;
+  padding: 0px;
+}
+
+::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+::-webkit-color-swatch {
+	border: none;
 }
 
 

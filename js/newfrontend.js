@@ -109,8 +109,13 @@ export function removeFollowSelect(value){
   removeSelect(select, value);
 }
 
-export function setSatelliteColor(){
-
+export function setSatelliteColor(id, color){
+  const satellite = document.getElementById(id);
+  if(satellite){
+    const color_picker = document.getElementsByClassName("color_picker")[0];
+    color_picker.value = color;
+    simulation.setOrbitColor(id, color);
+  }
 }
 /* EXPORTS */
 
@@ -167,13 +172,27 @@ function linkPlatformNode(){
   });
 }
 
-function createAndLinkSatellite(name){
+function createAndLinkSatellite(name, platform){
   const satellite_scroll_box = document.getElementById("satellite_scroll_box");
   const dummy_satellite = document.getElementById("dummy_satellite_node");
   const satellite = dummy_satellite.cloneNode(true);
+  const control = satellite.getElementsByClassName("light_container")[0];
+  const color_picker = satellite.getElementsByClassName("color_picker")[0];
 
+  satellite.id = name;
 
   setName(satellite, name);
+  satellite.onclick = (e) => {
+    if(e.target.classList.contains("showable")){
+      control.classList.toggle("hide");
+    }
+  };
+
+  color_picker.value = platform.color;
+  color_picker.oninput = () => {
+    //just pass in color_picker value because it set when manually picked
+    setSatelliteColor(name, color_picker.value);
+  };
 
   satellite.classList.remove("hide");
   satellite_scroll_box.appendChild(satellite);
@@ -192,7 +211,7 @@ function importPlatform(name, platform){
   const platforms = Object.keys(platform).sort();
   console.log(name, platform);
 
-  platforms.forEach(createAndLinkSatellite);
+  platforms.forEach(name => createAndLinkSatellite(name, platform[name]));
   platforms.forEach(insertFollowSelect);
   setName(platform_controls, name);
   hideContainer(platform_filedrop, true);
