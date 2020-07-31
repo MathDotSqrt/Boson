@@ -110,9 +110,18 @@ function linkFileDrop(element, load_file_func){
 function linkPlatformNode(){
   const platform_controls = document.getElementById("platform_control_grid");
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
+  const sensor_filedrop = document.getElementById("sensor_file_drop");
+  const iw_filedrop = document.getElementById("iw_file_drop");
+  const cw_filedrop = document.getElementById("cw_file_drop");
 
   linkFileDrop(platform_filedrop, (e) => {
-    BOSON_FILELOADER.loadEphemerisFile(e[0], importPlatformFile);
+    BOSON_FILELOADER.loadEphemerisFile(e[0], importPlatform);
+  });
+
+  linkFileDrop(sensor_filedrop, (e) => {
+    BOSON_FILELOADER.loadSensorFile(e[0], function(sensor_name, sensor){
+      importSensors();
+    });
   });
 }
 
@@ -120,7 +129,7 @@ linkGlobalControls();
 linkPlatformNode();
 /* NODES */
 
-function importPlatformFile(name, platform){
+function importPlatform(name, platform){
   console.log(name, platform);
   const platform_controls = document.getElementById("platform_control_grid");
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
@@ -128,6 +137,16 @@ function importPlatformFile(name, platform){
   hideContainer(platform_filedrop, true);
   hideContainer(platform_controls, false);
   simulation.importPlatform(name, platform);
+}
+
+function importSensors(platform_name, sensor_name, sensors){
+  console.log(platform_name, sensor_name, sensors);
+  //const platform_controls = document.getElementById("platform_control_grid");
+  //const platform_filedrop = document.getElementById("ephemeris_file_drop");
+
+  //hideContainer(platform_filedrop, true);
+  //hideContainer(platform_controls, false);
+  simulation.importSensors(platform_name, sensor_name, sensors);
 }
 
 

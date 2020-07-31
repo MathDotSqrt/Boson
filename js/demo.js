@@ -12,7 +12,7 @@ import TargetSet from './targetset.js'
 export class Simulation {
   constructor(dom){
     this._scene = new BOSON_RENDER.Scene(dom);
-    this._platforms = {};
+    this._platform = null;
     this._currentTargetSets = {};
     this._currentSchedule = null;
     this._scene.addPreRenderEvent(this);
@@ -23,34 +23,39 @@ export class Simulation {
   }
 
   importPlatform(name, platform){
-    this._platforms[name] = new Platform(name, platform, this._scene);
+    this._platform = new Platform(name, platform, this._scene);
   }
 
-  importSensors(ephemeris_name, sensor_name, sensors){
-    this._platforms[ephemeris_name].addSensors(sensor_name, sensors);
+  importSensors(sensor_name, sensors){
+    if(this._platform){
+      this._platform.addSensors(sensor_name, sensors);
+    }
   }
 
-  importWindow(ephemeris_name, window, isIW=true){
-    const platform = this._platforms[ephemeris_name];
-    if(platform && window){
-      platform.setWindow(window.name, window.intervals, isIW);
+  importWindow(window, isIW=true){
+    if(this._platform && window){
+      this._platform.setWindow(window.name, window.intervals, isIW);
     }
   }
 
 
   setOrbitColor(name, color){
-    // TODO: Change this
-    Object.values(this._platforms).forEach(p => p.setOrbitColor(name, color));
+    if(this._platform){
+      this._platform.setOrbitColor(name, color);
+    }
   }
 
   setOrbitTrail(names, value){
-    // TODO: Change this
-    Object.values(this._platforms).forEach(p => p.setOrbitTrail(names, value));
+    if(this._platform){
+      this._platform.setOrbitTrail(names, value);
+    }
   }
 
   removeOrbit(name){
-    this._platforms[name].removeAll();
-    delete this._platforms[name];
+    if(this._platform){
+      this._platform.removeAll();
+      this._platform = null;
+    }
   }
 
   importTargetSet(name, targets){
@@ -84,7 +89,7 @@ export class Simulation {
   }
 
   toJSON(){
-    const platform = Object.values(this._platforms).map(p => p.toJSON());
+    const platform = this._platform ? [this._platform.toJSON()] : [];
     const targets = Object.values(this._currentTargetSets).map(t => t.toJSON());
     const schedule = this._currentSchedule ? this._currentSchedule.toJSON() : null;
     const json = {
@@ -100,7 +105,9 @@ export class Simulation {
   //callback on cesiums update loop
   update(seconds){
     //orient all satellites to face the earth
-    Object.values(this._platforms).forEach(p => p.update());
+    if(this._platform){
+      this._platform.update();
+    }
 
     //if we have a schedule loaded
     if(this._currentSchedule){
@@ -140,12 +147,9 @@ export class Simulation {
   }
 
   _getByPlatformID(id){
-    return Object.values(this._platforms)
-      .map(p => p.getSatelliteByID(id))
-      .find(s => s.id === id);
-  }
-
-  _getPlatforms(){
-    return Object.values(this._currentOrbits).filter(x => x.id > 0);
+    if(this._platform){
+      return this._platform.getSatelliteByID(id);
+    }
+    return null;
   }
 }
