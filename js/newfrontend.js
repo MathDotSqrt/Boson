@@ -117,6 +117,15 @@ export function setSatelliteColor(id, color){
     simulation.setOrbitColor(id, color);
   }
 }
+
+export function setSatelliteTrail(id, orbit_trail){
+  const satellite = document.getElementById(id);
+  if(satellite){
+    const select = document.getElementsByClassName("orbit_trail_select")[0];
+    select.value = orbit_trail;
+    simulation.setOrbitTrail(id, orbit_trail);
+  }
+}
 /* EXPORTS */
 
 
@@ -178,8 +187,11 @@ function createAndLinkSatellite(name, platform){
   const satellite = dummy_satellite.cloneNode(true);
   const control = satellite.getElementsByClassName("light_container")[0];
   const color_picker = satellite.getElementsByClassName("color_picker")[0];
+  const orbit_trail_select = satellite.getElementsByClassName("orbit_trail_select")[0];
 
   satellite.id = name;
+
+  console.log(platform);
 
   setName(satellite, name);
   satellite.onclick = (e) => {
@@ -193,6 +205,11 @@ function createAndLinkSatellite(name, platform){
     //just pass in color_picker value because it set when manually picked
     setSatelliteColor(name, color_picker.value);
   };
+
+  orbit_trail_select.value = platform.orbitTrail;
+  orbit_trail_select.onchange = (e) => {
+    setSatelliteTrail(name, orbit_trail_select.value);
+  }
 
   satellite.classList.remove("hide");
   satellite_scroll_box.appendChild(satellite);

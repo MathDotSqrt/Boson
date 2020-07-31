@@ -45,9 +45,9 @@ export class Simulation {
     }
   }
 
-  setOrbitTrail(names, value){
+  setOrbitTrail(name, value){
     if(this._platform){
-      this._platform.setOrbitTrail(names, value);
+      this._platform.setOrbitTrail(name, value);
     }
   }
 

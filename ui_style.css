@@ -271,10 +271,11 @@ input[type=color] {
   margin: 0px;
   padding: 0px;
   float: right;
-  width: 80px;
+  width: 100%;
 }
 
 .slider_container p {
+
   margin: inherit;
   margin-left: 0px;
   color: #ffffff;

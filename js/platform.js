@@ -36,12 +36,10 @@ export default class Platform{
     }
   }
 
-  setOrbitTrail(names, value){
-    for(const name of names){
-      const orbit = this._satellites[name];
-      if(orbit){
-        orbit.orbit_trail = value;
-      }
+  setOrbitTrail(name, value){
+    const orbit = this._satellites[name];
+    if(orbit){
+      orbit.orbit_trail = value;
     }
   }
 

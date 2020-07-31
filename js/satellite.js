@@ -31,14 +31,14 @@ export default class Satellite {
   }
 
   get orbit_trail(){ return this._orbit_trail }
-  set orbit_trail(trail_type){
-    if(trail_type === "all") trail_type = BOSON_RENDER.ALL;
-    else if(trail_type === "one_rev") trail_type = BOSON_RENDER.ONE_REV;
-    else if(trail_type === "none") trail_type = BOSON_RENDER.NONE;
-    else if(typeof trail_type !== "number") return; //invalid input
+  set orbit_trail(trail_name){
+    var trail_type = BOSON_RENDER.ALL;
+    if(trail_name === "all") trail_type = BOSON_RENDER.ALL;
+    else if(trail_name === "one_rev") trail_type = BOSON_RENDER.ONE_REV;
+    else if(trail_name === "none") trail_type = BOSON_RENDER.NONE;
 
     this._scene.setOrbitTrail(this.name, trail_type);
-    this._orbit_trail = trail_type;
+    this._orbit_trail = trail_name;
   }
 
   get sensor(){

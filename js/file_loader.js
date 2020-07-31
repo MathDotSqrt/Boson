@@ -155,7 +155,7 @@ function parsePlatform(name, lines){
         name: ephemeris_name,
         id: id,
         color: "#00ff00",
-        orbitTrail: 0,
+        orbitTrail: "all",
         ephemeris: ephemeris
       };
     }
