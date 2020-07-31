@@ -144,16 +144,6 @@ export function setAllSatelliteTrail(names, orbit_trail){
 
 
 /* NODES */
-function linkGlobalControls(){
-  const select = document.getElementById("follow_select");
-  const save = document.getElementById("save_button");
-  const preset = document.getElementById("preset_file_input");
-
-  select.onchange = (e) => {
-    simulation.follow(select.value);
-  };
-}
-
 function linkFileDrop(element, load_file_func){
   const prevent_default = (e)=>e.preventDefault();
   const load_file = (e) => {if(e.target.files.length > 0) load_file_func(e.target.files);};
@@ -168,6 +158,20 @@ function linkFileDrop(element, load_file_func){
   element.onclick = () => {
     input.click();
   }
+}
+
+function linkGlobalControls(){
+  const select = document.getElementById("follow_select");
+  const save = document.getElementById("save_button");
+  const preset = document.getElementById("preset_file_drop");
+
+  select.onchange = (e) => {
+    simulation.follow(select.value);
+  };
+
+  linkFileDrop(preset, (e) => {
+    BOSON_FILELOADER.loadPresetJSON(e[0], importPreset);
+  });
 }
 
 function linkPlatformNode(){
@@ -234,6 +238,29 @@ linkPlatformNode();
 
 
 /* IMPORT */
+function importPreset(name, json){
+  console.log(name, json);
+
+  const platform = json.platform[0];
+  if(platform){
+    importPlatform(platform.name, platform.satellites);
+
+    const sensors = platform.sensors;
+    const iw = platform.iwWindow;
+    const cw = platform.cwWindow;
+
+    if(sensors){
+      importSensors(sensors.name, sensors.parameters);
+    }
+    if(iw){
+      importWindow(iw.name, iw, true);
+    }
+    if(cw){
+      importWindow(cw.name, cw, false);
+    }
+  }
+}
+
 function importPlatform(name, platform){
   const platform_controls = document.getElementById("platform_control_grid");
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
