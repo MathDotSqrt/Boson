@@ -119,12 +119,26 @@ export function setSatelliteColor(id, color){
 }
 
 export function setSatelliteTrail(id, orbit_trail){
+  const global_select = document.getElementById("global_orbit_trail_select");
   const satellite = document.getElementById(id);
   if(satellite){
+    global_select.value = "";
     const select = satellite.getElementsByClassName("orbit_trail_select")[0];
     select.value = orbit_trail;
     simulation.setOrbitTrail(id, orbit_trail);
   }
+}
+
+export function setAllSatelliteTrail(names, orbit_trail){
+  names.map(name => [name, document.getElementById(name)])
+  .filter(([name, node]) => node)
+  .map(([name, node]) => {
+    return [name, node.getElementsByClassName("orbit_trail_select")[0]];
+  })
+  .forEach(([name, select]) => {
+    select.value = orbit_trail;
+    simulation.setOrbitTrail(name, orbit_trail);
+  });
 }
 /* EXPORTS */
 
@@ -224,8 +238,9 @@ linkPlatformNode();
 function importPlatform(name, platform){
   const platform_controls = document.getElementById("platform_control_grid");
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
-
+  const global_orbit_select = document.getElementById("global_orbit_trail_select");
   const platforms = Object.keys(platform).sort();
+
   console.log(name, platform);
 
   platforms.forEach(name => createAndLinkSatellite(name, platform[name]));
@@ -233,6 +248,9 @@ function importPlatform(name, platform){
   setName(platform_controls, name);
   hideContainer(platform_filedrop, true);
   hideContainer(platform_controls, false);
+  global_orbit_select.onchange = () => {
+    setAllSatelliteTrail(platforms, global_orbit_select.value);
+  }
   simulation.importPlatform(name, platform);
 }
 
