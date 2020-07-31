@@ -328,6 +328,12 @@ input[type=color] {
   min-width: 0;
 }
 
+.control_grid > * > * { /*Vertically center all elements in grid cells*/
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .title {
   font-weight: bold;
 }
@@ -337,9 +343,11 @@ input[type=color] {
 }
 
 .control{
+
 }
 
 .control > * {
+
   float: right;
 }
 
