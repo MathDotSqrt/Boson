@@ -121,7 +121,7 @@ export function setSatelliteColor(id, color){
 export function setSatelliteTrail(id, orbit_trail){
   const satellite = document.getElementById(id);
   if(satellite){
-    const select = document.getElementsByClassName("orbit_trail_select")[0];
+    const select = satellite.getElementsByClassName("orbit_trail_select")[0];
     select.value = orbit_trail;
     simulation.setOrbitTrail(id, orbit_trail);
   }

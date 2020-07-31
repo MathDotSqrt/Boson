@@ -340,6 +340,7 @@ input[type=color] {
 }
 
 .title_small {
+  font-size: 14px;
   font-weight: normal;
 }
 
@@ -353,6 +354,7 @@ input[type=color] {
 }
 
 .control > p {
+  font-size: 14px;
   color: #999;
 }
 

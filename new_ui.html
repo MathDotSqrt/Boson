@@ -71,38 +71,56 @@
               <p>EPHEMERIS FILE</p>
             </div>
 
-            <div class="control_grid hide" id="platform_control_grid">
-              <div class="title">
-                <p>Name: </p>
-              </div>
-              <div class="control">
-                <p class="name">none</p>
-              </div>
-              <div class="title">
-                <p>Sensor File: </p>
-              </div>
-              <div class="control">
-                <div class="file_drop_small" id="sensor_file_drop">
-                  <input type="file" class="file_input hide" id="sensor_file_input" multiple/>
-                  <p>Load Sensor</p>
+            <div class="hide" id="platform_control_grid">
+              <div class="control_grid">
+                <div class="title">
+                  <p>Sensor File: </p>
+                </div>
+                <div class="control">
+                  <div class="file_drop_small" id="sensor_file_drop">
+                    <input type="file" class="file_input hide" id="sensor_file_input" multiple/>
+                    <p>Load Sensor</p>
+                  </div>
+                </div>
+                <div class="title">
+                  <p>IW File: </p>
+                </div>
+                <div class="control">
+                  <div class="file_drop_small" id="iw_file_drop">
+                    <input type="file" class="file_input hide" id="iw_file_input" multiple/>
+                    <p>Load IW</p>
+                  </div>
+                </div>
+                <div class="title">
+                  <p>CW File: </p>
+                </div>
+                <div class="control">
+                  <div class="file_drop_small" id="cw_file_drop">
+                    <input type="file" class="file_input hide" id="cw_file_input" multiple/>
+                    <p>Load CW</p>
+                  </div>
                 </div>
               </div>
-              <div class="title">
-                <p>IW File: </p>
-              </div>
-              <div class="control">
-                <div class="file_drop_small" id="iw_file_drop">
-                  <input type="file" class="file_input hide" id="iw_file_input" multiple/>
-                  <p>Load IW</p>
+
+              <div class="line"></div>
+
+              <div class="control_grid">
+                <div class="title_small">
+                  <p>Name:</p>
                 </div>
-              </div>
-              <div class="title">
-                <p>CW File: </p>
-              </div>
-              <div class="control">
-                <div class="file_drop_small" id="cw_file_drop">
-                  <input type="file" class="file_input hide" id="cw_file_input" multiple/>
-                  <p>Load CW</p>
+                <div class="control">
+                  <p class="name">none</p>
+                </div>
+
+                <div class="title_small">
+                  <p>Orbit Trail:</p>
+                </div>
+                <div class="control">
+                  <select class="orbit_trail_select">
+                    <option value="all"><p>All</p></option>
+                    <option value="one_rev"><p>One Rev</p></option>
+                    <option value="none"><p>None</p></option>
+                  </select>
                 </div>
               </div>
             </div>
