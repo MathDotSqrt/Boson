@@ -130,15 +130,14 @@ export function setSatelliteTrail(id, orbit_trail){
 }
 
 export function setAllSatelliteTrail(names, orbit_trail){
-  names.map(name => [name, document.getElementById(name)])
-  .filter(([name, node]) => node)
-  .map(([name, node]) => {
-    return [name, node.getElementsByClassName("orbit_trail_select")[0]];
-  })
-  .forEach(([name, select]) => {
-    select.value = orbit_trail;
-    simulation.setOrbitTrail(name, orbit_trail);
-  });
+  for(name of names){
+      const node = document.getElementById(name);
+      if(node){
+        const select = node.getElementsByClassName("orbit_trail_select")[0];
+        select.value = orbit_trail;
+        simulation.setOrbitTrail(name, orbit_trail);
+      }
+  }
 }
 /* EXPORTS */
 
