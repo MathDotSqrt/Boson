@@ -248,6 +248,70 @@ select {
 }
 /* FILE DROP */
 
+/* COLOR PICKER */
+input[type=color] {
+  -webkit-appearance: none;
+  float: right;
+  width: 35px;
+  height: 15px;
+  padding: 0px;
+}
+
+::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+::-webkit-color-swatch {
+	border: none;
+}
+/* COLOR PICKER */
+
+/* SLIDER */
+.slider_container{
+  position: relative;
+  margin: 0px;
+  padding: 0px;
+  float: right;
+  width: 80px;
+}
+
+.slider_container p {
+  margin: inherit;
+  margin-left: 0px;
+  color: #ffffff;
+  white-space: pre;
+}
+
+.slider {
+  display: block;
+  margin-top: auto;
+  margin-bottom: auto;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #d96712;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #d96712;
+  cursor: pointer;
+}
+/* SLIDER */
+
 
 /* GRID LAYOUT */
 .control_grid {
@@ -288,6 +352,7 @@ select {
 }
 /* GRID LAYOUT */
 
+/* SCROLL BAR */
 /* width */
 ::-webkit-scrollbar {
   display: block;
@@ -310,29 +375,7 @@ select {
 ::-webkit-scrollbar-thumb:hover {
   background: #AA510E;
 }
-
-
-
-input[type=color] {
-  -webkit-appearance: none;
-  float: right;
-  width: 35px;
-  height: 15px;
-  padding: 0px;
-}
-
-::-webkit-color-swatch-wrapper {
-	padding: 0;
-}
-::-webkit-color-swatch {
-	border: none;
-}
-
-
-
-
-
-
+/* SCROLL BAR */
 
 
 
