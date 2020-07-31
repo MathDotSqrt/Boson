@@ -5,13 +5,11 @@ const simulation = new BOSON.Simulation(document.getElementById('view'));
 
 /* PANEL */
 function initPanel(){
-  for(const element of document.getElementsByClassName("close_btn")){
-    element.onclick = closeNav;
-  }
+  const close_nav_element = document.getElementById("close_nav");
+  const open_nav_element = document.getElementById("open_nav");
 
-  for(const element of document.getElementsByClassName("open_btn")){
-    element.onclick = openNav;
-  }
+  close_nav_element.onclick = closeNav;
+  open_nav_element.onclick = openNav;
 
   const tabs = document.getElementsByClassName("tab");
   for(const tab of tabs){

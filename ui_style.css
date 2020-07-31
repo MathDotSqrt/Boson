@@ -85,21 +85,27 @@ select {
   z-index: 1;
 }
 
-.side_panel .close_btn {
-  display: block;
+#close_nav {
   position: absolute;
 
-  top: 0px;
+  top: 10px;
   right: 10px;  /*TODO: hard coded value for close button*/
+  line-height: 36px;
 
   padding: 0px 8px 0px 8px;
+}
+
+.close_btn {
+  display: block;
 
   text-decoration: none;
+  height: 5px;
+  line-height: 5px;
   font-size: 36px;
   color: #AA510E;
 }
 
-.side_panel .close_btn:hover {
+.close_btn:hover {
   color: #f1f1f1;
 }
 

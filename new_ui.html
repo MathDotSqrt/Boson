@@ -10,7 +10,7 @@
   </head>
   <body>
     <div id="side_panel_1" class="side_panel">
-      <a href="javascript:void(0)" class="close_btn">&times;</a>
+      <a href="javascript:void(0)" class="close_btn" id="close_nav">&times;</a>
       <div class="dark_container">
         <div class="side_panel_tab_list no_overflow">
           <div id="controls" class="tab no_overflow selected">
@@ -180,9 +180,50 @@
 
             <div class="line"></div>
 
-            <div class="file_drop" id="file_drop_target">
+            <div class="file_drop hide" id="file_drop_target">
               <input type="file" class="file_input hide" id="target_file_input" webkitdirectory directory multiple/>
               <p>TARGET FILE</p>
+            </div>
+
+            <div class="scroll_box" id="satellite_scroll_box">
+
+              <div class="dark_container expand_node listable_container showable" id="dummy_target_node">
+                <div class="control_grid showable">
+                  <div class="title showable">
+                    <p class="name showable">ID: 1</p>
+                  </div>
+                  <div class="control showable">
+                    <a href="javascript:void(0)" class="close_btn">&times;</a>
+                  </div>
+                </div>
+
+                <div class="light_container">
+                  <div class="control_grid">
+
+                    <div class="title_small">
+                      <p>Orbit Trail:</p>
+                    </div>
+                    <div class="control">
+                      <select class="orbit_trail_select">
+                        <option value="all"><p>All</p></option>
+                        <option value="one_rev"><p>One Rev</p></option>
+                        <option value="none"><p>None</p></option>
+                      </select>
+                    </div>
+
+
+                    <div class="title_small">
+                      <p>Alpha:</p>
+                    </div>
+                    <div class="control">
+                      <div class="slider_container">
+                        <input class="slider" type="range" min="0" max="1" step=".01" value=".5">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -201,7 +242,7 @@
         </div>
       </div>
     </div>
-    <button class="open_btn" onclick="">&#9776; Toggle Controls</button>
+    <button class="open_btn" onclick="" id="open_nav">&#9776; Toggle Controls</button>
 
     <div id="view"></div>
 
