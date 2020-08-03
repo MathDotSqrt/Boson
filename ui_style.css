@@ -44,7 +44,7 @@ button {
 }
 
 select {
-  width: 100%;
+  /* width: 100%; */
   max-width: 100%;
 }
 
@@ -52,11 +52,13 @@ select {
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: clip;
+
 }
 
 .no_overflow p{
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .hide {
@@ -366,7 +368,8 @@ input[type=color] {
 }
 
 .control > p.name {
-  float: none;
+  float: right;
+
 }
 /* GRID LAYOUT */
 
