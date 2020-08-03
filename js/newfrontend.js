@@ -123,7 +123,7 @@ export function removeFollowSelect(value){
 export function setSatelliteColor(id, color){
   const satellite = document.getElementById(id);
   if(satellite){
-    const color_picker = document.getElementsByClassName("color_picker")[0];
+    const color_picker = satellite.getElementsByClassName("color_picker")[0];
     color_picker.value = color;
     simulation.setOrbitColor(id, color);
   }
@@ -367,7 +367,6 @@ function importPlatform(name, platform){
   const platform_controls = document.getElementById("platform_control_grid");
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
   const global_orbit_select = document.getElementById("global_orbit_trail_select");
-  console.log(Object.values(platform).sort((a, b) => a.id - b.id).map(p => p.name));
   const platforms = Object.values(platform).sort((a, b) => a.id - b.id).map(p => p.name);
 
   console.log(name, platform);
