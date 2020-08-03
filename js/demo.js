@@ -24,6 +24,7 @@ export class Simulation {
 
   importPlatform(name, platform){
     this._platform = new Platform(name, platform, this._scene);
+    this._recomputeSimulationTime();
   }
 
   getAllPlatformNames(){
@@ -62,6 +63,8 @@ export class Simulation {
     if(this._platform){
       this._platform.removeAll();
       this._platform = null;
+      this._recomputeSimulationTime();
+
     }
   }
 
@@ -98,6 +101,8 @@ export class Simulation {
   importSchedule(name, schedule){
     if(!this._currentSchedule){
       this._currentSchedule = new Schedule(name, schedule);
+      this._recomputeSimulationTime();
+
     }
   }
 
@@ -111,6 +116,8 @@ export class Simulation {
 
       this._scene.clearAllVectors();
       this._currentSchedule = null;
+
+      this._recomputeSimulationTime();
     }
   }
 
@@ -170,6 +177,16 @@ export class Simulation {
         .map(([p, e]) => [e.delta, e.event, e.targets])
         .forEach(([delta, event, targets]) => select_target(delta, event, targets));
     }
+  }
+
+  _recomputeSimulationTime(){
+    console.log(this._getMaxTime());
+  }
+
+  _getMaxTime(){
+    const platform_time = this._platform ? this._platform.getMaxTime() : 0;
+    const schedule_time = this._currentSchedule ? this._currentSchedule.getMaxTime() : 0;
+    return Math.max(platform_time, schedule_time);
   }
 
   _getByPlatformID(id){

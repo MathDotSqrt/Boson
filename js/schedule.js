@@ -77,6 +77,13 @@ export default class Schedule {
     return null;
   }
 
+  getMaxTime(){
+    const max_times = Object.values(this._schedule)
+    .filter(e => e.platformID)  //make sure its not nan
+    .map(e => e.interval[e.interval.length-1]);
+    return Math.max(...max_times);
+  }
+
   toJSON(){
     const json = {
       name : this._name,

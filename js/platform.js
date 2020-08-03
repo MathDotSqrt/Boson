@@ -81,6 +81,11 @@ export default class Platform{
     return Object.values(this._satellites).map(s => s.name);
   }
 
+  getMaxTime(){
+    const max_times = Object.values(this._satellites).map(s => s.getMaxTime());
+    return Math.max(...max_times);
+  }
+
   removeAll(){
     Object.values(this._satellites).forEach(s => this._scene.removeOrbit(s.name));
   }

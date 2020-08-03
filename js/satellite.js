@@ -55,6 +55,15 @@ export default class Satellite {
     return this._window;
   }
 
+  getMaxTime(){
+    const time = this._ephemeris.time;
+    if(time.length > 0){
+      return time[time.length - 1];
+    }
+    
+    return 0;
+  }
+
   toJSON(){
     //NOTE: we do not add sensor/window data to this
     //that will be stored in the platforms json
