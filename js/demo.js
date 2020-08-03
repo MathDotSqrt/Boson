@@ -26,6 +26,13 @@ export class Simulation {
     this._platform = new Platform(name, platform, this._scene);
   }
 
+  getAllPlatformNames(){
+    if(this._platform){
+      return this._platform.getAllSatelliteNames();
+    }
+    return [];
+  }
+
   importSensors(sensor_name, sensors){
     if(this._platform){
       this._platform.addSensors(sensor_name, sensors);

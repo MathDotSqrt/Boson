@@ -232,7 +232,6 @@ export class Scene {
   }
 
   removeOrbit(name){
-    console.log("REMOVE ORBIT: " + name);
     this._viewer.entities.removeById(name);
     //Clean up the polylines
     const dispose = entity => this._viewer.entities.remove(entity);

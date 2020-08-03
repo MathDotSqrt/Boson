@@ -117,6 +117,7 @@ export function insertFollowSelect(value){
 export function removeFollowSelect(value){
   const select = document.getElementById("follow_select");
   removeSelect(select, value);
+  select.onchange();
 }
 
 export function setSatelliteColor(id, color){
@@ -256,8 +257,6 @@ function createAndLinkSatellite(name, platform){
 
   satellite.id = name;
 
-  console.log(platform);
-
   setName(satellite, name);
   satellite.onclick = (e) => {
     if(e.target.classList.contains("showable")){
@@ -332,8 +331,9 @@ function importPreset(name, json){
   removeAllSatellites();
   removeAllTargetSets();
 
-  const platform = json.platform[0];
-  if(platform){
+  if(json.platform){
+    const platform = json.platform[0];
+    
     importPlatform(platform.name, platform.satellites);
 
     const sensors = platform.sensors;
@@ -448,6 +448,7 @@ function removeAllSatellites(){
   fileDropDeselected(iw_filedrop, "Load IW");
   fileDropDeselected(cw_filedrop, "Load CW");
   removeAllChildren(satellite_scroll_box);
+  simulation.getAllPlatformNames().forEach(removeFollowSelect);
   simulation.removeAllOrbits();
 
 }
@@ -471,23 +472,3 @@ function removeSchedule(){
   simulation.removeSchedule();
 }
 /* DELETES */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
