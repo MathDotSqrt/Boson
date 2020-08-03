@@ -14,6 +14,10 @@ export default class Schedule {
     return Object.keys(this._schedule).filter(x => x > 0).map(x => parseInt(x));
   }
 
+  getAllTargets(){
+    return Object.values(this._schedule).map(e => e.targets).flat();
+  }
+
   getScheduleEventContinuous(platformID, seconds){
     const platform_schedule = this._schedule[platformID];
     if(!platform_schedule)

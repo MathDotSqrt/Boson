@@ -48,6 +48,10 @@ export default class TargetSet {
     this._scene.selectTarget(this.name, id);
   }
 
+  selectAllTargets(){
+    console.log(this);
+  }
+
   deselectTargetByID(id){
     this._scene.deselectTarget(this.name, id);
   }

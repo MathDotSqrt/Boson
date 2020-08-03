@@ -94,6 +94,21 @@ export class Simulation {
     }
   }
 
+  removeSchedule(){
+    if(this._currentSchedule){
+      const schedule_targets = this._currentSchedule.getAllTargets();
+      const target_sets = Object.values(this._currentTargetSets);
+      const deselect_by_id = (id) => target_sets.forEach(t => t.deselectTargetByID(id));
+
+      schedule_targets.forEach(deselect_by_id);
+
+      const platform_names = this._platform.getAllSatelliteNames();
+      platform_names.forEach(name => this._scene.iceVector(name));
+
+      this._currentSchedule = null;
+    }
+  }
+
   toJSON(){
     const platform = this._platform ? [this._platform.toJSON()] : [];
     const targets = Object.values(this._currentTargetSets).map(t => t.toJSON());

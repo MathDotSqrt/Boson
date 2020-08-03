@@ -235,9 +235,15 @@ function linkTargetNode(){
 
 function linkScheduleNode(){
   const schedule_filedrop = document.getElementById("schedule_file_drop");
+  const remove_all = document.getElementById("schedule_delete_all");
+
   linkFileDrop(schedule_filedrop, (e) => {
     BOSON_FILELOADER.loadScheduleFile(e[0], importSchedule);
-  })
+  });
+
+  remove_all.onclick = (e) => {
+    removeSchedule();
+  }
 }
 
 function createAndLinkSatellite(name, platform){
@@ -454,6 +460,15 @@ function removeAllTargetSets(){
 
   removeAllChildren(target_scroll_box);
   simulation.removeAllTargetSets();
+}
+
+function removeSchedule(){
+  const schedule_filedrop = document.getElementById("schedule_file_drop");
+  const schedule_controls = document.getElementById("schedule_control_grid");
+
+  hideContainer(schedule_filedrop, false);
+  hideContainer(schedule_controls, true);
+  simulation.removeSchedule();
 }
 /* DELETES */
 

@@ -77,6 +77,10 @@ export default class Platform{
     return Object.values(this._satellites).find(s => s.id === id);
   }
 
+  getAllSatelliteNames(){
+    return Object.values(this._satellites).map(s => s.name);
+  }
+
   removeAll(){
     Object.values(this._satellites).forEach(s => this._scene.removeOrbit(s.name));
   }
