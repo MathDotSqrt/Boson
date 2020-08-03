@@ -350,6 +350,10 @@ export class Scene {
     }
   }
 
+  clearAllVectors(){
+    Object.values(this._sampleLines).forEach(s => s.polyline.show = false);
+  }
+
   updateSatellite(name){
     const time = this._viewer.clock.currentTime;
     const entity = this._viewer.entities.getById(name);

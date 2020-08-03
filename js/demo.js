@@ -109,9 +109,7 @@ export class Simulation {
 
       schedule_targets.forEach(deselect_by_id);
 
-      const platform_names = this._platform.getAllSatelliteNames();
-      platform_names.forEach(name => this._scene.iceVector(name));
-
+      this._scene.clearAllVectors();
       this._currentSchedule = null;
     }
   }
