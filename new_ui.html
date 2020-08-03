@@ -62,7 +62,15 @@
 
         <div tabID="platform" class="side_panel_element no_overflow hide">
           <div class="light_container">
-            <h3 class="no_overflow">Platform File</h3>
+            <div class="control_grid">
+              <div class="title">
+                <h3 class="no_overflow">Platform File</h3>
+              </div>
+              <div class="control">
+                <a href="javascript:void(0)" class="close_btn" id="platform_delete_all">&times;</a>
+              </div>
+            </div>
+
 
             <div class="line"></div>
 
@@ -133,50 +141,20 @@
 
             <div class="scroll_box" id="satellite_scroll_box">
 
-              <div class="dark_container expand_node listable_container hide showable" id="dummy_satellite_node">
-                <div class="control_grid showable">
-                  <div class="title showable">
-                    <p class="name showable">ID: 1</p>
-                  </div>
-                  <div class="control showable">
-                    <input type="color" class="color_picker" value="#00ff00">
-                  </div>
-                </div>
-
-                <div class="light_container hide">
-                  <div class="control_grid">
-
-                    <div class="title_small">
-                      <p>Orbit Trail:</p>
-                    </div>
-                    <div class="control">
-                      <select class="orbit_trail_select">
-                        <option value="all"><p>All</p></option>
-                        <option value="one_rev"><p>One Rev</p></option>
-                        <option value="none"><p>None</p></option>
-                      </select>
-                    </div>
-
-
-                    <div class="title_small">
-                      <p>Alpha:</p>
-                    </div>
-                    <div class="control">
-                      <div class="slider_container">
-                        <input class="slider" type="range" min="0" max="1" step=".01" value=".5">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
             </div>
           </div>
         </div>
 
         <div tabID="target" class="side_panel_element light_container no_overflow hide">
           <div class="element_list" id="ephemeris_list">
-            <h3 class="no_overflow">Target Folder</h3>
+            <div class="control_grid">
+              <div class="title">
+                <h3 class="no_overflow">Target Folder</h3>
+              </div>
+              <div class="control">
+                <a href="javascript:void(0)" class="close_btn">&times;</a>
+              </div>
+            </div>
 
             <div class="line"></div>
 
@@ -233,8 +211,14 @@
 
         <div tabID="schedule" class="side_panel_element light_container no_overflow hide">
           <div class="element_list" id="schedule_list">
-            <h3 class="no_overflow">Schedule File</h3>
-
+            <div class="control_grid">
+              <div class="title">
+                <h3 class="no_overflow">Schedule File</h3>
+              </div>
+              <div class="control">
+                <a href="javascript:void(0)" class="close_btn">&times;</a>
+              </div>
+            </div>
             <div class="line"></div>
 
             <div class="file_drop" id="schedule_file_drop">
@@ -263,8 +247,49 @@
         </div>
       </div>
     </div>
-    <button class="open_btn" onclick="" id="open_nav">&#9776; Toggle Controls</button>
 
+    <!-- THIS IS WHERE ALL THE DUMMY NODES LIVE -->
+    <div class="hidden">
+      <div class="dark_container expand_node listable_container hide showable" id="dummy_satellite_node">
+        <div class="control_grid showable">
+          <div class="title showable">
+            <p class="name showable">ID: 1</p>
+          </div>
+          <div class="control showable">
+            <input type="color" class="color_picker" value="#00ff00">
+          </div>
+        </div>
+
+        <div class="light_container hide">
+          <div class="control_grid">
+
+            <div class="title_small">
+              <p>Orbit Trail:</p>
+            </div>
+            <div class="control">
+              <select class="orbit_trail_select">
+                <option value="all"><p>All</p></option>
+                <option value="one_rev"><p>One Rev</p></option>
+                <option value="none"><p>None</p></option>
+              </select>
+            </div>
+
+
+            <div class="title_small">
+              <p>Alpha:</p>
+            </div>
+            <div class="control">
+              <div class="slider_container">
+                <input class="slider" type="range" min="0" max="1" step=".01" value=".5">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <button class="open_btn" onclick="" id="open_nav">&#9776; Toggle Controls</button>
     <div id="view"></div>
 
     <script type="text/javascript" src="./js/FileSaver.js"></script>
@@ -276,4 +301,5 @@
 
 
   </body>
+
 </html>

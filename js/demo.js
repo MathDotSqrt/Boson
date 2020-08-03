@@ -51,7 +51,7 @@ export class Simulation {
     }
   }
 
-  removeOrbit(name){
+  removeAllOrbits(){
     if(this._platform){
       this._platform.removeAll();
       this._platform = null;

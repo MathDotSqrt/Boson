@@ -83,7 +83,12 @@ function setName(element, name){
 function fileDropSelected(element, name){
   element.classList.add("selected");
   const p = element.getElementsByTagName("p")[0];
-  console.log(p);
+  p.innerHTML = name;
+}
+
+function fileDropDeselected(element, name){
+  element.classList.remove("selected");
+  const p = element.getElementsByTagName("p")[0];
   p.innerHTML = name;
 }
 
@@ -189,6 +194,7 @@ function linkPlatformNode(){
   const sensor_filedrop = document.getElementById("sensor_file_drop");
   const iw_filedrop = document.getElementById("iw_file_drop");
   const cw_filedrop = document.getElementById("cw_file_drop");
+  const removeAll = document.getElementById("platform_delete_all");
 
   linkFileDrop(platform_filedrop, (e) => {
     BOSON_FILELOADER.loadEphemerisFile(e[0], importPlatform);
@@ -205,6 +211,10 @@ function linkPlatformNode(){
   linkFileDrop(cw_filedrop, (e) => {
     BOSON_FILELOADER.loadWindowFile(e[0], (name, window)=>importWindow(name, window, false));
   });
+
+  removeAll.onclick = (e) => {
+    removeAllSatellites();
+  }
 }
 
 function linkTargetNode(){
@@ -346,6 +356,7 @@ function importPlatform(name, platform){
   setName(platform_controls, name);
   hideContainer(platform_filedrop, true);
   hideContainer(platform_controls, false);
+  global_orbit_select.value = "";
   global_orbit_select.onchange = () => {
     setAllSatelliteTrail(platforms, global_orbit_select.value);
   }
@@ -394,7 +405,33 @@ function importSchedule(name, schedule){
 /* IMPORT */
 
 
+/* DELETES */
+function removeAllChildren(element){
+  while(element.firstChild){
+    element.removeChild(element.lastChild);
+  }
+}
 
+function removeAllSatellites(){
+  const platform_controls = document.getElementById("platform_control_grid");
+  const platform_filedrop = document.getElementById("ephemeris_file_drop");
+  const sensor_filedrop = document.getElementById("sensor_file_drop");
+  const iw_filedrop = document.getElementById("iw_file_drop");
+  const cw_filedrop = document.getElementById("cw_file_drop");
+  const satellite_scroll_box = document.getElementById("satellite_scroll_box");
+
+
+  hideContainer(platform_controls, true);
+  hideContainer(platform_filedrop, false);
+
+  fileDropDeselected(sensor_filedrop, "Load Sensor");
+  fileDropDeselected(iw_filedrop, "Load IW");
+  fileDropDeselected(cw_filedrop, "Load CW");
+  removeAllChildren(satellite_scroll_box);
+  simulation.removeAllOrbits();
+
+}
+/* DELETES */
 
 
 
