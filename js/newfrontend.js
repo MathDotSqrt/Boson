@@ -367,7 +367,8 @@ function importPlatform(name, platform){
   const platform_controls = document.getElementById("platform_control_grid");
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
   const global_orbit_select = document.getElementById("global_orbit_trail_select");
-  const platforms = Object.values(platform).sort((a, b) => a.id > b.id).map(p => p.name);
+  console.log(Object.values(platform).sort((a, b) => a.id - b.id).map(p => p.name));
+  const platforms = Object.values(platform).sort((a, b) => a.id - b.id).map(p => p.name);
 
   console.log(name, platform);
 
