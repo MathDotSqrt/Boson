@@ -245,6 +245,12 @@ function createAndLinkTargetSet(name, target_set){
   const dummy_target = document.getElementById("dummy_target_node");
   const target = dummy_target.cloneNode(true);
   const control = target.getElementsByClassName("light_container")[0];
+
+  const target_color = control.getElementsByClassName("color_picker")[0];
+  const select_color = control.getElementsByClassName("color_picker")[1];
+  const alpha_slider = control.getElementsByClassName("slider")[0];
+
+  target.id = name;
   target.classList.remove("hide");
 
   setName(target, name);
@@ -254,6 +260,20 @@ function createAndLinkTargetSet(name, target_set){
       control.classList.toggle("hide");
     }
   };
+
+
+  target_color.value = target_set.color;
+  select_color.value = target_set.selectColor;
+  alpha_slider.value = target_set.alpha;
+  target_color.oninput = (e) => {
+    simulation.setTargetColor(name, target_color.value, parseFloat(alpha_slider.value));
+  }
+  select_color.oninput = (e) => {
+    simulation.setTargetSelectColor(name, select_color.value);
+  }
+  alpha_slider.oninput = (e) => {
+    simulation.setTargetColor(name, target_color.value, parseFloat(alpha_slider.value));
+  }
 
   target_scroll_box.appendChild(target);
 }
@@ -286,6 +306,9 @@ function importPreset(name, json){
       importWindow(cw.name, cw, false);
     }
   }
+
+  const targets = json.targets;
+  targets.forEach(target => importTargetSet(target.name, target));
 }
 
 function importPlatform(name, platform){
