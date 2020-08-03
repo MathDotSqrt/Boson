@@ -97,7 +97,7 @@ export function loadScheduleFile(new_file, func){
   promise.then(text => {
     const schedule = parseSchedule(new_file.name, text);
     if(schedule){
-      func(new_file, schedule);
+      func(new_file.name, schedule);
     }
   })
 }

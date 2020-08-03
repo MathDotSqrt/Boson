@@ -206,6 +206,14 @@ function linkTargetNode(){
   });
 }
 
+function linkScheduleNode(){
+  const schedule_filedrop = document.getElementById("schedule_file_drop");
+  console.log(schedule_filedrop);
+  linkFileDrop(schedule_filedrop, (e) => {
+    BOSON_FILELOADER.loadScheduleFile(e[0], importSchedule);
+  })
+}
+
 function createAndLinkSatellite(name, platform){
   const satellite_scroll_box = document.getElementById("satellite_scroll_box");
   const dummy_satellite = document.getElementById("dummy_satellite_node");
@@ -281,6 +289,7 @@ function createAndLinkTargetSet(name, target_set){
 linkGlobalControls();
 linkPlatformNode();
 linkTargetNode();
+linkScheduleNode();
 /* NODES */
 
 
@@ -357,6 +366,17 @@ function importTargetSet(name, target_set){
   hideContainer(target_filedrop, true);
 
   simulation.importTargetSet(name, target_set);
+}
+
+function importSchedule(name, schedule){
+  const schedule_filedrop = document.getElementById("schedule_file_drop");
+  const schedule_controls = document.getElementById("schedule_control_grid");
+  console.log(name, schedule);
+
+  hideContainer(schedule_filedrop, true);
+  hideContainer(schedule_controls, false);
+
+  simulation.importSchedule(name, schedule);
 }
 /* IMPORT */
 
