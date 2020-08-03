@@ -152,7 +152,7 @@
                 <h3 class="no_overflow">Target Folder</h3>
               </div>
               <div class="control">
-                <a href="javascript:void(0)" class="close_btn">&times;</a>
+                <a href="javascript:void(0)" class="close_btn" id="target_delete_all">&times;</a>
               </div>
             </div>
 
@@ -164,46 +164,6 @@
             </div>
 
             <div class="scroll_box" id="target_scroll_box" style="max-height: 1000px;">
-
-              <div class="dark_container expand_node listable_container hide showable" id="dummy_target_node">
-                <div class="control_grid showable">
-                  <div class="title showable">
-                    <p class="name showable">ID: 1</p>
-                  </div>
-                  <div class="control showable">
-                    <a href="javascript:void(0)" class="close_btn">&times;</a>
-                  </div>
-                </div>
-
-                <div class="light_container hide">
-                  <div class="control_grid">
-
-                    <div class="title_small">
-                      <p>Target Color:</p>
-                    </div>
-                    <div class="control">
-                      <input type="color" class="color_picker" value="#00ff00">
-                    </div>
-
-                    <div class="title_small">
-                      <p>Select Color:</p>
-                    </div>
-                    <div class="control">
-                      <input type="color" class="color_picker" value="#ff0000">
-                    </div>
-
-                    <div class="title_small">
-                      <p>Alpha:</p>
-                    </div>
-                    <div class="control">
-                      <div class="slider_container">
-                        <input class="slider" type="range" min="0" max="1" step=".01" value=".5">
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
 
             </div>
           </div>
@@ -283,6 +243,46 @@
                 <input class="slider" type="range" min="0" max="1" step=".01" value=".5">
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dark_container expand_node listable_container hide showable" id="dummy_target_node">
+        <div class="control_grid showable">
+          <div class="title showable">
+            <p class="name showable">ID: 1</p>
+          </div>
+          <div class="control showable">
+            <a href="javascript:void(0)" class="close_btn">&times;</a>
+          </div>
+        </div>
+
+        <div class="light_container hide">
+          <div class="control_grid">
+
+            <div class="title_small">
+              <p>Target Color:</p>
+            </div>
+            <div class="control">
+              <input type="color" class="color_picker" value="#00ff00">
+            </div>
+
+            <div class="title_small">
+              <p>Select Color:</p>
+            </div>
+            <div class="control">
+              <input type="color" class="color_picker" value="#ff0000">
+            </div>
+
+            <div class="title_small">
+              <p>Alpha:</p>
+            </div>
+            <div class="control">
+              <div class="slider_container">
+                <input class="slider" type="range" min="0" max="1" step=".01" value=".5">
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

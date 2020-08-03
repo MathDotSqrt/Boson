@@ -167,6 +167,9 @@ function linkFileDrop(element, load_file_func){
   element.ondragleave = prevent_default;
   element.onclick = () => {
     input.click();
+    //reset input so it will trigger again
+    //when user selects same file
+    input.value = null;
   }
 }
 
@@ -194,7 +197,7 @@ function linkPlatformNode(){
   const sensor_filedrop = document.getElementById("sensor_file_drop");
   const iw_filedrop = document.getElementById("iw_file_drop");
   const cw_filedrop = document.getElementById("cw_file_drop");
-  const removeAll = document.getElementById("platform_delete_all");
+  const remove_all = document.getElementById("platform_delete_all");
 
   linkFileDrop(platform_filedrop, (e) => {
     BOSON_FILELOADER.loadEphemerisFile(e[0], importPlatform);
@@ -212,17 +215,22 @@ function linkPlatformNode(){
     BOSON_FILELOADER.loadWindowFile(e[0], (name, window)=>importWindow(name, window, false));
   });
 
-  removeAll.onclick = (e) => {
+  remove_all.onclick = (e) => {
     removeAllSatellites();
   }
 }
 
 function linkTargetNode(){
   const target_filedrop = document.getElementById("target_file_drop");
+  const remove_all = document.getElementById("target_delete_all");
 
   linkFileDrop(target_filedrop, (e) => {
     BOSON_FILELOADER.loadTargetFile(e, importTargetSet);
   });
+
+  remove_all.onclick = (e) => {
+    removeAllTargetSets();
+  }
 }
 
 function linkScheduleNode(){
@@ -315,6 +323,9 @@ linkScheduleNode();
 function importPreset(name, json){
   console.log(name, json);
 
+  removeAllSatellites();
+  removeAllTargetSets();
+
   const platform = json.platform[0];
   if(platform){
     importPlatform(platform.name, platform.satellites);
@@ -341,6 +352,9 @@ function importPreset(name, json){
   if(schedule){
     importSchedule(schedule.name, schedule);
   }
+
+  const preset_filedrop = document.getElementById("preset_file_drop");
+  fileDropSelected(preset_filedrop, name);
 }
 
 function importPlatform(name, platform){
@@ -430,6 +444,16 @@ function removeAllSatellites(){
   removeAllChildren(satellite_scroll_box);
   simulation.removeAllOrbits();
 
+}
+
+function removeAllTargetSets(){
+  const target_filedrop = document.getElementById("target_file_drop");
+  const traget_scroll_box = document.getElementById("target_scroll_box");
+
+  hideContainer(target_filedrop, false);
+
+  removeAllChildren(target_scroll_box);
+  simulation.removeAllTargetSets();
 }
 /* DELETES */
 

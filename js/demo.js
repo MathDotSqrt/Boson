@@ -82,6 +82,12 @@ export class Simulation {
     delete this._currentTargetSets[name];
   }
 
+  removeAllTargetSets(){
+    const remove = (name) => this._scene.removeTargetPrimitive(name);
+    Object.keys(this._currentTargetSets).forEach(remove);
+    this._currentTargetSets = {};
+  }
+
   importSchedule(name, schedule){
     if(!this._currentSchedule){
       this._currentSchedule = new Schedule(name, schedule);
