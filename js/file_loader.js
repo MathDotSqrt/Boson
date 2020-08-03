@@ -422,5 +422,8 @@ function parseSchedule(name, lines){
     schedule[platformID].coords.push(lon, lat);
   }
 
-  return schedule;
+  return {
+    name : name,
+    schedule : schedule
+  };
 }

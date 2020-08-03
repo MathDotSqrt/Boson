@@ -2,7 +2,7 @@
 export default class Schedule {
   constructor(name, schedule){
     this._name = name;
-    this._schedule = schedule;
+    this._schedule = schedule.schedule;
     this._lastEvent = {};
   }
 

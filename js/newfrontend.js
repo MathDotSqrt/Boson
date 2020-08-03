@@ -208,7 +208,6 @@ function linkTargetNode(){
 
 function linkScheduleNode(){
   const schedule_filedrop = document.getElementById("schedule_file_drop");
-  console.log(schedule_filedrop);
   linkFileDrop(schedule_filedrop, (e) => {
     BOSON_FILELOADER.loadScheduleFile(e[0], importSchedule);
   })
@@ -318,6 +317,11 @@ function importPreset(name, json){
 
   const targets = json.targets;
   targets.forEach(target => importTargetSet(target.name, target));
+
+  const schedule = json.schedule;
+  if(schedule){
+    importSchedule(schedule.name, schedule);
+  }
 }
 
 function importPlatform(name, platform){
