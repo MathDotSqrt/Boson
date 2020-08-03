@@ -98,6 +98,11 @@ function hideContainer(element, hide=true){
 /* WIDGETS */
 
 /* EXPORTS */
+export function saveState(){
+  const json = JSON.stringify(simulation.toJSON());
+  const blob = new Blob([json], {type: "text/plain;"});
+  saveAs(blob, "preset.json"); //from FileSaver.js
+}
 
 export function insertFollowSelect(value){
   const select = document.getElementById("follow_select");
@@ -168,6 +173,10 @@ function linkGlobalControls(){
   select.onchange = (e) => {
     simulation.follow(select.value);
   };
+
+  save.onclick = (e) => {
+    saveState();
+  }
 
   linkFileDrop(preset, (e) => {
     BOSON_FILELOADER.loadPresetJSON(e[0], importPreset);
