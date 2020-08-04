@@ -343,8 +343,7 @@ linkScheduleNode();
 function importPreset(name, json){
   console.log(name, json);
 
-  removeAllSatellites();
-  removeAllTargetSets();
+  removeAllState();
 
   if(json.platform){
     const platform = json.platform[0];
@@ -463,6 +462,12 @@ function removeAllChildren(element){
   while(element.firstChild){
     element.removeChild(element.lastChild);
   }
+}
+
+function removeAllState(){
+  removeAllSatellites();
+  removeAllTargetSets();
+  removeSchedule();
 }
 
 function removeAllSatellites(){
