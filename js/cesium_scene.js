@@ -43,7 +43,7 @@ export class Scene {
     this._viewer.clock.multiplier = 0;
 
     //Set timeline to simulation bounds
-    this._viewer.timeline.zoomTo(this._start, this._stop);
+    this._viewer.timeline.zoomTo(this._start.clone(), this._stop.clone());
 
     const that = this;
     this._viewer.scene.preRender.addEventListener(function(){that._preRender()});
@@ -70,7 +70,14 @@ export class Scene {
   }
 
   setStopTime(seconds){
-    this._stop = Cesium.JulianDate.addSeconds(this._start, seconds, new Cesium.JulianDate());
+    if(seconds == 0){
+      this._stop = Cesium.JulianDate.addSeconds(this._start, 1, new Cesium.JulianDate());
+      this._viewer.clock.multiplier = 0;
+    }
+    else{
+      this._stop = Cesium.JulianDate.addSeconds(this._start, seconds + 1, new Cesium.JulianDate());
+    }
+    
     this._viewer.clock.stopTime = this._stop.clone();
     this._viewer.timeline.zoomTo(this._start, this._stop);
   }
