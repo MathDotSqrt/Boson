@@ -288,6 +288,7 @@ function createAndLinkTargetSet(name, target_set){
   const target_color = control.getElementsByClassName("color_picker")[0];
   const select_color = control.getElementsByClassName("color_picker")[1];
   const alpha_slider = control.getElementsByClassName("slider")[0];
+  const stat = control.getElementsByClassName("stat")[0];
 
   target.id = name;
   target.classList.remove("hide");
@@ -313,6 +314,8 @@ function createAndLinkTargetSet(name, target_set){
   alpha_slider.oninput = (e) => {
     simulation.setTargetColor(name, target_color.value, parseFloat(alpha_slider.value));
   }
+
+  stat.innerHTML = Object.values(target_set.targetSet).length + "";
 
   target_scroll_box.appendChild(target);
 }
