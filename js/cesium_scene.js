@@ -22,7 +22,7 @@ export class Scene {
 
     this._start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
     // TODO: Dont hard code this!!
-    this._stop = Cesium.JulianDate.addSeconds(this._start, 171246.075653055, new Cesium.JulianDate());
+    this._stop = Cesium.JulianDate.addSeconds(this._start, 1, new Cesium.JulianDate());
 
 
     this._viewer = new Cesium.Viewer(dom.id, {
@@ -40,7 +40,7 @@ export class Scene {
     this._viewer.clock.stopTime = this._stop.clone();
     this._viewer.clock.currentTime = this._start.clone();
     this._viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; //Loop at the end
-    this._viewer.clock.multiplier = 10;
+    this._viewer.clock.multiplier = 0;
 
     //Set timeline to simulation bounds
     this._viewer.timeline.zoomTo(this._start, this._stop);
@@ -67,6 +67,12 @@ export class Scene {
       //cesium needs to update this every frame
       this._entityView.update(this._viewer.clock.currentTime);
     }
+  }
+
+  setStopTime(seconds){
+    this._stop = Cesium.JulianDate.addSeconds(this._start, seconds, new Cesium.JulianDate());
+    this._viewer.clock.stopTime = this._stop.clone();
+    this._viewer.timeline.zoomTo(this._start, this._stop);
   }
 
   followEntity(name){
@@ -96,7 +102,7 @@ export class Scene {
       interpolationAlgorithm : Cesium.LagrangePolynomialApproximation,
       interpolationDegree : 2
     });
-
+    var last_time = this._start;
     for(var index = 0; index < ephemeris.position.length/3; index += 1){
       const pos_x = ephemeris.position[3 * index + 0];
       const pos_y = ephemeris.position[3 * index + 1];
@@ -106,17 +112,18 @@ export class Scene {
       const cesium_pos = new Cesium.Cartesian3(pos_x, pos_y, pos_z);
       const cesium_time = Cesium.JulianDate.addSeconds(this._start, time, new Cesium.JulianDate());
       pos_property.addSample(cesium_time, cesium_pos);
+      last_time = cesium_time;
     }
 
     const entity = this._viewer.entities.add({
       id: name,
       //Set the entity availability to the same interval as the simulation time.
-      availability: new Cesium.TimeIntervalCollection([
-        new Cesium.TimeInterval({
-          start: this._start,
-          stop: this._stop,
-        }),
-      ]),
+      // availability: new Cesium.TimeIntervalCollection([
+      //   new Cesium.TimeInterval({
+      //     start: this._start,
+      //     stop: this._stop,
+      //   }),
+      // ]),
 
       //Use our computed positions
       position: pos_property,
@@ -135,7 +142,7 @@ export class Scene {
 
     //Create default polyline for entire orbit interval.
     //This will be replaced when user loads iw/cw file.
-    const interval = [this._start, this._stop];
+    const interval = [this._start, last_time];
     const paths = BOSON_ORBIT.createIntervalPolyline([interval], pos_property, this._viewer);
 
     this._entityPaths[name] = {

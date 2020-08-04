@@ -180,7 +180,7 @@ export class Simulation {
   }
 
   _recomputeSimulationTime(){
-    console.log(this._getMaxTime());
+    this._scene.setStopTime(this._getMaxTime());
   }
 
   _getMaxTime(){
