@@ -10,6 +10,10 @@ export default class Schedule {
     return this._schedule;
   }
 
+  clearLastEventCache(){
+    this._lastEvent = {};
+  }
+
   getAllPlatformIDs(){
     return Object.keys(this._schedule).filter(x => x > 0).map(x => parseInt(x));
   }

@@ -343,6 +343,8 @@ linkScheduleNode();
 function importPreset(name, json){
   console.log(name, json);
 
+  if(!json) return;
+
   removeAllState();
 
   if(json.platform){
@@ -379,6 +381,10 @@ function importPreset(name, json){
       setTimeout(function(){
         setFollowSelect(settings.follow);
       }, 1500);   //1.5 seconds
+    }
+
+    if(settings.currentTime){
+      simulation.setVisualizationTime(settings.currentTime);
     }
   }
 

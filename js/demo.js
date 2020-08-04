@@ -24,6 +24,10 @@ export class Simulation {
     this._follow = name;
   }
 
+  setVisualizationTime(seconds){
+    this._scene.setCurrentTime(seconds);
+  }
+
   importPlatform(name, platform){
     this._platform = new Platform(name, platform, this._scene);
     this._recomputeSimulationTime();
@@ -125,7 +129,8 @@ export class Simulation {
 
   toJSON(){
     const settings = {
-      follow: this._follow
+      follow: this._follow,
+      currentTime: this._scene.getCurrentTime()
     };
 
     const platform = this._platform ? [this._platform.toJSON()] : [];
@@ -143,7 +148,9 @@ export class Simulation {
 
 
   //callback on cesiums update loop
-  update(seconds){
+  update(){
+    const seconds = this._scene.getCurrentTime();
+
     //orient all satellites to face the earth
     if(this._platform){
       this._platform.update();

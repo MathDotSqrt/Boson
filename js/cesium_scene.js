@@ -69,6 +69,23 @@ export class Scene {
     }
   }
 
+  getCurrentTime(){
+    const current = this._viewer.clock.currentTime;
+    const start = this._viewer.clock.startTime;
+    const seconds = Cesium.JulianDate.secondsDifference(current, start);
+    return seconds;
+  }
+
+  setCurrentTime(seconds){
+    const current = Cesium.JulianDate.addSeconds(this._start, seconds, new Cesium.JulianDate())
+
+    const greaterOrEqual = (a, b) => Cesium.JulianDate.greaterThanOrEquals(a, b);
+    const lesserOrEqual = (a, b) => Cesium.JulianDate.lessThanOrEquals(a, b);
+    //if(greaterOrEqual(current, this._start) && lesserOrEqual(current. this._stop)){
+      this._viewer.clock.currentTime = current;
+    //}
+  }
+
   setStopTime(seconds){
     if(seconds == 0){
       this._stop = Cesium.JulianDate.addSeconds(this._start, 1, new Cesium.JulianDate());
@@ -81,11 +98,6 @@ export class Scene {
     this._viewer.clock.stopTime = this._stop.clone();
     this._viewer.timeline.zoomTo(this._start, this._stop);
   }
-
-  getCurrentTime(){
-    console.log(this._viewer.clock.currentTime);
-  }
-
 
   followEntity(name){
     const entity = this._viewer.entities.getById(name);
@@ -103,8 +115,7 @@ export class Scene {
   addPreRenderEvent(simulation){
     const that = this;
     this._viewer.scene.preRender.addEventListener(function(){
-      const seconds = Cesium.JulianDate.secondsDifference(that._viewer.clock.currentTime, that._viewer.clock.startTime);
-      simulation.update(seconds);
+      simulation.update();
     });
   }
 
