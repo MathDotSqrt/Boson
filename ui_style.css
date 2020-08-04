@@ -115,7 +115,7 @@ select {
 .open_btn {
   position: absolute;
   border: none;
-  padding: 10px 15px;
+  padding: 10px 10px;
 
   line-height: 20px;
   font-size: 20px;
