@@ -420,6 +420,8 @@ function importSchedule(name, schedule){
   const schedule_controls = document.getElementById("schedule_control_grid");
   console.log(name, schedule);
 
+  setName(schedule_controls, name);
+
   hideContainer(schedule_filedrop, true);
   hideContainer(schedule_controls, false);
 
