@@ -418,9 +418,16 @@ function importTargetSet(name, target_set){
 function importSchedule(name, schedule){
   const schedule_filedrop = document.getElementById("schedule_file_drop");
   const schedule_controls = document.getElementById("schedule_control_grid");
+  const num_events = schedule_controls.getElementsByClassName("stat")[0];
   console.log(name, schedule);
 
   setName(schedule_controls, name);
+
+  const accumulator = (a, c) => a + c;
+  num_events.innerHTML = Object
+    .values(schedule.schedule)
+    .map(s => s.targets.length)
+    .reduce(accumulator) + "";
 
   hideContainer(schedule_filedrop, true);
   hideContainer(schedule_controls, false);
