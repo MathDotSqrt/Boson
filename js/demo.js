@@ -16,10 +16,12 @@ export class Simulation {
     this._currentTargetSets = {};
     this._currentSchedule = null;
     this._scene.addPreRenderEvent(this);
+    this._follow = null;
   }
 
   follow(name){
     this._scene.followEntity(name);
+    this._follow = name;
   }
 
   importPlatform(name, platform){
@@ -122,10 +124,15 @@ export class Simulation {
   }
 
   toJSON(){
+    const settings = {
+      follow: this._follow
+    };
+
     const platform = this._platform ? [this._platform.toJSON()] : [];
     const targets = Object.values(this._currentTargetSets).map(t => t.toJSON());
     const schedule = this._currentSchedule ? this._currentSchedule.toJSON() : null;
     const json = {
+      settings: settings,
       platform : platform,
       targets : targets,
       schedule : schedule

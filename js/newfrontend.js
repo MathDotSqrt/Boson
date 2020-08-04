@@ -111,13 +111,25 @@ export function saveState(){
 
 export function insertFollowSelect(value){
   const select = document.getElementById("follow_select");
-  insertSelect(select, value);
+  if(select){
+    insertSelect(select, value);
+  }
+}
+
+export function setFollowSelect(value){
+  const select = document.getElementById("follow_select");
+  if(select){
+    select.value = value;
+    select.onchange();
+  }
 }
 
 export function removeFollowSelect(value){
   const select = document.getElementById("follow_select");
-  removeSelect(select, value);
-  select.onchange();
+  if(select){
+    removeSelect(select, value);
+    select.onchange();
+  }
 }
 
 export function setSatelliteColor(id, color){
@@ -360,6 +372,15 @@ function importPreset(name, json){
   const schedule = json.schedule;
   if(schedule){
     importSchedule(schedule.name, schedule);
+  }
+
+  const settings = json.settings;
+  if(settings){
+    if(settings.follow){
+      setTimeout(function(){
+        setFollowSelect(settings.follow);
+      }, 1500);   //1.5 seconds
+    }
   }
 
   const preset_filedrop = document.getElementById("preset_file_drop");

@@ -77,15 +77,20 @@ export class Scene {
     else{
       this._stop = Cesium.JulianDate.addSeconds(this._start, seconds + 1, new Cesium.JulianDate());
     }
-    
+
     this._viewer.clock.stopTime = this._stop.clone();
     this._viewer.timeline.zoomTo(this._start, this._stop);
   }
 
+  getCurrentTime(){
+    console.log(this._viewer.clock.currentTime);
+  }
+
+
   followEntity(name){
     const entity = this._viewer.entities.getById(name);
     if(entity){
-      Cesium.EntityView.defaultOffset3D = new Cesium.Cartesian3(35000, 35000, 140000);
+      //Cesium.EntityView.defaultOffset3D = new Cesium.Cartesian3(35000, 35000, 140000);
       this._entityView = new Cesium.EntityView(entity, this._viewer.scene);
     }
     else{
