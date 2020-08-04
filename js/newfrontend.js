@@ -484,3 +484,6 @@ function removeSchedule(){
   simulation.removeSchedule();
 }
 /* DELETES */
+
+//removes annoying bottom text
+document.getElementsByClassName("cesium-viewer-bottom")[0].remove();
