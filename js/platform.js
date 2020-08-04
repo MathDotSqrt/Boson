@@ -64,9 +64,9 @@ export default class Platform{
     }
     else{
       this._cwWindow = windows;
-
       satellites.forEach(s => s.window.setCWInterval(windows.intervals[s.id]));
     }
+    satellites.forEach(s => s.orbit_trail = s.orbit_trail);
   }
 
   getSatelliteByName(name){
