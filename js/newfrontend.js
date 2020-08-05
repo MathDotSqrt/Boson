@@ -372,12 +372,18 @@ function importPreset(name, json){
 
   const schedule = json.schedule;
   if(schedule){
-    importSchedule(schedule.name, schedule);
+    //hmmm for some reason the selected target dont get updated unless
+    //there is a small delay with importing schedules. Probably has somthing
+    //to do with cesium loading targets async-ly
+    setTimeout(function(){
+      importSchedule(schedule.name, schedule);
+    }, 1);   //1 millisecond??
   }
 
   const settings = json.settings;
   if(settings){
     if(settings.follow){
+      //Enough time for scene to load before following a satellite
       setTimeout(function(){
         setFollowSelect(settings.follow);
       }, 1500);   //1.5 seconds

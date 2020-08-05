@@ -11,7 +11,11 @@ export default class Schedule {
   }
 
   clearLastEventCache(){
-    this._lastEvent = {};
+    for(const platformID in this._lastEvent){
+      this._lastEvent[platformID].lastIndex = 0;
+    }
+
+    console.log("CLEARED CACHE");
   }
 
   getAllPlatformIDs(){

@@ -76,6 +76,10 @@ export class Simulation {
 
   importTargetSet(name, targets){
     this._currentTargetSets[name] = new TargetSet(targets, this._scene);
+
+    if(this._currentSchedule){
+      this._currentSchedule.clearLastEventCache();
+    }
   }
 
   setTargetColor(name, color, alpha){
@@ -182,6 +186,7 @@ export class Simulation {
       const deselect_by_id = (id) => target_sets.forEach(t => t.deselectTargetByID(id));
       const select_target = (delta, events, targetIDs) => {
         const select_func = delta >= 0 ? select_by_id : deselect_by_id;
+
         targetIDs.forEach(select_func);
         select_by_id(events.target)
       }
