@@ -323,6 +323,7 @@ export class Scene {
     if(primitive){
       const attrib = primitive.getGeometryInstanceAttributes(target_id);
       if(attrib){
+        console.log("SELECT:", target_id);
         //console.log(name, attrib);
 
         //attrib.color.value[3] !
@@ -331,19 +332,24 @@ export class Scene {
     }
   }
 
-  selectAllTargets(name){
-    const primitive = this._targetPrimitives[name];
-    if(primitive){
-      console.log(primitive);
-    }
-  }
+  // selectAllTargets(name){
+  //   const primitive = this._targetPrimitives[name];
+  //   if(primitive){
+  //     console.log(primitive);
+  //   }
+  // }
 
   deselectTarget(name, target_id){
     const primitive = this._targetPrimitives[name];
-    const attrib = primitive.getGeometryInstanceAttributes(target_id);
-    if(attrib){
-      //attrib.color.value[3] !
-      attrib.color = new Cesium.ColorGeometryInstanceAttribute(0, 0, 0, 0).value;
+    if(primitive){
+      const attrib = primitive.getGeometryInstanceAttributes(target_id);
+
+      if(attrib){
+        console.log("DESELECT:", target_id);
+
+        //attrib.color.value[3] !
+        attrib.color = new Cesium.ColorGeometryInstanceAttribute(0, 0, 0, 0).value;
+      }
     }
   }
 

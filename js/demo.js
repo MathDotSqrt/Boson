@@ -186,14 +186,13 @@ export class Simulation {
       const deselect_by_id = (id) => target_sets.forEach(t => t.deselectTargetByID(id));
       const select_target = (delta, events, targetIDs) => {
         const select_func = delta >= 0 ? select_by_id : deselect_by_id;
-
         targetIDs.forEach(select_func);
-        select_by_id(events.target)
       }
 
       const select_events = events
         .filter(([p, e]) => e)
         .map(([p, e]) => [e.delta, e.event, e.targets])
+        .filter(([delta, event, targets]) => delta != 0)
         .forEach(([delta, event, targets]) => select_target(delta, event, targets));
     }
   }
