@@ -160,41 +160,66 @@ export class Simulation {
       this._platform.update();
     }
 
-    //if we have a schedule loaded
     if(this._currentSchedule){
-      //gets all events from prev seconds to current seconds
-      const getEvent = (id) => this._currentSchedule.getScheduleEventContinuous(id, seconds);
+      const schedule_event = this._currentSchedule.getScheduleEventContinuous(seconds);
+      const is_forward = schedule_event.is_forward;
+      const platform_events = schedule_event.platform_events;
+      const target_ids = schedule_event.target_ids;
 
-      //gets all platformIDs defined in schedule
-      const platformIDs = this._currentSchedule.getAllPlatformIDs();
-      const events = platformIDs.map(id => [this._getByPlatformID(id), getEvent(id)]);
+      const schedule_platform_ids = this._currentSchedule.getAllPlatformIDs();
+      const vector_events = schedule_platform_ids
+        .map(id => this._getByPlatformID(id))
+        .filter(p => p);
 
-      //fires red vector to visualize target collection
-      const fire_events = events
-        .filter(([p, e]) => p && e)
-        .map(([p, e]) => [p.name, e.event.coord])
-        .forEach(([name, [lon, lat]]) => this._scene.fireVector(name, lon, lat));
+      const fire_events = vector_events
+        .filter(p => p.id in platform_events)
+        .forEach(p => {
+          const fire_event = platform_events[p.id];
+          const lon = fire_event.coord[0];
+          const lat = fire_event.coord[1];
+          this._scene.fireVector(p.name, lon, lat);
+        })
 
-      //removes red vector when no target is being collected
-      const ice_events = events
-        .filter(([p, e]) => p && !e)
-        .forEach(([p, e]) => this._scene.iceVector(p.name));
-
-      //gets all loaded target sets
-      const target_sets = Object.values(this._currentTargetSets);
-      const select_by_id   = (id) => target_sets.forEach(t => t.selectTargetByID(id));
-      const deselect_by_id = (id) => target_sets.forEach(t => t.deselectTargetByID(id));
-      const select_target = (delta, events, targetIDs) => {
-        const select_func = delta >= 0 ? select_by_id : deselect_by_id;
-        targetIDs.forEach(select_func);
-      }
-
-      const select_events = events
-        .filter(([p, e]) => e)
-        .map(([p, e]) => [e.delta, e.event, e.targets])
-        .filter(([delta, event, targets]) => delta != 0)
-        .forEach(([delta, event, targets]) => select_target(delta, event, targets));
+      const ice_events = vector_events
+        .filter(p => !(p.id in platform_events))
+        .forEach(p => this._scene.iceVector(p.name));
     }
+
+    // //if we have a schedule loaded
+    // if(this._currentSchedule){
+    //   //gets all events from prev seconds to current seconds
+    //   const getEvent = (id) => this._currentSchedule.getScheduleEventContinuous(id, seconds);
+    //
+    //   //gets all platformIDs defined in schedule
+    //   const platformIDs = this._currentSchedule.getAllPlatformIDs();
+    //   const events = platformIDs.map(id => [this._getByPlatformID(id), getEvent(id)]);
+    //
+    //   //fires red vector to visualize target collection
+    //   const fire_events = events
+    //     .filter(([p, e]) => p && e)
+    //     .map(([p, e]) => [p.name, e.event.coord])
+    //     .forEach(([name, [lon, lat]]) => this._scene.fireVector(name, lon, lat));
+    //
+    //   //removes red vector when no target is being collected
+    //   const ice_events = events
+    //     .filter(([p, e]) => p && !e)
+    //     .forEach(([p, e]) => this._scene.iceVector(p.name));
+    //
+    //   //gets all loaded target sets
+    //   const target_sets = Object.values(this._currentTargetSets);
+    //   const select_by_id   = (id) => target_sets.forEach(t => t.selectTargetByID(id));
+    //   const deselect_by_id = (id) => target_sets.forEach(t => t.deselectTargetByID(id));
+    //   const select_target = (delta, events, targetIDs) => {
+    //     const select_func = delta >= 0 ? select_by_id : deselect_by_id;
+    //     targetIDs.forEach(select_func);
+    //   }
+    //
+    //   const select_events = events
+    //     .filter(([p, e]) => e)
+    //     .map(([p, e]) => [e.delta, e.event, e.targets])
+    //     .filter(([delta, event, targets]) => delta != 0)
+    //     .forEach(([delta, event, targets]) => select_target(delta, event, targets));
+    // }
   }
 
   _recomputeSimulationTime(){

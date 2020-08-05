@@ -76,37 +76,37 @@ export default class Schedule {
     }
   }
 
-  getScheduleEventContinuous(platformID, seconds){
-    const platform_schedule = this._schedule[platformID];
-    if(!platform_schedule)
-      return null;
-
-    if(!(platformID in this._lastEvent)){
-      this._lastEvent[platformID] = {
-        lastIndex : 0,
-      };
-    }
-
-    //TODO PERFORMANCE IDEA: store interval inside last event to avoid
-    //the binary search
-    const lastIndex = this._lastEvent[platformID].lastIndex;
-    const id_index = binary_search_interval(platform_schedule.interval, seconds);
-    if(id_index !== -1){
-      const schedule_event = this._getEvent(platform_schedule, id_index);
-
-      const minIndex = Math.min(lastIndex, id_index);
-      const maxIndex = Math.max(lastIndex, id_index);
-      const target_ids = platform_schedule.targets.slice(minIndex, maxIndex + 1);
-      this._lastEvent[platformID].lastIndex = id_index;
-      return {
-        delta : id_index - lastIndex,
-        event : schedule_event,
-        targets : target_ids
-      }
-    }
-
-    return null;
-  }
+  // getScheduleEventContinuous(platformID, seconds){
+  //   const platform_schedule = this._schedule[platformID];
+  //   if(!platform_schedule)
+  //     return null;
+  //
+  //   if(!(platformID in this._lastEvent)){
+  //     this._lastEvent[platformID] = {
+  //       lastIndex : 0,
+  //     };
+  //   }
+  //
+  //   //TODO PERFORMANCE IDEA: store interval inside last event to avoid
+  //   //the binary search
+  //   const lastIndex = this._lastEvent[platformID].lastIndex;
+  //   const id_index = binary_search_interval(platform_schedule.interval, seconds);
+  //   if(id_index !== -1){
+  //     const schedule_event = this._getEvent(platform_schedule, id_index);
+  //
+  //     const minIndex = Math.min(lastIndex, id_index);
+  //     const maxIndex = Math.max(lastIndex, id_index);
+  //     const target_ids = platform_schedule.targets.slice(minIndex, maxIndex + 1);
+  //     this._lastEvent[platformID].lastIndex = id_index;
+  //     return {
+  //       delta : id_index - lastIndex,
+  //       event : schedule_event,
+  //       targets : target_ids
+  //     }
+  //   }
+  //
+  //   return null;
+  // }
 
   getScheduleEvent(platformID, seconds){
     const platform_schedule = this._schedule[platformID];
