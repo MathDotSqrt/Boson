@@ -162,7 +162,7 @@ export class Simulation {
 
     if(this._currentSchedule){
       const schedule_event = this._currentSchedule.getScheduleEventContinuous(seconds);
-      const is_forward = schedule_event.is_forward;
+      const delta = schedule_event.delta;
       const platform_events = schedule_event.platform_events;
       const target_ids = schedule_event.target_ids;
 
@@ -183,6 +183,18 @@ export class Simulation {
       const ice_events = vector_events
         .filter(p => !(p.id in platform_events))
         .forEach(p => this._scene.iceVector(p.name));
+
+      const target_sets = Object.values(this._currentTargetSets);
+      if(delta != 0){
+
+        for(const target_set of target_sets){
+          const select_by_id = (id) => target_set.selectTargetByID(id);
+          const deselect_by_id = (id) => target_set.deselectTargetByID(id);
+          const select_func = delta > 0 ? select_by_id : deselect_by_id;
+
+          target_ids.forEach(select_func);
+        }
+      }
     }
 
     // //if we have a schedule loaded
