@@ -4,6 +4,7 @@ export default class Schedule {
     this._name = name;
     this._schedule = schedule.schedule;
     this._lastEvent = {};
+    this._lastSecond = 0;
   }
 
   get schedule(){
@@ -16,6 +17,7 @@ export default class Schedule {
       for(const platformID in this._lastEvent){
         this._lastEvent[platformID].lastIndex = 0;
       }
+      this._lastSecond = 0;
       console.log("CLEARED CACHE");
 
     }, 10);
@@ -28,6 +30,50 @@ export default class Schedule {
 
   getAllTargets(){
     return Object.values(this._schedule).map(e => e.targets).flat();
+  }
+
+  getScheduleEventContinuous(seconds){
+    //todo figure out where nan is getting injected
+    const target_ids = [];
+    const platform_events = {};
+    const is_forward = seconds > this._lastSecond;
+    this._lastSecond = seconds;
+
+    const no_nan_platform = (p) => !isNaN(p.platformID);
+    const platform_schedules = Object.values(this._schedule)
+      .filter(no_nan_platform);
+
+    for(const platform_schedule of platform_schedules){
+      const platform_id = platform_schedule.platformID;
+      const schedule_interval = platform_schedule.interval;
+
+      if(!(platform_id in this._lastEvent)){
+        this._lastEvent[platform_id] = {
+          lastIndex : 0
+        }
+      }
+
+      const last_index = this._lastEvent[platform_id];
+      const current_index = binary_search_interval(schedule_interval, seconds);
+
+      if(current_index !== -1){
+        const event = this._getEvent(platform_schedule, current_index);
+        platform_events[platform_id] = event;
+
+        const min_index = Math.min(last_index, current_index);
+        const max_index = Math.max(last_index, current_index);
+        const target_slice = platform_schedule.targets.slice(min_index, max_index + 1);
+        target_ids.push(target_slice);
+
+        this._lastEvent[platform_id] = current_index;
+      }
+    }
+
+    return {
+      is_forward : is_forward,
+      target_ids : target_ids,
+      platform_events : platform_events
+    }
   }
 
   getScheduleEventContinuous(platformID, seconds){
