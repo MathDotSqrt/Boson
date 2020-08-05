@@ -238,6 +238,12 @@ export class Scene {
     const color = Cesium.Color.fromCssColorString("#FFF");
     const entity = this._viewer.entities.getById(name);
 
+    //I think there is a bug with cesium-volume-sensors with removing
+    //sensor proerties from entities and replacing with a new property
+    const hide = (name) => {if(entity[name]) entity[name].show = false;};
+    hide("conicSensor");
+    hide("customPatternSensor");
+
     if(sensor_type === "Doppler Cone Angle"){
       BOSON_UTIL.create_squint_sensor(entity, min, max, 55, 20, color);
     }
