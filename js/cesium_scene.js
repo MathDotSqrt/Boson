@@ -69,6 +69,10 @@ export class Scene {
     }
   }
 
+  updatePrimitives(){
+      this._viewer.scene.render(this._viewer.clock.currentTime);
+  }
+
   getCurrentTime(){
     const current = this._viewer.clock.currentTime;
     const start = this._viewer.clock.startTime;
@@ -300,7 +304,9 @@ export class Scene {
     this._targetPrimitives[name] = new Cesium.Primitive({
       geometryInstances : instances,
       appearance : BOSON_UTIL.create_material(),
-      allowPicking : false  //for performance reasons
+      allowPicking : false,  //for performance reasons
+      asynchronous : true
+
     });
 
     this._viewer.scene.primitives.add(this._targetPrimitives[name]);
@@ -323,7 +329,6 @@ export class Scene {
     if(primitive){
       const attrib = primitive.getGeometryInstanceAttributes(target_id);
       if(attrib){
-        //console.log("SELECT:", target_id);
         //console.log(name, attrib);
 
         //attrib.color.value[3] !

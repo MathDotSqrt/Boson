@@ -76,7 +76,7 @@ export class Simulation {
 
   importTargetSet(name, targets){
     this._currentTargetSets[name] = new TargetSet(targets, this._scene);
-
+    this._scene.updatePrimitives();
     if(this._currentSchedule){
       this._currentSchedule.clearLastEventCache();
     }
@@ -186,7 +186,6 @@ export class Simulation {
 
       const target_sets = Object.values(this._currentTargetSets);
       if(delta != 0){
-
         for(const target_set of target_sets){
           const select_by_id = (id) => target_set.selectTargetByID(id);
           const deselect_by_id = (id) => target_set.deselectTargetByID(id);

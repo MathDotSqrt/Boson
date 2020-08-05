@@ -372,12 +372,7 @@ function importPreset(name, json){
 
   const schedule = json.schedule;
   if(schedule){
-    //hmmm for some reason the selected target dont get updated unless
-    //there is a small delay with importing schedules. Probably has somthing
-    //to do with cesium loading targets async-ly
-    setTimeout(function(){
-      importSchedule(schedule.name, schedule);
-    }, 1);   //1 millisecond??
+    importSchedule(schedule.name, schedule);
   }
 
   const settings = json.settings;

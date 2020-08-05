@@ -12,16 +12,11 @@ export default class Schedule {
   }
 
   clearLastEventCache(){
-    setTimeout(function(){
-
-      for(const platformID in this._lastEvent){
-        this._lastEvent[platformID] = 0;
-      }
-      this._lastSecond = 0;
-      console.log("CLEARED CACHE");
-
-    }, 10);
-
+    for(const platformID in this._lastEvent){
+      this._lastEvent[platformID] = 0;
+    }
+    this._lastSecond = 0;
+    console.log("CLEARED CACHE");
   }
 
   getAllPlatformIDs(){
@@ -58,6 +53,8 @@ export default class Schedule {
         const event = this._getEvent(platform_schedule, current_index);
         platform_events[platform_id] = event;
       }
+
+
       const min_index = Math.min(last_index, current_index);
       const max_index = Math.max(last_index, current_index);
       const target_slice = platform_schedule.targets.slice(min_index + 1, max_index + 1);
