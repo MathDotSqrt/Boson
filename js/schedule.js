@@ -52,19 +52,18 @@ export default class Schedule {
       }
 
       const last_index = this._lastEvent[platform_id];
-      const current_index = binary_search_interval(schedule_interval, seconds);
-      if(current_index !== -1){
+      const [is_within, current_index] = binary_search_interval(schedule_interval, seconds);
 
+      if(is_within){
         const event = this._getEvent(platform_schedule, current_index);
         platform_events[platform_id] = event;
-
-        const min_index = Math.min(last_index, current_index);
-        const max_index = Math.max(last_index, current_index);
-        const target_slice = platform_schedule.targets.slice(min_index + 1, max_index + 1);
-        target_ids.push(target_slice);
-
-        this._lastEvent[platform_id] = current_index;
       }
+      const min_index = Math.min(last_index, current_index);
+      const max_index = Math.max(last_index, current_index);
+      const target_slice = platform_schedule.targets.slice(min_index + 1, max_index + 1);
+      target_ids.push(target_slice);
+
+      this._lastEvent[platform_id] = current_index;
     }
 
     return {
@@ -160,7 +159,7 @@ function binary_search_interval(intervals, seconds){
     const interval_start = intervals[mid * 2];
     const interval_end = intervals[mid * 2 + 1];
     if(seconds >= interval_start && seconds <= interval_end){
-      return mid;
+      return [true, mid];
     }
     else if(seconds < interval_start){
       end = mid - 1;
@@ -170,5 +169,5 @@ function binary_search_interval(intervals, seconds){
     }
   }
 
-  return -1;
+  return [false, end];
 }

@@ -323,7 +323,7 @@ export class Scene {
     if(primitive){
       const attrib = primitive.getGeometryInstanceAttributes(target_id);
       if(attrib){
-        console.log("SELECT:", target_id);
+        //console.log("SELECT:", target_id);
         //console.log(name, attrib);
 
         //attrib.color.value[3] !
@@ -345,7 +345,7 @@ export class Scene {
       const attrib = primitive.getGeometryInstanceAttributes(target_id);
 
       if(attrib){
-        console.log("DESELECT:", target_id);
+        //console.log("DESELECT:", target_id);
 
         //attrib.color.value[3] !
         attrib.color = new Cesium.ColorGeometryInstanceAttribute(0, 0, 0, 0).value;
