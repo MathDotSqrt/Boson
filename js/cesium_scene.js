@@ -78,12 +78,8 @@ export class Scene {
 
   setCurrentTime(seconds){
     const current = Cesium.JulianDate.addSeconds(this._start, seconds, new Cesium.JulianDate())
-
-    const greaterOrEqual = (a, b) => Cesium.JulianDate.greaterThanOrEquals(a, b);
-    const lesserOrEqual = (a, b) => Cesium.JulianDate.lessThanOrEquals(a, b);
-    //if(greaterOrEqual(current, this._start) && lesserOrEqual(current. this._stop)){
-      this._viewer.clock.currentTime = current;
-    //}
+    //hmm cant do bounds checks because start and stop time is dynamic and often
+    this._viewer.clock.currentTime = current;
   }
 
   setStopTime(seconds){
