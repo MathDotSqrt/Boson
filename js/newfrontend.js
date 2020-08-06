@@ -249,6 +249,8 @@ function linkTargetNode(){
 function linkScheduleNode(){
   const schedule_filedrop = document.getElementById("schedule_file_drop");
   const remove_all = document.getElementById("schedule_delete_all");
+  const next_button = document.getElementById("next_event");
+  const prev_button = document.getElementById("prev_event");
 
   linkFileDrop(schedule_filedrop, (e) => {
     BOSON_FILELOADER.loadScheduleFile(e[0], importSchedule);
@@ -256,6 +258,13 @@ function linkScheduleNode(){
 
   remove_all.onclick = (e) => {
     removeSchedule();
+  }
+
+  next_button.onclick = (e) => {
+    simulation.nextScheduleEvent();
+  }
+  prev_button.onclick = (e) => {
+    console.log("prev");
   }
 }
 

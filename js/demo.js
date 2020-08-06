@@ -132,7 +132,13 @@ export class Simulation {
   }
 
   nextScheduleEvent(){
-    
+    if(this._currentSchedule){
+      const seconds = this._scene.getCurrentTime();
+      const next_event = this._currentSchedule.getNextEventTime(seconds);
+      console.log(seconds);
+      console.log(next_event);
+      this._scene.setCurrentTime(next_event);
+    }
   }
 
   toJSON(){

@@ -81,7 +81,7 @@ export default class Schedule {
       const next_index = current_index == num_intervals - 1 ? 0 : current_index + 1;
 
       const event = this._getEvent(platform_schedule, next_index);
-      const start = event.interval[0];
+      const start = event.interval[0] + .0001;
       if(start < closest_next_interval){
         closest_next_interval = start;
       }
