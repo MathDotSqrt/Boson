@@ -131,6 +131,10 @@ export class Simulation {
     }
   }
 
+  nextScheduleEvent(){
+    
+  }
+
   toJSON(){
     const settings = {
       follow: this._follow,

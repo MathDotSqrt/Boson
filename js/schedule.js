@@ -34,9 +34,7 @@ export default class Schedule {
     const delta = seconds - this._lastSecond;
     this._lastSecond = seconds;
 
-    const no_nan_platform = (p) => !isNaN(p.platformID);
-    const platform_schedules = Object.values(this._schedule)
-      .filter(no_nan_platform);
+    const platform_schedules = this._getPlatforms();
 
     for(const platform_schedule of platform_schedules){
       const platform_id = platform_schedule.platformID;
@@ -70,46 +68,50 @@ export default class Schedule {
     }
   }
 
-  // getScheduleEventContinuous(platformID, seconds){
-  //   const platform_schedule = this._schedule[platformID];
-  //   if(!platform_schedule)
-  //     return null;
-  //
-  //   if(!(platformID in this._lastEvent)){
-  //     this._lastEvent[platformID] = {
-  //       lastIndex : 0,
-  //     };
-  //   }
-  //
-  //   //TODO PERFORMANCE IDEA: store interval inside last event to avoid
-  //   //the binary search
-  //   const lastIndex = this._lastEvent[platformID].lastIndex;
-  //   const id_index = binary_search_interval(platform_schedule.interval, seconds);
-  //   if(id_index !== -1){
-  //     const schedule_event = this._getEvent(platform_schedule, id_index);
-  //
-  //     const minIndex = Math.min(lastIndex, id_index);
-  //     const maxIndex = Math.max(lastIndex, id_index);
-  //     const target_ids = platform_schedule.targets.slice(minIndex, maxIndex + 1);
-  //     this._lastEvent[platformID].lastIndex = id_index;
-  //     return {
-  //       delta : id_index - lastIndex,
-  //       event : schedule_event,
-  //       targets : target_ids
-  //     }
-  //   }
-  //
-  //   return null;
-  // }
+  getNextEventTime(seconds){
+    const platform_schedules = this._getPlatforms();
 
-  getScheduleEvent(platformID, seconds){
-    const platform_schedule = this._schedule[platformID];
-    if(platform_schedule){
-      const id_index = binary_search_interval(platform_schedule.interval, seconds);
-      return this._getEvent(platform_schedule, id_index);
+    //todo fix this
+    var closest_next_interval = Number.MAX_VALUE;
+    for(const platform_schedule of platform_schedules){
+      const schedule_interval = platform_schedule.interval;
+      const num_intervals = schedule_interval.length / 2;
+
+      const [is_within, current_index] = binary_search_interval(schedule_interval, seconds);
+      const next_index = current_index == num_intervals - 1 ? 0 : current_index + 1;
+
+      const event = this._getEvent(platform_schedule, next_index);
+      const start = event.interval[0];
+      if(start < closest_next_interval){
+        closest_next_interval = start;
+      }
     }
 
-    return null;
+    return closest_next_interval;
+  }
+
+  getMaxTime(){
+    const max_times = Object.values(this._schedule)
+    .filter(e => e.platformID)  //make sure its not nan
+    .map(e => e.interval[e.interval.length-1]);
+    return Math.max(...max_times);
+  }
+
+  toJSON(){
+    const json = {
+      name : this._name,
+      schedule : this._schedule
+    };
+
+    return json;
+  }
+
+  _getPlatforms(){
+    const no_nan_platform = (p) => !isNaN(p.platformID) && p.platformID != null;
+    const platform_schedules = Object.values(this._schedule)
+      .filter(no_nan_platform);
+
+    return platform_schedules;
   }
 
   _getEvent(platform_schedule, id_index){
@@ -127,22 +129,6 @@ export default class Schedule {
       }
     }
     return null;
-  }
-
-  getMaxTime(){
-    const max_times = Object.values(this._schedule)
-    .filter(e => e.platformID)  //make sure its not nan
-    .map(e => e.interval[e.interval.length-1]);
-    return Math.max(...max_times);
-  }
-
-  toJSON(){
-    const json = {
-      name : this._name,
-      schedule : this._schedule
-    };
-
-    return json;
   }
 }
 
