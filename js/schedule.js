@@ -68,8 +68,8 @@ export default class Schedule {
     }
   }
 
-  getNextEventTime(seconds){
-    const platform_schedules = this._getPlatforms();
+  getNextEventTime(seconds, satellite){
+    const platform_schedules = this._getSubsetPlatforms(satellite);
 
     var closest_next_interval = Number.MAX_VALUE;
     for(const platform_schedule of platform_schedules){
@@ -89,8 +89,8 @@ export default class Schedule {
     return closest_next_interval;
   }
 
-  getPrevEventTime(seconds){
-    const platform_schedules = this._getPlatforms();
+  getPrevEventTime(seconds, satellite){
+    const platform_schedules = this._getSubsetPlatforms(satellite);;
 
     var closest_prev_interval = 0;
     for(const platform_schedule of platform_schedules){
@@ -131,6 +131,14 @@ export default class Schedule {
     };
 
     return json;
+  }
+
+  _getSubsetPlatforms(platform){
+    console.log(platform);
+    if(platform && platform.id in this._schedule){
+      return [this._schedule[platform.id]];
+    }
+    return this._getPlatforms();
   }
 
   _getPlatforms(){

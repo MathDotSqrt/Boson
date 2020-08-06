@@ -134,7 +134,8 @@ export class Simulation {
   nextScheduleEvent(){
     if(this._currentSchedule){
       const seconds = this._scene.getCurrentTime();
-      const next_event = this._currentSchedule.getNextEventTime(seconds);
+      const following_platform = this._getByPlatformName(this._follow);
+      const next_event = this._currentSchedule.getNextEventTime(seconds, following_platform);
       this._scene.setCurrentTime(next_event);
     }
   }
@@ -142,7 +143,8 @@ export class Simulation {
   prevScheduleEvent(){
     if(this._currentSchedule){
       const seconds = this._scene.getCurrentTime();
-      const prev_event = this._currentSchedule.getPrevEventTime(seconds);
+      const following_platform = this._getByPlatformName(this._follow);
+      const prev_event = this._currentSchedule.getPrevEventTime(seconds, following_platform);
       this._scene.setCurrentTime(prev_event);
     }
   }
@@ -211,42 +213,6 @@ export class Simulation {
         }
       }
     }
-
-    // //if we have a schedule loaded
-    // if(this._currentSchedule){
-    //   //gets all events from prev seconds to current seconds
-    //   const getEvent = (id) => this._currentSchedule.getScheduleEventContinuous(id, seconds);
-    //
-    //   //gets all platformIDs defined in schedule
-    //   const platformIDs = this._currentSchedule.getAllPlatformIDs();
-    //   const events = platformIDs.map(id => [this._getByPlatformID(id), getEvent(id)]);
-    //
-    //   //fires red vector to visualize target collection
-    //   const fire_events = events
-    //     .filter(([p, e]) => p && e)
-    //     .map(([p, e]) => [p.name, e.event.coord])
-    //     .forEach(([name, [lon, lat]]) => this._scene.fireVector(name, lon, lat));
-    //
-    //   //removes red vector when no target is being collected
-    //   const ice_events = events
-    //     .filter(([p, e]) => p && !e)
-    //     .forEach(([p, e]) => this._scene.iceVector(p.name));
-    //
-    //   //gets all loaded target sets
-    //   const target_sets = Object.values(this._currentTargetSets);
-    //   const select_by_id   = (id) => target_sets.forEach(t => t.selectTargetByID(id));
-    //   const deselect_by_id = (id) => target_sets.forEach(t => t.deselectTargetByID(id));
-    //   const select_target = (delta, events, targetIDs) => {
-    //     const select_func = delta >= 0 ? select_by_id : deselect_by_id;
-    //     targetIDs.forEach(select_func);
-    //   }
-    //
-    //   const select_events = events
-    //     .filter(([p, e]) => e)
-    //     .map(([p, e]) => [e.delta, e.event, e.targets])
-    //     .filter(([delta, event, targets]) => delta != 0)
-    //     .forEach(([delta, event, targets]) => select_target(delta, event, targets));
-    // }
   }
 
   _recomputeSimulationTime(){
@@ -263,6 +229,13 @@ export class Simulation {
   _getByPlatformID(id){
     if(this._platform){
       return this._platform.getSatelliteByID(id);
+    }
+    return null;
+  }
+
+  _getByPlatformName(name){
+    if(this._platform){
+      return this._platform.getSatelliteByName(name);
     }
     return null;
   }
