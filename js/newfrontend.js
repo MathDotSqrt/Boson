@@ -264,7 +264,7 @@ function linkScheduleNode(){
     simulation.nextScheduleEvent();
   }
   prev_button.onclick = (e) => {
-    console.log("prev");
+    simulation.prevScheduleEvent();
   }
 }
 

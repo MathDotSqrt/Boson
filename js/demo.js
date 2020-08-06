@@ -135,9 +135,15 @@ export class Simulation {
     if(this._currentSchedule){
       const seconds = this._scene.getCurrentTime();
       const next_event = this._currentSchedule.getNextEventTime(seconds);
-      console.log(seconds);
-      console.log(next_event);
       this._scene.setCurrentTime(next_event);
+    }
+  }
+
+  prevScheduleEvent(){
+    if(this._currentSchedule){
+      const seconds = this._scene.getCurrentTime();
+      const prev_event = this._currentSchedule.getPrevEventTime(seconds);
+      this._scene.setCurrentTime(prev_event);
     }
   }
 

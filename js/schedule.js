@@ -71,7 +71,6 @@ export default class Schedule {
   getNextEventTime(seconds){
     const platform_schedules = this._getPlatforms();
 
-    //todo fix this
     var closest_next_interval = Number.MAX_VALUE;
     for(const platform_schedule of platform_schedules){
       const schedule_interval = platform_schedule.interval;
@@ -81,13 +80,41 @@ export default class Schedule {
       const next_index = current_index == num_intervals - 1 ? 0 : current_index + 1;
 
       const event = this._getEvent(platform_schedule, next_index);
-      const start = event.interval[0] + .0001;
+      const start = event.interval[0] + .0001;  //floating-point woes
       if(start < closest_next_interval){
         closest_next_interval = start;
       }
     }
 
     return closest_next_interval;
+  }
+
+  getPrevEventTime(seconds){
+    const platform_schedules = this._getPlatforms();
+
+    var closest_prev_interval = 0;
+    for(const platform_schedule of platform_schedules){
+      const schedule_interval = platform_schedule.interval;
+      const num_intervals = schedule_interval.length / 2;
+
+      const [is_within, current_index] = binary_search_interval(schedule_interval, seconds);
+      var next_index = current_index;
+      if(is_within){
+        next_index = next_index == 0 ? num_intervals - 1 : next_index - 1;
+      }
+      else if(next_index  < 0){
+        //if seconds is before the first interval, wrap to the end
+        next_index = num_intervals - 1;
+      }
+
+      const event = this._getEvent(platform_schedule, next_index);
+      const start = event.interval[0] + .0001;  //floating-point woes
+      if(start > closest_prev_interval){
+        closest_prev_interval = start;
+      }
+    }
+
+    return closest_prev_interval;
   }
 
   getMaxTime(){
@@ -152,5 +179,7 @@ function binary_search_interval(intervals, seconds){
     }
   }
 
+  //this returns -1 if seconds is before the first interval
+  //this is desired behavior
   return [false, end];
 }
