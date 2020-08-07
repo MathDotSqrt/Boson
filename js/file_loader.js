@@ -1,7 +1,16 @@
 "use strict";
+/*
+...
+file_loader: is a collection of functions that handle reading files and parsing
+them asynchronously. When files are parsed they trigger a callback passed in
+by the calling code.
+...
+*/
+
 import * as BOSON from './demo.js';
 
 function pFileReader(file){
+  //Wraps FileReader with a Promise
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = (e) => reject(e);
@@ -29,9 +38,9 @@ export function loadPresetJSON(new_file, func){
     var result = null;
     try{
       result = JSON.parse(text);
+      func(new_file.name, result);
     } catch(err){console.log("Error, could not parse");}
 
-    func(new_file.name, result);
   });
 }
 
@@ -66,25 +75,31 @@ export function loadWindowFile(new_file, func){
 }
 
 export function loadTargetFile(file_list, func){
+  //contains centroid location of all targets
   const TARGETS = "targets.csv";
+  //contains vertex data for non point targets
   const TARGET_VERTICES = "target_vertices.csv";
 
+  //hacky way to get dir, non standard
   //const dir = file_list[0].webkitRelativePath.split('/')[0];
 
   const file_array = Object.values(file_list);
   const targets = file_array.find(file => file.name === TARGETS);
   const target_vertices = file_array.find(file => file.name === TARGET_VERTICES);
 
+  //parse the two files independently
   const target_promise = pFileReader(targets).then(parseTarget, console.error);
   const vertex_promise = pFileReader(target_vertices).then(parseTargetVertex, console.error);
 
   //when both target and vertex data gets parsed
   Promise.all([target_promise, vertex_promise])
   .then(([targets, vertices]) => {
+    //TODO: fix this error handling. This (might?) break the code.
     if(targets === null || vertices === null){
       throw new Error("Failed to parse target deck!");
     }
 
+    //this returns 3 target_sets. Call callback 3 times for each target set
     const [point, dsa, mcg] = createTargetObject(targets, vertices);
     func("deck_point", point)
     func("deck_dsa", dsa)

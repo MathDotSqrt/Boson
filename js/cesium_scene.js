@@ -1,5 +1,11 @@
 "use strict";
 
+/*
+...
+Scene: is a class that owns cesium viewer, entities and primitives. 
+...
+*/
+
 import * as BOSON_UTIL from './cesium_util.js';
 import * as BOSON_ORBIT from './cesium_orbit.js';
 
