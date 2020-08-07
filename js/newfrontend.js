@@ -1,6 +1,14 @@
+/*
+...
+A collection of functions that add event listeners to existing html elements
+and make the UI responsive.
+...
+*/
+
 import * as BOSON from './demo.js'
 import * as BOSON_FILELOADER from './file_loader.js';
 
+//simulation is an instance that repersents the state of the visualization
 const simulation = new BOSON.Simulation(document.getElementById('view'));
 
 /* PANEL */
@@ -104,6 +112,7 @@ function hideContainer(element, hide=true){
 
 /* EXPORTS */
 export function saveState(){
+  //serializes the json
   const json = JSON.stringify(simulation.toJSON());
   const blob = new Blob([json], {type: "text/plain;"});
   saveAs(blob, "preset.json"); //from FileSaver.js
@@ -168,6 +177,7 @@ export function setAllSatelliteTrail(names, orbit_trail){
 
 /* NODES */
 function linkFileDrop(element, load_file_func){
+  //dont propigate the event
   const prevent_default = (e)=>e.preventDefault();
   const load_file = (e) => {if(e.target.files.length > 0) load_file_func(e.target.files);};
 
@@ -280,6 +290,9 @@ function createAndLinkSatellite(name, platform){
 
   setName(satellite, name);
   satellite.onclick = (e) => {
+    //Onclick event is triggered for all children including the control panel
+    //for the satellites. We test if child element contains "showable" before
+    //toggling visibility
     if(e.target.classList.contains("showable")){
       control.classList.toggle("hide");
     }
@@ -287,7 +300,6 @@ function createAndLinkSatellite(name, platform){
 
   color_picker.value = platform.color;
   color_picker.oninput = () => {
-    //just pass in color_picker value because it set when manually picked
     setSatelliteColor(name, color_picker.value);
   };
 
@@ -354,9 +366,11 @@ function importPreset(name, json){
 
   if(!json) return;
 
+  //clears the state of the visualization
   removeAllState();
 
-  if(json.platform){
+  if(json.platform && json.platform.length > 0){
+    //TODO make json.platform not an array
     const platform = json.platform[0];
 
     importPlatform(platform.name, platform.satellites);
@@ -403,48 +417,47 @@ function importPreset(name, json){
 }
 
 function importPlatform(name, platform){
+  console.log(name, platform);
+
   const platform_controls = document.getElementById("platform_control_grid");
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
   const global_orbit_select = document.getElementById("global_orbit_trail_select");
+
   const platforms = Object.values(platform).sort((a, b) => a.id - b.id).map(p => p.name);
-
-  console.log(name, platform);
-
   platforms.forEach(name => createAndLinkSatellite(name, platform[name]));
   platforms.forEach(insertFollowSelect);
   setName(platform_controls, name);
+
   hideContainer(platform_filedrop, true);
   hideContainer(platform_controls, false);
   global_orbit_select.value = "";
   global_orbit_select.onchange = () => {
     setAllSatelliteTrail(platforms, global_orbit_select.value);
   }
+
   simulation.importPlatform(name, platform);
 }
 
 function importSensors(name, sensors){
-  const sensor_file_drop = document.getElementById("sensor_file_drop");
-
   console.log(name, sensors);
 
+  const sensor_file_drop = document.getElementById("sensor_file_drop");
   fileDropSelected(sensor_file_drop, name);
   simulation.importSensors(name, sensors);
 }
 
 function importWindow(name, window, isIW=true){
-  const file_drop = document.getElementById(isIW ? "iw_file_drop" : "cw_file_drop");
-
   console.log(name, window);
 
+  const file_drop = document.getElementById(isIW ? "iw_file_drop" : "cw_file_drop");
   fileDropSelected(file_drop, name);
   simulation.importWindow(window, isIW);
 }
 
 function importTargetSet(name, target_set){
-  const target_filedrop = document.getElementById("target_file_drop");
-
   console.log(name, target_set);
 
+  const target_filedrop = document.getElementById("target_file_drop");
   createAndLinkTargetSet(name, target_set);
   hideContainer(target_filedrop, true);
 
@@ -452,13 +465,16 @@ function importTargetSet(name, target_set){
 }
 
 function importSchedule(name, schedule){
+  console.log(name, schedule);
+
   const schedule_filedrop = document.getElementById("schedule_file_drop");
   const schedule_controls = document.getElementById("schedule_control_grid");
   const num_events = schedule_controls.getElementsByClassName("stat")[0];
-  console.log(name, schedule);
 
   setName(schedule_controls, name);
 
+  //Hack to count the number of events in the schedule
+  //TODO: there is a bug with counting NaN events
   const accumulator = (a, c) => a + c;
   num_events.innerHTML = Object
     .values(schedule.schedule)
@@ -475,12 +491,14 @@ function importSchedule(name, schedule){
 
 /* DELETES */
 function removeAllChildren(element){
+  //Javascript has no built in functionality to delete all children
   while(element.firstChild){
     element.removeChild(element.lastChild);
   }
 }
 
 function removeAllState(){
+  //This is most efficent order to remove visualization elements
   removeAllSatellites();
   removeAllTargetSets();
   removeSchedule();
@@ -527,5 +545,5 @@ function removeSchedule(){
 }
 /* DELETES */
 
-//removes annoying bottom text
+//removes annoying bottom text for cesium
 document.getElementsByClassName("cesium-viewer-bottom")[0].remove();

@@ -1,8 +1,17 @@
 "use strict";
 
+/*
+...
+Simulation is a class that repersents the current state of the simulation.
+This class handles the importing and serialization of state. The primary function
+of this class it to guarantee any changes made to the ui will be repersented in
+cesium's scene. Simulation and its children does not own any cesium entities or
+primitives. This state ownership architecture designed to work well with including
+additional visualization libraries.
+...
+*/
+
 import * as BOSON_RENDER from './cesium_scene.js';
-
-
 import Platform from './platform.js'
 import Schedule from './schedule.js'
 import TargetSet from './targetset.js'
@@ -11,11 +20,23 @@ import TargetSet from './targetset.js'
 
 export class Simulation {
   constructor(dom){
+    //this._scene is an instance of Cesiums state.
+    //If any state changes were made in simulation or its children this._scene
+    //needs to be updated.
     this._scene = new BOSON_RENDER.Scene(dom);
+
     this._platform = null;
+
+    //Named object of all the target types. (Point, DSA, MCG)
+    //Designed to work seemlessly with adding new target types in the UI.
     this._currentTargetSets = {};
     this._currentSchedule = null;
+
+    //Cesium owns the update/animation loop for the visualization
+    //This is how Simulation remains in lockstep with cesium's update loop
     this._scene.addPreRenderEvent(this);
+
+    //name of the entity getting followed
     this._follow = null;
   }
 
@@ -25,11 +46,14 @@ export class Simulation {
   }
 
   setVisualizationTime(seconds){
+    //Cesium owns the current timestep of the simulation
     this._scene.setCurrentTime(seconds);
   }
 
   importPlatform(name, platform){
     this._platform = new Platform(name, platform, this._scene);
+
+    //An imported satellite's ephemeris can expand the bounds of cesiums timeline
     this._recomputeSimulationTime();
   }
 
@@ -69,14 +93,22 @@ export class Simulation {
     if(this._platform){
       this._platform.removeAll();
       this._platform = null;
-      this._recomputeSimulationTime();
 
+      //A removed satellite can shrink the bounds of cesiums timeline
+      this._recomputeSimulationTime();
     }
   }
 
   importTargetSet(name, targets){
     this._currentTargetSets[name] = new TargetSet(targets, this._scene);
+
+    //This is to fix a bug when swapping targets in the middle of a schedule.
+    //Essentually this initalizes the generated primitives for schedule to update
+    //its selection state
     this._scene.updatePrimitives();
+
+    //Tells the schedule to clear the cached event. Forces schedule to update
+    //from timestep 0 to currentTime
     if(this._currentSchedule){
       this._currentSchedule.clearLastEventCache();
     }
@@ -91,6 +123,7 @@ export class Simulation {
   }
 
   setTargetSelectColor(name, color){
+    //TODO: add alpha parameter
     const target_set = this._currentTargetSets[name];
     if(target_set){
       target_set.selectColor = color;
@@ -111,8 +144,9 @@ export class Simulation {
   importSchedule(name, schedule){
     if(!this._currentSchedule){
       this._currentSchedule = new Schedule(name, schedule);
-      this._recomputeSimulationTime();
 
+      //An imported schedule can expand the bounds of cesiums timeline
+      this._recomputeSimulationTime();
     }
   }
 
@@ -127,10 +161,13 @@ export class Simulation {
       this._scene.clearAllVectors();
       this._currentSchedule = null;
 
+      //A removed schedule can shrink the bounds of cesiums timeline
       this._recomputeSimulationTime();
     }
   }
 
+  //Steps the simulation to the next schedule event. If no satellite is followed
+  //then timestep to closest event in scene
   nextScheduleEvent(){
     if(this._currentSchedule){
       const seconds = this._scene.getCurrentTime();
@@ -140,6 +177,8 @@ export class Simulation {
     }
   }
 
+  //Steps the simulation to the previous schedule event. If no satellite is followed
+  //then timestep to closest event in scene
   prevScheduleEvent(){
     if(this._currentSchedule){
       const seconds = this._scene.getCurrentTime();
@@ -149,12 +188,14 @@ export class Simulation {
     }
   }
 
+  //Converts the state of the entire simulation to a single json object
   toJSON(){
     const settings = {
       follow: this._follow,
       currentTime: this._scene.getCurrentTime()
     };
 
+    //TODO: make platform not an array. No need anymore
     const platform = this._platform ? [this._platform.toJSON()] : [];
     const targets = Object.values(this._currentTargetSets).map(t => t.toJSON());
     const schedule = this._currentSchedule ? this._currentSchedule.toJSON() : null;
@@ -173,12 +214,13 @@ export class Simulation {
   update(){
     const seconds = this._scene.getCurrentTime();
 
-    //orient all satellites to face the earth
+    //orient all satellites
     if(this._platform){
       this._platform.update();
     }
 
     if(this._currentSchedule){
+      //This returns the current event and all previous events missed
       const schedule_event = this._currentSchedule.getScheduleEventContinuous(seconds);
       const delta = schedule_event.delta;
       const platform_events = schedule_event.platform_events;
@@ -203,10 +245,13 @@ export class Simulation {
         .forEach(p => this._scene.iceVector(p.name));
 
       const target_sets = Object.values(this._currentTargetSets);
+      //If time has progressed forward or backwards, potentially update targets
       if(delta != 0){
         for(const target_set of target_sets){
           const select_by_id = (id) => target_set.selectTargetByID(id);
           const deselect_by_id = (id) => target_set.deselectTargetByID(id);
+
+          //If delts is positive we moved foreward in time
           const select_func = delta > 0 ? select_by_id : deselect_by_id;
 
           target_ids.forEach(select_func);
