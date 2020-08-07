@@ -2,7 +2,7 @@
 
 /*
 ...
-Scene: is a class that owns cesium viewer, entities and primitives. 
+Scene: is a class that owns cesium viewer, entities and primitives.
 ...
 */
 
