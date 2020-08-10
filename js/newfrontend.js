@@ -11,6 +11,9 @@ import * as BOSON_FILELOADER from './file_loader.js';
 //simulation is an instance that repersents the state of the visualization
 const simulation = new BOSON.Simulation(document.getElementById('view'));
 
+//max width for the side panel to expand to
+const MAX_WIDTH = "300px"
+
 /* PANEL */
 function initPanel(){
   const close_nav_element = document.getElementById("close_nav");
@@ -27,7 +30,7 @@ function initPanel(){
 
 function openNav(){
   const panel = document.getElementById("side_panel_1");
-  panel.style.width = "300px";
+  panel.style.width = MAX_WIDTH;
 }
 function closeNav(){
   const panel = document.getElementById("side_panel_1");

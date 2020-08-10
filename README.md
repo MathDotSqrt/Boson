@@ -46,7 +46,76 @@ Although Boson runs entirely on the front-end's browser, Cesium will not serve c
 
 <img src="docs/codereview.png" width="500">
 
-### Example Code
+### Code Snippets
+
+#### Common Pattern for Parsing CSV
+Boson's main input file type is CSV. A common pattern used to parse CSV files is generating an index map from the header.  
+
+A user will create a `columnMap` with programmer name as the key and the CSV column name as the value.
+
+```javascript
+const columnMap = {
+  platformID : "PlatformID",
+  time : "Time",
+  posx : "PositionX",
+  posy : "PositionY",
+  posz : "PositionZ",
+  velx : "VelocityX",
+  vely : "VelocityY",
+  velz : "VelocityZ"
+}
+```
+`getHeaderIndices` will return an index map with the same keys as columnMap and with the column indices as the value. Returns null if column name was not found.
+```javascript
+const indexMap = getHeaderIndices(header, columnMap);
+
+if(indexMap === null){
+  return null;
+}
+```
+`indexMap` is now used to index into the line split array.
+```javascript
+const split = line.split(',');
+...
+ephemeris.time.push(Number(split[indexMap.time]));
+//convert km to meters
+ephemeris.position.push(Number(split[indexMap.posx]) * 1000);
+ephemeris.position.push(Number(split[indexMap.posy]) * 1000);
+ephemeris.position.push(Number(split[indexMap.posz]) * 1000);
+
+ephemeris.velocity.push(Number(split[indexMap.velx]) * 1000);
+ephemeris.velocity.push(Number(split[indexMap.vely]) * 1000);
+ephemeris.velocity.push(Number(split[indexMap.velz]) * 1000);
+```
+
+---
+#### Orienting Satellite Sensor Volumes
+When orienting the satellite's sensor-volume with the `velOrientation` entity property, the volume points 180 degrees away from the surface of the earth.
+
+```javascript
+const current_orientation = entity.velOrientation.getValue(time); //calculated velocity orientation
+const orientation = entity.orientation.getValue();                //current orientation of entity
+
+//points sensor to surface of the earth
+//rotate sensor 180 degrees along the axis of its velocity
+const vel_axis = Cesium.Cartesian3.normalize(velocity, temp0_vec3);
+const rotate_down_quat = Cesium.Quaternion.fromAxisAngle(vel_axis, Math.PI, temp0_quat);
+Cesium.Quaternion.multiply(rotate_down_quat, current_orientation, orientation); //orientation now facing earth surface
+```    
+The code to rotate the sensor volume on the axis perpendicular to the surface of the earth.
+```javascript
+//not accurate in Wgs84 because it measures from center of earth not
+//orthogonal from surface of earth
+const pos_axis = Cesium.Cartesian3.normalize(position, temp0_vec3);       
+const offset_rotation = 0;                                                      //in radians
+const offset_quat = Cesium.Quaternion.fromAxisAngle(pos_axis, offset_rotation, temp0_quat);
+Cesium.Quaternion.multiply(offset_quat, orientation, orientation);
+```
+Final orientation.
+```javascript
+entity.orientation.setValue(orientation);
+```
+---
 
 #### Target Select Shader
 This is a modified version of EllipsoidSurfaceAppearance vertex shader. The only modification was adding the color attribute and passing it to the fragment shader. This color attribute is a value passed to each vertex in the shader. The color attribute's alpha value is used in the fragment shader to decide whether to sample from a default color uniform or from a selected color uniform. This is done for performance reasons

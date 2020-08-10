@@ -414,9 +414,6 @@ export class Scene {
 
       if(position === undefined) return;
 
-      //this rotates the sensor with respect to the entity's
-      //position and velocity. This sensor points strait up
-      //need to rotate it to point to the surface of the earth
       const current_orientation = entity.velOrientation.getValue(time);
       const orientation = entity.orientation.getValue();
 
