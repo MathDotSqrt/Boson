@@ -122,6 +122,7 @@ export default class WindowInterval {
 
   _updateColors(){
     if(this.isComputed()){
+      //force updates parents color 
       this._parent.color = this._parent._color; //this is really bad
       //this._scene.setOrbitColor(this._name, this._defaultColor, "default");
       this._scene.setOrbitColor(this._name, this._iwColor, "image_window");

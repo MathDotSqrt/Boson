@@ -21,32 +21,6 @@ Although `Boson` runs entirely on the front-end's browser, Cesium will not serve
 
 ## Developer Guide
 
-<!-- ### Important Files
-  - `ui_style.css` is the base CSS of `Boson`
-  - `new_ui.html` is the base HTML of `Boson`
-  - `frontend.js` is a collection of functions that add event listeners to html elements and make the UI dynamic
-  - `file_loader.js` is a collection of functions that read and parse files into JSON asynchronously. When files are successfully parsed they trigger a callback
-  - `cesium_scene.js` defines `Scene`; a class that owns the visualization including Cesium's `Viewer`, `Entities` and `Primitives`.
-  - `demo.js` defines `Simulation`; a class that represents the current state of the visualization. This class handles importing and serialization of visualization state. The primary function of this class it to guarantee any changes made to the UI will be represented in cesium's `Scene` class. Simulation and its children does not own any cesium entities or primitives. This state ownership architecture designed to work well with including additional visualization libraries. `Simulation` owns:
-    - `Platform`
-    - `TargetSet`
-    - `Schedule`
-  - `platform.js` defines `Platform` class. `Platform` is a class that owns every satellite in the scene.
-  - `satellite.js` defines `Satellite` class. `Satellite` is a class that represents the state of an orbiting satellite in cesium's visualization. A satellite optionally defines its sensor.
-  - `sensor.js` defines `Sensor` class. `Sensor` is a class that represents the state of the satellite's sensor volume in the Cesium visualization. Cesium visualizes sensor volumes with the library `cesium-volume-sensor`.
-  - `windowinterval.js` defines `WindowInterval` class. `WindowInterval` represents the Imaging Window (IW) and Communication Window (CW) intervals for an individual satellite's orbit. When both intervals are defined, the class will compute 4 non-overlapping interval sets.
-    - `this._complInterval` complement of (IW or CW) intervals *(default satellite color)*
-    - `this._mutexIWInterval` mutually exclusive image window interval *(red)*
-    - `this._mutexCWInterval` mutually exclusive comm window interval *(blue)*
-    - `this._mutinInterval` mutually inclusive intervals for (IW and CW) *(purple)*
-  - `targetset.js` defines `TargetSet` class. `TargetSet` represents a collection of related target regions in Cesium's primitive visualization.
-  - `schedule.js` defines `Schedule` class. `Schedule` represents time-series collection events for each satellite individually. Every visualization timestep queries `Schedule` to get the current event and an array of skipped events for each satellite. -->
-
-### Code Diagram
-> The arrow represents the direction of the calling code.
-
-<img src="docs/codereview.png" width="500">
-
 ### Classes
 
 #### Scene
@@ -202,6 +176,135 @@ class Satellite {
   update();
 }
 ```
+
+#### Sensor
+> defined in `sensor.js`
+
+`Sensor` represents the state of the satellite's sensor volume in the Cesium visualization. Cesium visualizes sensor volumes with the library `cesium-volume-sensor`. This class is not dynamic.
+
+```javascript
+class Sensor{
+  constructor(name, type, min_value, max_value, scene);
+
+
+  //Note: only getters. This class is not dynamic
+  get sensor_type();
+  get min_value();
+  get max_value();
+}
+```
+
+#### WindowInterval
+> defined in `windowinterval.js`
+
+`WindowInterval` represents the Imaging Window (IW) and Communication Window (CW) intervals for an individual satellite's orbit. When both intervals are defined, the class will compute 4 non-overlapping interval sets.
+  - `this._complInterval` complement of (IW or CW) intervals *(default satellite color)*
+  - `this._mutexIWInterval` mutually exclusive image window interval *(red)*
+  - `this._mutexCWInterval` mutually exclusive comm window interval *(blue)*
+  - `this._mutinInterval` mutually inclusive intervals for (IW and CW) *(purple)*
+
+```javascript
+class WindowInterval{
+  constructor(parent, scene);   //Parent is the satellite this window interval is attached to
+
+  setIWInterval(interval);
+  setCWInterval(interval);
+
+
+  isComputed();                 //Tests if all four intervals are computed
+
+
+  /*Interval Color Controls*/
+  //The UI is not hooked up to these controls yet, but they do work.
+  set DefaultColor(color);
+  get DefaultColor();
+  set IWColor(color);
+  get getIWColor();
+  set CWColor(color);
+  get CWColor();
+  set BothColor(color);
+  get BothColor();
+  /*Interval Color Controls*/
+
+  //Four non overlapping intervals
+  get complInterval();
+  get mutexIWInterval();
+  get mutexCWInterval();
+  get mutinInterval();
+}
+```
+
+#### TargetSet
+> defined in `targetset.js`
+
+`TargetSet` represents a collection of related target regions in Cesium's primitive visualization
+
+```javascript
+class TargetSet{
+  constructor(targets, scene);
+
+  get name();
+  get color();
+  set color(color);
+
+  get alpha();
+  set alpha(alpha);
+
+  get selectColor();
+  set selectColor(selectColor);
+
+  selectTargetByID(id);
+  deselectTargetByID(id);
+
+  toJSON();   //Serialize all targets in the scene and their state
+}
+```
+
+#### Schedule
+> defined in `schedule.js`
+
+`Schedule` represents time-series collection events for each satellite individually. Every visualization timestep queries `Schedule` to get the current event and an array of skipped events for each satellite.
+
+```javascript
+class Schedule{
+  constructor(name, schedule);
+
+  get schedule();
+
+  //Everytime getScheduleEventContinuous is called, Schedule caches the last event for substantial efficiency gains
+  //When visualization state changes, its important to clear the last cache.
+  clearLastEventCache();
+
+
+  getAllPlatformIDs();  //All of the platformIDs referenced in the schedule
+  getAllTargets();      //All of the targetIDs referenced in the schedule
+
+  //Gets the current event and an array of skipped events for each satellite
+  getScheduleEventContinuous(seconds);
+
+  //If satellite is defined, get next event for specific satellite. If not defined get next closest event.
+  getNextEventTime(seconds, satellite);
+  getPrevEventTime(seconds satellite);
+
+
+  getMaxTime();       //Gets largest time value from all schedule events
+
+  toJSON();           //Serializes schedule events  
+}
+```
+
+### More Important Files
+  - `ui_style.css` is the base CSS of `Boson`
+  - `new_ui.html` is the base HTML of `Boson`
+  - `frontend.js` is a collection of functions that add event listeners to html elements and make the UI dynamic
+  - `file_loader.js` is a collection of functions that read and parse files into JSON asynchronously. When files are successfully parsed they trigger a callback
+
+### Code Diagram
+> The arrow represents the direction of the calling code.
+
+<img src="docs/codereview.png" width="500">
+
+---
 
 ### Code Snippets
 
