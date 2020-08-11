@@ -6,27 +6,28 @@ electro-optical/radar sensors.
 All dependencies are prebuilt and stored in `./js/build/`. These dependencies are either imported with a script tag in `index.html` or imported with ES6 modules.
 
 #### Current Dependencies
-- [Cesium 1.72](https://cesium.com/downloads/)
-- [MathDotSqrt/cesium-sensor-volumes](https://github.com/MathDotSqrt/cesium-sensor-volumes)
-- [FileSaver.js](https://github.com/eligrey/FileSaver.js/)
+- [Cesium 1.72](https://cesium.com/downloads/) *earth visualization*
+- [MathDotSqrt/cesium-sensor-volumes](https://github.com/MathDotSqrt/cesium-sensor-volumes) *sensor visualization*
+- [FileSaver.js](https://github.com/eligrey/FileSaver.js/) *saves BLOB as file*
 
-*Boson should be backward compatible with all versions of Cesium >= __1.62__*
+*`Boson` should be backward compatible with all versions of Cesium >= __1.62__*
 
 ## Deployment
 
-Boson runs best on the newest version of chrome, but will run on any browser that supports ES6 and WebGL.
+`Boson` runs best on the newest version of chrome, but will run on any browser that supports ES6 and WebGL.
 
 #### Hosting
-Although Boson runs entirely on the front-end's browser, Cesium will not serve cross-origin requests unless it is hosted on a webserver. The project folder needs to be hosted on a webserver. The user can either host the webserver locally on his machine and connect to the project via [localhost](localhost:8080/boson/new_ui.html) or host it remotely and connect to it via the hosts IP.
+Although `Boson` runs entirely on the front-end's browser, Cesium will not serve cross-origin requests unless it is hosted on a webserver. To run `Boson` the entire project folder needs to be on a webserver. The user can either host the webserver locally on a personal machine or host it remotely. If hosted locally you can access `Boson` via [localhost](http://localhost:8080/boson/new_ui.html).
 
 ## Developer Guide
 
-### Important Files
-  - `new_ui.html` is the base html of Boson
-  - `frontend.js` is a collection of functions that add event listeners to existing html elements and make the UI responsive.
-  - `file_loader.js` is a collection of functions that handle reading files and parsing the content into JSON asynchronously. When files are successfully parsed they trigger a callback.
-  - `cesium_scene.js` defines `Scene` class. `Scene` is a class that owns cesium's `Viewer`, `entities` and `primitives`.
-  - `demo.js` defines `Simulation` class. `Simulation` is a class that represents the current state of the simulation. This class handles the importing and serialization of state. The primary function of this class it to guarantee any changes made to the UI will be represented in cesium's `Scene` class. Simulation and its children does not own any cesium entities or primitives. This state ownership architecture designed to work well with including additional visualization libraries. `Simulation` owns:
+<!-- ### Important Files
+  - `ui_style.css` is the base CSS of `Boson`
+  - `new_ui.html` is the base HTML of `Boson`
+  - `frontend.js` is a collection of functions that add event listeners to html elements and make the UI dynamic
+  - `file_loader.js` is a collection of functions that read and parse files into JSON asynchronously. When files are successfully parsed they trigger a callback
+  - `cesium_scene.js` defines `Scene`; a class that owns the visualization including Cesium's `Viewer`, `Entities` and `Primitives`.
+  - `demo.js` defines `Simulation`; a class that represents the current state of the visualization. This class handles importing and serialization of visualization state. The primary function of this class it to guarantee any changes made to the UI will be represented in cesium's `Scene` class. Simulation and its children does not own any cesium entities or primitives. This state ownership architecture designed to work well with including additional visualization libraries. `Simulation` owns:
     - `Platform`
     - `TargetSet`
     - `Schedule`
@@ -39,12 +40,168 @@ Although Boson runs entirely on the front-end's browser, Cesium will not serve c
     - `this._mutexCWInterval` mutually exclusive comm window interval *(blue)*
     - `this._mutinInterval` mutually inclusive intervals for (IW and CW) *(purple)*
   - `targetset.js` defines `TargetSet` class. `TargetSet` represents a collection of related target regions in Cesium's primitive visualization.
-  - `schedule.js` defines `Schedule` class. `Schedule` represents time-series collection events for each satellite individually. Every visualization timestep queries `Schedule` to get the current event and an array of skipped events for each satellite.
+  - `schedule.js` defines `Schedule` class. `Schedule` represents time-series collection events for each satellite individually. Every visualization timestep queries `Schedule` to get the current event and an array of skipped events for each satellite. -->
 
 ### Code Diagram
 > The arrow represents the direction of the calling code.
 
 <img src="docs/codereview.png" width="500">
+
+### Classes
+
+#### Scene
+> defined in `cesium_scene.js`
+
+`Scene` is a class that owns the WebGL visualization including Cesium's `Viewer`, `Entities` and `Primitives`.
+
+```  javascript
+class Scene{
+  constructor(dom);
+
+  /* Visualization Timeline Controls */
+  getCurrentTime();
+  setCurrentTime(seconds);
+  setStopTime(seconds);
+  /* Visualization Timeline Controls */
+
+  followEntity(name);
+  addPreRenderEvent(simulation);
+
+  /*Satellite Controls*/
+  createOrbit(name, ephemeris);
+  setOrbitWindows(name, none, onlyIW, onlyCW, both);
+  setOrbitColor(name, csscolor, type);
+  setOrbitTrail(id, trail);
+  appendSensor(name, sensor_type, min, max);
+  setSensorColor(id, sensor_type, css_color);
+  removeOrbit(name);
+  /*Satellite Controls*/
+
+  /*Target Set Controls*/
+  updatePrimitives();     //Force updates all primitives in the scene.
+                          //Enables getGeometryInstanceAttributes on the first frame
+  createTargetPrimitive(name, target_set);
+  setTargetColor(id, css_color, alpha=.5);
+  setTargetSelectColor(id, css_color);
+  selectTarget(name, target_id);
+  deselectTarget(name, target_id);
+  removeTargetPrimitive(name);
+  /*Target Set Controls*/
+
+  /*Target Collection Visualization Controls*/
+  fireVector(name, lon, lat);
+  iceVector(name);
+  clearAllVectors();
+  /*Target Collection Visualization Controls*/
+
+}
+```
+
+#### Simulation
+> defined in `demo.js`
+
+`Simulation` is a class that represents the current state of the visualization. This class handles importing and serialization of visualization state. The primary function of this class it to guarantee any changes made to the UI will be represented in cesium's `Scene` class. Simulation and its children does not own any cesium entities or primitives. This state ownership architecture designed to work well with including additional visualization libraries. `Simulation` owns:
+  - `Scene`
+  - `Platform`
+  - `TargetSet`
+  - `Schedule`
+
+``` javascript
+class Simulation{
+  constructor(dom); //DOM is the html element for Cesium to put canvas in
+
+  follow(name);
+  setVisualizationTime(seconds);
+
+  /*Platform Controls*/
+  importPlatform(name, platform);
+  getAllPlatformNames();
+  importSensors(sensor_names, sensors);
+  importWindow(window, isIW=true);
+  setOrbitColor(name, color);
+  setOrbitTrail(name, values);
+  removeAllOrbits();
+  /*Platform Controls*/
+
+  /*Target Set Controls*/
+  importTargetSet(name, targets);
+  setTargetColor(name, color, alpha);
+  setTargetSelectColor(name, color);
+  removeTargetSet(name);
+  removeAllTargetSets();
+  /*Target Set Controls*/
+
+  /*Schedule Controls*/
+  importSchedule(name, schedule);
+  removeSchedule();
+  nextScheduleEvent();
+  prevScheduleEvent();
+  /*Schedule Controls*/
+
+  toJSON(); //Serializes entire visualization state
+}
+```
+
+#### Platform
+> defined in `platform.js`
+
+`Platform` is a class that owns every satellite in the scene. Platform owns:
+- `Satellite`
+
+``` javascript
+class Platform {
+  constructor(name, platform, scene);
+  addSensors(name, sensors);
+  setOrbitColor(name, color);
+  setOrbitTrail(name, value);
+  setAllOrbitTrail(value);
+
+  setWindow(window_name, intervals, isIW);
+  removeAll();
+
+  getSatelliteByName(name);
+  getSatelliteByID(id);
+  getAllSatelliteNames();
+  getMaxTime();             //Gets max ephemeris from all satellites
+
+  get name();               //Name of the platform file
+
+  toJSON();                 //Serialize the sate of all the satellites in the platform
+  update();                 //Update all satellites
+}
+```
+
+#### Satellite
+> defined in `satellite.js`
+
+`Satellite` represents the state of an orbiting satellite in cesium's visualization. A satellite optionally defines its sensor. Satellite owns:
+  - `Sensor`
+  - `WindowInterval`
+
+``` javascript
+class Satellite {
+  constructor(satellite, scene);
+
+  get name();
+  get id();
+
+  get color();
+  set color(new_color);
+
+  get orbit_trail();
+  set orbit_trail(trail_name);
+
+  get sensor();
+  set sensor(sensor);
+
+  get window();
+
+  getMaxTime();
+
+  toJSON();                   //Serialize the state of the satellite
+  update();
+}
+```
 
 ### Code Snippets
 
