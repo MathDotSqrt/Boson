@@ -17,9 +17,32 @@ All dependencies are prebuilt and stored in `./js/build/`. These dependencies ar
 `Boson` runs best on the newest version of chrome, but will run on any browser that supports ES6 and WebGL.
 
 #### Hosting
-Although `Boson` runs entirely on the front-end's browser, Cesium will not serve cross-origin requests unless it is hosted on a webserver. To run `Boson` the entire project folder needs to be on a webserver. The user can either host the webserver locally on a personal machine or host it remotely. If hosted locally you can access `Boson` via [localhost](http://localhost:8080/boson/new_ui.html).
+Although `Boson` runs entirely on the front-end's browser, Cesium will not serve cross-origin requests unless it is hosted on a webserver. To run `Boson` the entire project folder needs to be on a webserver. The user can either host the webserver locally on a personal machine or host it remotely. If hosted locally you can access `Boson` via [localhost](http://localhost:8080/Boson/new_ui.html).
 
 ## Developer Guide
+
+### Setup
+To develop on Boson you will need the code repository, a web server, and a python interpreter with PIP.  
+
+1. Download the code repository
+
+  `git clone https://github.com/MathDotSqrt/Boson.git`
+
+  A folder titled `Boson` should appear as the root directory for the project.
+2. Download Tomcat
+
+  Version [Apache Tomcat Version 10.0.0](http://mirrors.ibiblio.org/apache/tomcat/tomcat-10/v10.0.0-M7/bin/apache-tomcat-10.0.0-M7-windows-x64.zip). After it is unzipped there are two important folders `bin` and `webapps`. To host `Boson` on tomcat put its root directory in the `webapps` folder. To launch the webserver, run `startup.bat` within the `bin` folder.
+
+  Now `Boson` should be hosted locally on http://localhost:8080/Boson/new_ui.html
+
+  To host `Boston` remotely, complete the previous steps on a dedicated host machine. Get its IPv4 Address and use the IP address with port 8080 to access it same as before.
+
+  Example: http://100.100.0.100:8080/Boson/new_ui.html
+
+3. Install Python Interpreter
+
+  TBD
+
 
 ### Classes
 
@@ -30,7 +53,7 @@ Although `Boson` runs entirely on the front-end's browser, Cesium will not serve
 
 ```  javascript
 class Scene{
-  constructor(dom);
+  constructor(dom){}
 
   /* Visualization Timeline Controls */
   getCurrentTime();
@@ -82,7 +105,7 @@ class Scene{
 
 ``` javascript
 class Simulation{
-  constructor(dom); //DOM is the html element for Cesium to put canvas in
+  constructor(dom){} //DOM is the html element for Cesium to put canvas in
 
   follow(name);
   setVisualizationTime(seconds);
@@ -124,7 +147,7 @@ class Simulation{
 
 ``` javascript
 class Platform {
-  constructor(name, platform, scene);
+  constructor(name, platform, scene){}
   addSensors(name, sensors);
   setOrbitColor(name, color);
   setOrbitTrail(name, value);
@@ -154,7 +177,7 @@ class Platform {
 
 ``` javascript
 class Satellite {
-  constructor(satellite, scene);
+  constructor(satellite, scene){}
 
   get name();
   get id();
@@ -184,7 +207,7 @@ class Satellite {
 
 ```javascript
 class Sensor{
-  constructor(name, type, min_value, max_value, scene);
+  constructor(name, type, min_value, max_value, scene){}
 
 
   //Note: only getters. This class is not dynamic
@@ -205,7 +228,7 @@ class Sensor{
 
 ```javascript
 class WindowInterval{
-  constructor(parent, scene);   //Parent is the satellite this window interval is attached to
+  constructor(parent, scene){}   //Parent is the satellite this window interval is attached to
 
   setIWInterval(interval);
   setCWInterval(interval);
@@ -241,7 +264,7 @@ class WindowInterval{
 
 ```javascript
 class TargetSet{
-  constructor(targets, scene);
+  constructor(targets, scene){}
 
   get name();
   get color();
@@ -267,7 +290,7 @@ class TargetSet{
 
 ```javascript
 class Schedule{
-  constructor(name, schedule);
+  constructor(name, schedule){}
 
   get schedule();
 
