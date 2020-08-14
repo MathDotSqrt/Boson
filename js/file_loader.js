@@ -39,7 +39,7 @@ export function loadPresetJSON(new_file, func){
     try{
       result = JSON.parse(text);
       func(new_file.name, result);
-    } catch(err){console.log("Error, could not parse");}
+    } catch(err){console.log("Error, could not parse", err);}
 
   });
 }

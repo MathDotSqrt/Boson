@@ -16,10 +16,27 @@ PLATFORM_COLUMN_MAP = {
     "velz" : "VelocityZ",
 }
 
-DEFAULT_PLATFORM = {
-    "name" : "default_name",
+SENSOR_COLUMN_MAP = {
+    "platformID" : "PlatformID",
+    "constraint" : "Constraint Type",
+    "minValue" : "Min Value",
+    "maxValue" : "Max Value"
+}
+
+DEFAULT_SATELLITE = {
+    "name" : "satellite",
     "color" : "#00ff00",
     "orbitTrail" : "all"
+}
+
+DEFAULT_SENSOR = {
+    "name" : "sensor constraints"
+}
+
+DEFAULT_SENSOR_PARAMETER = {
+    "maxValue" : 90,
+    "minValue" : 20,
+    "sensorType" : "GrazeAngle"
 }
 
 SAVE_DIR = "./data/python_preset.json"
@@ -31,14 +48,16 @@ preset = {
         "satellites" : {
             1 : {
                 "name" : "platform_1",
-                "color" : "#ff00ff",
-                "orbitTrail" : "one_rev"
+                "color" : "#ff00ff"
             },
             2 : {
                 "name" : "platform_2",
                 "color" : "#00ffff",
                 "orbitTrail" : "all"
             }
+        },
+        "sensors" : {
+            "path" : "./data/sensor_constraints.csv"
         }
     },
     "schedule" : None,
@@ -69,6 +88,12 @@ def read_csv(filename):
     columns = [line.strip().split(DELIM) for line in lines]
     return columns;
 
+def set_default(obj, default):
+    for [key, value] in default.items():
+        if not key in obj:
+            obj[key] = value
+    return obj
+
 def get_header_indices(header, column_map):
     indices = [(k, header.index(v)) for [k, v] in column_map.items() if v in header];
     if(len(indices) != len(column_map.values())):
@@ -76,6 +101,9 @@ def get_header_indices(header, column_map):
     return dict(indices)
 
 def parse_platform(platform):
+    if platform == None:
+        return None
+
     csv = read_csv(platform["path"]);
     header = csv[0];
     content = csv[1:];
@@ -105,13 +133,45 @@ def parse_platform(platform):
         ephemeris["velocity"].append(float(row[index_map["vely"]]) * 1000);
         ephemeris["velocity"].append(float(row[index_map["velz"]]) * 1000);
 
+    satellites = platform["satellites"]
     for [id, ephemeris] in ephemera.items():
-        platform["satellites"][id]["id"] = id
-        platform["satellites"][id]["ephemeris"] = ephemeris
+        if not id in satellites:
+            satellites[id] = DEFAULT_SATELLITE.copy()
+
+        satellites[id]["id"] = id
+        satellites[id]["ephemeris"] = ephemeris
+        set_default(satellites[id], DEFAULT_SATELLITE);
+
+def parse_sensor(sensors):
+    if sensors == None:
+        return None
+
+    csv = read_csv(sensors["path"])
+    header = csv[0]
+    content = csv[1:]
+
+    index_map = get_header_indices(header, SENSOR_COLUMN_MAP)
+    if index_map == None:
+        return None
+
+    parameters = []
+    for row in content:
+        parameters.append({
+            "platformID" : int(row[index_map["platformID"]]),
+            "sensorType" : row[index_map["constraint"]],
+            "minValue" : float(row[index_map["minValue"]]),
+            "maxValue" : float(row[index_map["maxValue"]]),
+        })
+
+    sensors["parameters"] = parameters
+    set_default(sensors, DEFAULT_SENSOR);
 
 
+def parse_target_deck(target):
+    pass
 def import_platform(platform):
     parse_platform(platform);
+    parse_sensor(platform["sensors"]);
 
 def import_preset(preset):
     import_platform(preset["platform"])
