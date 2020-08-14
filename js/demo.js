@@ -195,14 +195,17 @@ export class Simulation {
       currentTime: this._scene.getCurrentTime()
     };
 
-    //TODO: make platform not an array. No need anymore
     const platform = this._platform ? this._platform.toJSON() : null;
-    const targets = Object.values(this._currentTargetSets).map(t => t.toJSON());
+
+    const target_map = {};
+    const targets = Object.entries(this._currentTargetSets)
+      .forEach(([key,value]) => target_map[key] = value.toJSON());
+
     const schedule = this._currentSchedule ? this._currentSchedule.toJSON() : null;
     const json = {
       settings: settings,
       platform : platform,
-      targets : targets,
+      targets : target_map,
       schedule : schedule
     };
 

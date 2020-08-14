@@ -378,8 +378,8 @@ function parseTargetVertex(lines){
     //const coord = {lat: split[3], lon: split[4], alt: split[5]};
     //const coord = [Number(split[3]), Number(split[4]), Number(split[5])];
     const coord = [
-      Number(split[indexMap.longitude]) * 180 / 3.1415,
-      Number(split[indexMap.latitude]) * 180 / 3.1415
+      Number(split[indexMap.longitude]) * 180 / 3.1415926,
+      Number(split[indexMap.latitude]) * 180 / 3.1415926
     ];
 
     if(current_target !== target.id){

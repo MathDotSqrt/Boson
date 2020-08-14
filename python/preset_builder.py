@@ -23,6 +23,12 @@ SENSOR_COLUMN_MAP = {
     "maxValue" : "Max Value"
 }
 
+TARGET_VERTEX_MAP = {
+    "target" : "TargetID",
+    "longitude" : "Longitude",
+    "latitude" : "latitude"
+}
+
 DEFAULT_SATELLITE = {
     "name" : "satellite",
     "color" : "#00ff00",
@@ -31,6 +37,13 @@ DEFAULT_SATELLITE = {
 
 DEFAULT_SENSOR = {
     "name" : "sensor constraints"
+}
+
+DEFAULT_TARGET = {
+    "name" : "target",
+    "color" : "#00ff00",
+    "selectColor" : "#ff0000",
+    "alpha" : 1
 }
 
 DEFAULT_SENSOR_PARAMETER = {
@@ -61,7 +74,16 @@ preset = {
         }
     },
     "schedule" : None,
-    "targets" : []
+    "targets" : {
+        "target_path" : "./data/TestScenario1 Deck/target.csv",
+        "target_vertices" : "./data/TestScenario1 Deck/target_vertices.csv",
+        "targets" : {
+            "deck_dsa" : {
+                "name" : "deck_dsa",
+                "color" : "#ff00ff"
+            }
+        }
+    }
 }
 
 def listdir_fullpath(d):
@@ -167,11 +189,26 @@ def parse_sensor(sensors):
     set_default(sensors, DEFAULT_SENSOR);
 
 
-def parse_target_deck(target):
+def parse_target(path):
     pass
+
+def parse_target_vertex(path):
+    csv = read_csv(path)
+    header = csv[0]
+    content = csv[1:]
+
+    index_map = get_header_indices(header, TARGET_VERTEX_MAP)
+
+    if index_map == None:
+        return None
+
+    pass
+
 def import_platform(platform):
     parse_platform(platform);
     parse_sensor(platform["sensors"]);
+
+def import_targets
 
 def import_preset(preset):
     import_platform(preset["platform"])
