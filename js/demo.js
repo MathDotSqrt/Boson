@@ -196,7 +196,7 @@ export class Simulation {
     };
 
     //TODO: make platform not an array. No need anymore
-    const platform = this._platform ? [this._platform.toJSON()] : [];
+    const platform = this._platform ? this._platform.toJSON() : null;
     const targets = Object.values(this._currentTargetSets).map(t => t.toJSON());
     const schedule = this._currentSchedule ? this._currentSchedule.toJSON() : null;
     const json = {

@@ -22,15 +22,17 @@ DEFAULT_PLATFORM = {
     "orbitTrail" : "all"
 }
 
+SAVE_DIR = "./data/python_preset.json"
+
 preset = {
     "platform" : {
         "name" : "platform.csv",
-        "path" : "../data/platform.csv",
+        "path" : "data/platform.csv",
         "satellites" : {
             1 : {
                 "name" : "platform_1",
                 "color" : "#ff00ff",
-                "orbitTrail" : "all"
+                "orbitTrail" : "one_rev"
             },
             2 : {
                 "name" : "platform_2",
@@ -82,10 +84,30 @@ def parse_platform(platform):
     if(index_map == None):
         return None
 
+    ephemera = {};
     for row in content:
-        id = row[index_map["platformID"]];
-        print(platform[id]);
-    print(index_map);
+        id = int(row[index_map["platformID"]]);
+        if not id in ephemera:
+            ephemera[id] = {
+                "position" : [],
+                "time" : [],
+                "velocity" : []
+            }
+
+        ephemeris = ephemera[id];
+        ephemeris["time"].append(float(row[index_map["time"]]));
+        # convert km to meters
+        ephemeris["position"].append(float(row[index_map["posx"]]) * 1000);
+        ephemeris["position"].append(float(row[index_map["posy"]]) * 1000);
+        ephemeris["position"].append(float(row[index_map["posz"]]) * 1000);
+
+        ephemeris["velocity"].append(float(row[index_map["velx"]]) * 1000);
+        ephemeris["velocity"].append(float(row[index_map["vely"]]) * 1000);
+        ephemeris["velocity"].append(float(row[index_map["velz"]]) * 1000);
+
+    for [id, ephemeris] in ephemera.items():
+        platform["satellites"][id]["id"] = id
+        platform["satellites"][id]["ephemeris"] = ephemeris
 
 
 def import_platform(platform):
@@ -94,23 +116,9 @@ def import_platform(platform):
 def import_preset(preset):
     import_platform(preset["platform"])
 
+    return json.dumps(preset);
 
+blob = import_preset(preset)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import_preset(preset)
+with open(SAVE_DIR, 'w') as writer:
+    writer.write(blob);

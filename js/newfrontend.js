@@ -372,9 +372,9 @@ function importPreset(name, json){
   //clears the state of the visualization
   removeAllState();
 
-  if(json.platform && json.platform.length > 0){
+  if(json.platform){
     //TODO make json.platform not an array
-    const platform = json.platform[0];
+    const platform = json.platform;
 
     importPlatform(platform.name, platform.satellites);
 
