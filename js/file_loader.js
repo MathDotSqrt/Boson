@@ -164,9 +164,9 @@ function parsePlatform(name, lines){
     }
 
     const ephemeris_name = name + "_" + id;
-    if(!(ephemeris_name in platform)){
+    if(!(id in platform)){
       const ephemeris = { time: [], position: [], velocity: [] };
-      platform[ephemeris_name] = {
+      platform[id] = {
         name: ephemeris_name,
         id: id,
         color: "#00ff00",
@@ -175,7 +175,7 @@ function parsePlatform(name, lines){
       };
     }
 
-    const ephemeris = platform[ephemeris_name].ephemeris;
+    const ephemeris = platform[id].ephemeris;
     ephemeris.time.push(Number(split[indexMap.time]));
     //convert km to meters
     ephemeris.position.push(Number(split[indexMap.posx]) * 1000);

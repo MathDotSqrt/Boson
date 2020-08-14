@@ -16,15 +16,28 @@ PLATFORM_COLUMN_MAP = {
     "velz" : "VelocityZ",
 }
 
+DEFAULT_PLATFORM = {
+    "name" : "default_name",
+    "color" : "#00ff00",
+    "orbitTrail" : "all"
+}
+
 preset = {
     "platform" : {
         "name" : "platform.csv",
         "path" : "../data/platform.csv",
-        "satellites" : [
-            {
-                
+        "satellites" : {
+            1 : {
+                "name" : "platform_1",
+                "color" : "#ff00ff",
+                "orbitTrail" : "all"
+            },
+            2 : {
+                "name" : "platform_2",
+                "color" : "#00ffff",
+                "orbitTrail" : "all"
             }
-        ]
+        }
     },
     "schedule" : None,
     "targets" : []
@@ -71,7 +84,7 @@ def parse_platform(platform):
 
     for row in content:
         id = row[index_map["platformID"]];
-        print(id)
+        print(platform[id]);
     print(index_map);
 
 

@@ -426,9 +426,9 @@ function importPlatform(name, platform){
   const platform_filedrop = document.getElementById("ephemeris_file_drop");
   const global_orbit_select = document.getElementById("global_orbit_trail_select");
 
-  const platforms = Object.values(platform).sort((a, b) => a.id - b.id).map(p => p.name);
-  platforms.forEach(name => createAndLinkSatellite(name, platform[name]));
-  platforms.forEach(insertFollowSelect);
+  const platforms = Object.values(platform).sort((a, b) => a.id - b.id);
+  platforms.forEach(p => createAndLinkSatellite(p.name, p));
+  platforms.map(p => p.name).forEach(insertFollowSelect);
   setName(platform_controls, name);
 
   hideContainer(platform_filedrop, true);

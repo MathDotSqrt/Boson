@@ -134,7 +134,6 @@ export default class Schedule {
   }
 
   _getSubsetPlatforms(platform){
-    console.log(platform);
     if(platform && platform.id in this._schedule){
       return [this._schedule[platform.id]];
     }
