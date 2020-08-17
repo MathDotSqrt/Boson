@@ -89,7 +89,7 @@ preset = {
         "path" : "data/platform.csv",
         "satellites" : {
             1 : {
-                "name" : "platform_asdasd1",
+                "name" : "platform_reallylongname",
                 "color" : "#ff00ff"
             },
             2 : {

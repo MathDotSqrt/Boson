@@ -289,9 +289,8 @@ function createAndLinkSatellite(name, platform){
   const color_picker = satellite.getElementsByClassName("color_picker")[0];
   const orbit_trail_select = satellite.getElementsByClassName("orbit_trail_select")[0];
 
-  satellite.id = name;
-
-  setName(satellite, name);
+  satellite.id = platform.id;
+  setName(satellite, platform.id + ": " + platform.name);
   satellite.onclick = (e) => {
     //Onclick event is triggered for all children including the control panel
     //for the satellites. We test if child element contains "showable" before

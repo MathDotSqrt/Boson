@@ -397,8 +397,10 @@ input[type=color] {
 /* SCROLL BAR */
 
 
-
-
+/* THIS IS BAD BUT I AM OUT OF TIME */
+p.platform_name {
+  width: 180px;
+}
 
 
 /*  */
