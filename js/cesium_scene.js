@@ -36,9 +36,19 @@ export class Scene {
       selectionIndicator: false, //Disable selection indicator
       shouldAnimate: true, // Enable animations
       requestRenderMode: false,
-      //mapProjection: new Cesium.WebMercatorProjection()
-      //terrainProvider: Cesium.createWorldTerrain(),
+
+
+      baseLayerPicker : false
     });
+
+    const layers = this._viewer.scene.imageryLayers;
+    layers.addImageryProvider(new Cesium.WebMapServiceImageryProvider({
+        url : new Cesium.Resource({
+            url: '/path/to/imagery',
+            //dont need proxy if imagry source has cross origin resource sharing enabled
+            //proxy : new Cesium.DefaultProxy('/proxy/')
+        })
+    }));
 
     //Set bounds of our simulation time
     //Make sure viewer is at the desired time.
