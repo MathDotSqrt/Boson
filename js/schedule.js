@@ -83,6 +83,8 @@ export default class Schedule {
       const [is_within, index] = binary_search_interval(inter, seconds);
 
       var next_index = index + 1;
+      
+      //if currently at or after last event, wrap to the beginning
       if(next_index >= num_intervals){
         next_index = 0;
       }
@@ -117,7 +119,12 @@ export default class Schedule {
       const num_intervals = inter.length / 2;
 
       const [is_within, index] = binary_search_interval(inter, seconds);
+
+      //if binary_search_interval does not return true for is_within, index
+      //would be the closest non current event to satellite
       var prev_index = is_within ? index - 1 : index;
+
+      //if currently at or before first event, wrap to the end
       if(prev_index < 0){
         prev_index = num_intervals - 1;
       }
