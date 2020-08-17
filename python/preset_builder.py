@@ -87,7 +87,7 @@ preset = {
         }
     },
     "schedule" : None,
-    "targets" : {
+    "target_deck" : {
         "target_path" : "./data/TestScenario1 Deck/targets.csv",
         "target_vertices" : "./data/TestScenario1 Deck/target_vertices.csv",
         "targets" : {
@@ -333,8 +333,8 @@ def contains_key(key, obj):
 def import_preset(preset):
     if contains_key("platform", preset):
         import_platform(preset["platform"])
-    if contains_key("targets", preset):
-        import_targets(preset["targets"]);
+    if contains_key("target_deck", preset):
+        import_targets(preset["target_deck"]);
 
     return json.dumps(preset);
 

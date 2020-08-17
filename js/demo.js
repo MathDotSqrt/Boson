@@ -205,7 +205,7 @@ export class Simulation {
     const json = {
       settings: settings,
       platform : platform,
-      targets : target_map,
+      target_deck : {targets : target_map},  //todo fix this naming
       schedule : schedule
     };
 

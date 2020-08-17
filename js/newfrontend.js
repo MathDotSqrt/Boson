@@ -393,9 +393,9 @@ function importPreset(name, json){
     }
   }
 
-  const targets = json.targets;
-  if(targets){
-    Object.values(targets.targets).forEach(target => importTargetSet(target.name, target));
+  const target_deck = json.target_deck;
+  if(target_deck){
+    Object.values(target_deck.targets).forEach(target => importTargetSet(target.name, target));
   }
 
   const schedule = json.schedule;
