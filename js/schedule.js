@@ -70,13 +70,18 @@ export default class Schedule {
 
   getNextEventTime(seconds, satellite){
 
+    //Array of satellites we are interested in
     const platform_schedules = this._getSubsetPlatforms(satellite);;
     const intervals = platform_schedules.map(p => p.interval);
 
+    //Computes the next event time for each satellite.
+    //If a satellite is currently on or past its last event, this
+    //will wrap and return the time of its first event
     const next_events = intervals.map(inter => {
       const num_intervals = inter.length / 2;
 
       const [is_within, index] = binary_search_interval(inter, seconds);
+
       var next_index = index + 1;
       if(next_index >= num_intervals){
         next_index = 0;
@@ -86,8 +91,10 @@ export default class Schedule {
       return start;
     })
 
+    //computs the time difference for each next_event
     const deltas = next_events.map(e => e - seconds);
 
+    //if all the satellite events wrapped
     if(deltas.every(d => d < 0)){
       return Math.min(...next_events);
     }
@@ -95,36 +102,22 @@ export default class Schedule {
       const min_delta = Math.min(...deltas.filter(d => d > 0));
       return min_delta + seconds;
     }
-    // const platform_schedules = this._getSubsetPlatforms(satellite);
-    //
-    // var closest_next_interval = Number.MAX_VALUE;
-    // for(const platform_schedule of platform_schedules){
-    //   const schedule_interval = platform_schedule.interval;
-    //   const num_intervals = schedule_interval.length / 2;
-    //
-    //   const [is_within, current_index] = binary_search_interval(schedule_interval, seconds);
-    //   const next_index = current_index == num_intervals - 1 ? 0 : current_index + 1;
-    //
-    //   const event = this._getEvent(platform_schedule, next_index);
-    //   const start = event.interval[0] + .0001;  //floating-point woes
-    //   if(start < closest_next_interval){
-    //     closest_next_interval = start;
-    //   }
-    // }
-    //
-    // return closest_next_interval;
   }
 
   getPrevEventTime(seconds, satellite){
 
+    //Array of satellites we are interested in
     const platform_schedules = this._getSubsetPlatforms(satellite);;
     const intervals = platform_schedules.map(p => p.interval);
 
+    //Computes the prev event time for each satellite.
+    //If a satellite is currently on or before its first event, this
+    //will wrap and return the time of its last event
     const prev_events = intervals.map(inter => {
       const num_intervals = inter.length / 2;
 
       const [is_within, index] = binary_search_interval(inter, seconds);
-      var prev_index = index - 1;
+      var prev_index = is_within ? index - 1 : index;
       if(prev_index < 0){
         prev_index = num_intervals - 1;
       }
@@ -133,8 +126,10 @@ export default class Schedule {
       return start;
     })
 
+    //computs the time difference for each next_event
     const deltas = prev_events.map(e => e - seconds);
 
+    //if all the satellite events wrapped
     if(deltas.every(d => d > 0)){
       return Math.max(...prev_events);
     }
