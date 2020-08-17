@@ -37,6 +37,19 @@ TARGET_VERTEX_MAP = {
     "latitude" : "Latitude"
 }
 
+SCHEDULE_COLUMN_MAP = {
+    "platformID" : "PlatformID",
+    "target" : "TargetID",
+    "start" : "ImageStartTime",
+    "end" : "ImageEndTime",
+    "longitude" : "Longitude",
+    "latitude" : "Latitude"
+}
+
+DEFAULT_PLATFORM = {
+    "name" : "platform"
+}
+
 DEFAULT_SATELLITE = {
     "name" : "satellite",
     "color" : "#00ff00",
@@ -60,16 +73,19 @@ DEFAULT_TARGET = {
     "alpha" : 1
 }
 
+DEFAULT_SCHEDULE = {
+    "name" : "schedule operations"
+}
+
 TARGET_POINT = 1
 TARGET_DSA = 3
 TARGET_MCG = 5
-DEFAULT_TARGET_TYPES = [TARGET_POINT, TARGET_DSA, TARGET_MCG]
 
 SAVE_DIR = "./data/python_preset.json"
 
 preset = {
     "platform" : {
-        "name" : "platform.csv",
+        # "name" : "platform.csv",
         "path" : "data/platform.csv",
         "satellites" : {
             1 : {
@@ -86,7 +102,10 @@ preset = {
             "path" : "./data/sensor_constraints.csv"
         }
     },
-    "schedule" : None,
+    "schedule" : {
+        "name" : "schedule operations",
+        "path" : "./data/scheduled_operations.csv"
+    },
     "target_deck" : {
         "target_path" : "./data/TestScenario1 Deck/targets.csv",
         "target_vertices" : "./data/TestScenario1 Deck/target_vertices.csv",
@@ -151,9 +170,6 @@ def get_header_indices(header, column_map):
 #
 
 def parse_platform(platform):
-    if platform == None:
-        return None
-
     csv = read_csv(platform["path"]);
     header = csv[0];
     content = csv[1:];
@@ -304,9 +320,64 @@ def create_targets(targets, vertices, type):
 # PARSE TARGET
 #
 
+#
+# PARSE SCHEDULE
+#
+
+def parse_schedule(schedule):
+    csv = read_csv(schedule["path"])
+    header = csv[0]
+    content = csv[1:]
+
+    index_map = get_header_indices(header, SCHEDULE_COLUMN_MAP)
+
+    if index_map == None:
+        return None
+
+    schedule_events = {}
+
+    for row in content:
+        platformID = int(row[index_map["platformID"]])
+        targetID = row[index_map["target"]]
+        start = float(row[index_map["start"]])
+        end = float(row[index_map["end"]])
+        lon = float(row[index_map["longitude"]])
+        lat = float(row[index_map["latitude"]])
+
+        if not platformID in schedule_events:
+            schedule_events[platformID] = {
+                "platformID" : platformID,
+                "targets" : [],
+                "interval" : [],
+                "coords" : []
+            }
+        schedule_events[platformID]["targets"].append(targetID)
+        schedule_events[platformID]["interval"].append(start)
+        schedule_events[platformID]["interval"].append(end)
+        schedule_events[platformID]["coords"].append(lon)
+        schedule_events[platformID]["coords"].append(lat)
+
+    schedule["schedule"] = schedule_events
+
+
+
+#
+# PARSE SCHEDULE
+#
+
+#
+# IMPORTING
+#
+
+def contains_key(key, obj):
+    return key in obj and obj[key] != None
+
 def import_platform(platform):
+    set_default(platform, DEFAULT_PLATFORM)
     parse_platform(platform);
-    parse_sensor(platform["sensors"]);
+
+    if contains_key("sensors", platform):
+        parse_sensor(platform["sensors"]);
 
 def import_targets(target_deck):
     target_positions = parse_target(target_deck["target_path"])
@@ -314,29 +385,30 @@ def import_targets(target_deck):
 
     targets = target_deck["targets"]
 
-
-    for type in targets.keys():
-        target = targets.get(type, None);
-        if None:
-            continue
-
+    for [type, target] in targets.items():
         target = set_default(target, DEFAULT_TARGET);
         if type == TARGET_POINT:
             target["targetSet"] = create_point_targets(target_positions, type);
         else:
             target["targetSet"] = create_targets(target_positions, target_vertices, type);
 
-
-def contains_key(key, obj):
-    return key in obj and obj[key] != None
+def import_schedule(schedule):
+    set_default(schedule, DEFAULT_SCHEDULE)
+    parse_schedule(schedule);
 
 def import_preset(preset):
     if contains_key("platform", preset):
         import_platform(preset["platform"])
     if contains_key("target_deck", preset):
-        import_targets(preset["target_deck"]);
+        import_targets(preset["target_deck"])
+    if contains_key("schedule", preset):
+        import_schedule(preset["schedule"])
 
     return json.dumps(preset);
+
+#
+# IMPORTING
+#
 
 blob = import_preset(preset)
 
