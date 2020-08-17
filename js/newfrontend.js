@@ -165,6 +165,7 @@ export function setSatelliteTrail(id, orbit_trail){
 }
 
 export function setAllSatelliteTrail(names, orbit_trail){
+  console.log(names);
   for(name of names){
       const node = document.getElementById(name);
       if(node){
@@ -289,8 +290,9 @@ function createAndLinkSatellite(name, platform){
   const color_picker = satellite.getElementsByClassName("color_picker")[0];
   const orbit_trail_select = satellite.getElementsByClassName("orbit_trail_select")[0];
 
-  satellite.id = platform.id;
+  satellite.id = platform.name;
   setName(satellite, platform.id + ": " + platform.name);
+  // setName(control, platform.name)
   satellite.onclick = (e) => {
     //Onclick event is triggered for all children including the control panel
     //for the satellites. We test if child element contains "showable" before
@@ -436,7 +438,7 @@ function importPlatform(name, platform){
   hideContainer(platform_controls, false);
   global_orbit_select.value = "";
   global_orbit_select.onchange = () => {
-    setAllSatelliteTrail(platforms, global_orbit_select.value);
+    setAllSatelliteTrail(platforms.map(p => p.name), global_orbit_select.value);
   }
 
   simulation.importPlatform(name, platform);
