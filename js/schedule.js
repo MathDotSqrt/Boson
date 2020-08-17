@@ -69,52 +69,79 @@ export default class Schedule {
   }
 
   getNextEventTime(seconds, satellite){
-    const platform_schedules = this._getSubsetPlatforms(satellite);
 
-    var closest_next_interval = Number.MAX_VALUE;
-    for(const platform_schedule of platform_schedules){
-      const schedule_interval = platform_schedule.interval;
-      const num_intervals = schedule_interval.length / 2;
+    const platform_schedules = this._getSubsetPlatforms(satellite);;
+    const intervals = platform_schedules.map(p => p.interval);
 
-      const [is_within, current_index] = binary_search_interval(schedule_interval, seconds);
-      const next_index = current_index == num_intervals - 1 ? 0 : current_index + 1;
+    const next_events = intervals.map(inter => {
+      const num_intervals = inter.length / 2;
 
-      const event = this._getEvent(platform_schedule, next_index);
-      const start = event.interval[0] + .0001;  //floating-point woes
-      if(start < closest_next_interval){
-        closest_next_interval = start;
+      const [is_within, index] = binary_search_interval(inter, seconds);
+      var next_index = index + 1;
+      if(next_index >= num_intervals){
+        next_index = 0;
       }
-    }
 
-    return closest_next_interval;
+      const start = inter[next_index * 2] + .0001; //floating-point woes
+      return start;
+    })
+
+    const deltas = next_events.map(e => e - seconds);
+
+    if(deltas.every(d => d < 0)){
+      return Math.min(...next_events);
+    }
+    else{
+      const min_delta = Math.min(...deltas.filter(d => d > 0));
+      return min_delta + seconds;
+    }
+    // const platform_schedules = this._getSubsetPlatforms(satellite);
+    //
+    // var closest_next_interval = Number.MAX_VALUE;
+    // for(const platform_schedule of platform_schedules){
+    //   const schedule_interval = platform_schedule.interval;
+    //   const num_intervals = schedule_interval.length / 2;
+    //
+    //   const [is_within, current_index] = binary_search_interval(schedule_interval, seconds);
+    //   const next_index = current_index == num_intervals - 1 ? 0 : current_index + 1;
+    //
+    //   const event = this._getEvent(platform_schedule, next_index);
+    //   const start = event.interval[0] + .0001;  //floating-point woes
+    //   if(start < closest_next_interval){
+    //     closest_next_interval = start;
+    //   }
+    // }
+    //
+    // return closest_next_interval;
   }
 
   getPrevEventTime(seconds, satellite){
+
     const platform_schedules = this._getSubsetPlatforms(satellite);;
+    const intervals = platform_schedules.map(p => p.interval);
 
-    var closest_prev_interval = 0;
-    for(const platform_schedule of platform_schedules){
-      const schedule_interval = platform_schedule.interval;
-      const num_intervals = schedule_interval.length / 2;
+    const prev_events = intervals.map(inter => {
+      const num_intervals = inter.length / 2;
 
-      const [is_within, current_index] = binary_search_interval(schedule_interval, seconds);
-      var next_index = current_index;
-      if(is_within){
-        next_index = next_index == 0 ? num_intervals - 1 : next_index - 1;
-      }
-      else if(next_index  < 0){
-        //if seconds is before the first interval, wrap to the end
-        next_index = num_intervals - 1;
+      const [is_within, index] = binary_search_interval(inter, seconds);
+      var prev_index = index - 1;
+      if(prev_index < 0){
+        prev_index = num_intervals - 1;
       }
 
-      const event = this._getEvent(platform_schedule, next_index);
-      const start = event.interval[0] + .0001;  //floating-point woes
-      if(start > closest_prev_interval){
-        closest_prev_interval = start;
-      }
+      const start = inter[prev_index * 2] + .0001; //floating-point woes
+      return start;
+    })
+
+    const deltas = prev_events.map(e => e - seconds);
+
+    if(deltas.every(d => d > 0)){
+      return Math.max(...prev_events);
     }
-
-    return closest_prev_interval;
+    else{
+      const min_delta = Math.max(...deltas.filter(d => d < 0));
+      return min_delta + seconds;
+    }
   }
 
   getMaxTime(){
