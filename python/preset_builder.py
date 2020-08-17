@@ -89,11 +89,11 @@ preset = {
         "path" : "data/platform.csv",
         "satellites" : {
             1 : {
-                "name" : "platform_1",
+                "name" : "platform_asdasd1",
                 "color" : "#ff00ff"
             },
             2 : {
-                "name" : "platform_2",
+                "name" : "platform_asd2",
                 "color" : "#00ffff",
                 "orbitTrail" : "all"
             }
@@ -203,6 +203,8 @@ def parse_platform(platform):
     for [id, ephemeris] in ephemera.items():
         if not id in satellites:
             satellites[id] = DEFAULT_SATELLITE.copy()
+            satellites[id]["name"] += str(id)
+
 
         satellites[id]["id"] = id
         satellites[id]["ephemeris"] = ephemeris
