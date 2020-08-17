@@ -39,7 +39,7 @@ export function loadPresetJSON(new_file, func){
     try{
       result = JSON.parse(text);
       func(new_file.name, result);
-    } catch(err){console.log("Error, could not parse");}
+    } catch(err){console.log("Error, could not parse", err);}
 
   });
 }
@@ -164,9 +164,9 @@ function parsePlatform(name, lines){
     }
 
     const ephemeris_name = name + "_" + id;
-    if(!(ephemeris_name in platform)){
+    if(!(id in platform)){
       const ephemeris = { time: [], position: [], velocity: [] };
-      platform[ephemeris_name] = {
+      platform[id] = {
         name: ephemeris_name,
         id: id,
         color: "#00ff00",
@@ -175,7 +175,7 @@ function parsePlatform(name, lines){
       };
     }
 
-    const ephemeris = platform[ephemeris_name].ephemeris;
+    const ephemeris = platform[id].ephemeris;
     ephemeris.time.push(Number(split[indexMap.time]));
     //convert km to meters
     ephemeris.position.push(Number(split[indexMap.posx]) * 1000);
@@ -378,8 +378,8 @@ function parseTargetVertex(lines){
     //const coord = {lat: split[3], lon: split[4], alt: split[5]};
     //const coord = [Number(split[3]), Number(split[4]), Number(split[5])];
     const coord = [
-      Number(split[indexMap.longitude]) * 180 / 3.1415,
-      Number(split[indexMap.latitude]) * 180 / 3.1415
+      Number(split[indexMap.longitude]) * 180 / 3.1415926,
+      Number(split[indexMap.latitude]) * 180 / 3.1415926
     ];
 
     if(current_target !== target.id){

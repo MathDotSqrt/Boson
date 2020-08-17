@@ -12,7 +12,7 @@ export default class Platform{
     this._cwWindow = null;
 
     const satellites = Object.values(platform).map(s=>new Satellite(s, this._scene));
-    satellites.forEach(s => this._satellites[s.name] = s);
+    satellites.forEach(s => this._satellites[s.id] = s);
   }
 
   addSensors(name, sensors){
@@ -30,14 +30,14 @@ export default class Platform{
   }
 
   setOrbitColor(name, color){
-    const orbit = this._satellites[name];
+    const orbit = this.getSatelliteByName(name);
     if(orbit){
       orbit.color = color;
     }
   }
 
   setOrbitTrail(name, value){
-    const orbit = this._satellites[name];
+    const orbit = this.getSatelliteByName(name);
     if(orbit){
       orbit.orbit_trail = value;
     }
@@ -70,11 +70,11 @@ export default class Platform{
   }
 
   getSatelliteByName(name){
-    return this._satellites[name];
+    return Object.values(this._satellites).find(s => s.name === name);
   }
 
   getSatelliteByID(id){
-    return Object.values(this._satellites).find(s => s.id === id);
+    return this._satellites[id];
   }
 
   getAllSatelliteNames(){
@@ -97,7 +97,7 @@ export default class Platform{
   toJSON(){
     const satelliteMap = {};
     const satellites = Object.values(this._satellites).map(s => s.toJSON());
-    satellites.forEach(s => satelliteMap[s.name] = s);  //convert array to map
+    satellites.forEach(s => satelliteMap[s.id] = s);  //convert array to map
 
     const sensors = this._sensors;
     //const windows = this._windows;
