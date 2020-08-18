@@ -23,6 +23,12 @@ SENSOR_COLUMN_MAP = {
     "maxValue" : "Max Value"
 }
 
+WINDOW_COLUMN_MAP = {
+    "platformID" : "PlatformID",
+    "start" : "StartTime",
+    "end" : "EndTime"
+}
+
 TARGET_COLUMN_MAP = {
     "target" : "TargetID",
     "type" : "TypeID",
@@ -66,6 +72,14 @@ DEFAULT_SENSOR_PARAMETER = {
     "sensorType" : "GrazeAngle"
 }
 
+DEFAULT_IW = {
+    "name" : "Image Window"
+}
+
+DEFAULT_CW = {
+    "name" : "Comm Window"
+}
+
 DEFAULT_TARGET = {
     "name" : "target",
     "color" : "#00ff00",
@@ -100,6 +114,14 @@ preset = {
         },
         "sensors" : {
             "path" : "./data/sensor_constraints.csv"
+        },
+        "cwWindow" : {
+            "name": "comm windows",
+            "path" : "./data/comm_windows.csv"
+        },
+        "iwWindow" : {
+            "name" : "imaging window",
+            "path" : "./data/imaging_windows.csv"
         }
     },
     "schedule" : {
@@ -210,10 +232,9 @@ def parse_platform(platform):
         satellites[id]["ephemeris"] = ephemeris
         set_default(satellites[id], DEFAULT_SATELLITE);
 
-def parse_sensor(sensors):
-    if sensors == None:
-        return None
+    return True
 
+def parse_sensor(sensors):
     csv = read_csv(sensors["path"])
     header = csv[0]
     content = csv[1:]
@@ -232,8 +253,29 @@ def parse_sensor(sensors):
         })
 
     sensors["parameters"] = parameters
-    set_default(sensors, DEFAULT_SENSOR);
+    return True
 
+def parse_window(window):
+    csv = read_csv(window["path"])
+    header = csv[0]
+    content = csv[1:]
+
+    index_map = get_header_indices(header, WINDOW_COLUMN_MAP)
+    if(index_map == None):
+        return None
+
+    intervals = {}
+    for row in content:
+        platformID = int(row[index_map["platformID"]])
+        start = float(row[index_map["start"]])
+        end = float(row[index_map["end"]])
+
+        if not platformID in intervals:
+            intervals[platformID] = []
+        intervals[platformID].append([start, end])
+
+    window["intervals"] = intervals
+    return True
 #
 # Parse Platform
 #
@@ -360,6 +402,7 @@ def parse_schedule(schedule):
         schedule_events[platformID]["coords"].append(lat)
 
     schedule["schedule"] = schedule_events
+    return True
 
 
 
@@ -375,15 +418,38 @@ def contains_key(key, obj):
     return key in obj and obj[key] != None
 
 def import_platform(platform):
-    set_default(platform, DEFAULT_PLATFORM)
-    parse_platform(platform);
+    is_valid = parse_platform(platform);
+
+    if not is_valid:
+        return None
 
     if contains_key("sensors", platform):
-        parse_sensor(platform["sensors"]);
+        set_default(platform["sensors"], DEFAULT_SENSOR)
+        is_valid = parse_sensor(platform["sensors"]);
+        if not is_valid:
+            platform.pop("sensors", None)
+
+    if contains_key("iwWindow", platform):
+        set_default(platform["iwWindow"], DEFAULT_IW)
+        is_valid = parse_window(platform["iwWindow"]);
+        if not is_valid:
+            platform.pop("iwWindow", None)
+
+    if contains_key("cwWindow", platform):
+        set_default(platform["cwWindow"], DEFAULT_CW)
+        is_valid = parse_window(platform["cwWindow"]);
+        if not is_valid:
+            platform.pop("cwWindow", None)
+
+    return True
+
 
 def import_targets(target_deck):
     target_positions = parse_target(target_deck["target_path"])
     target_vertices = parse_target_vertex(target_deck["target_vertices"])
+
+    if target_positions == None or target_vertices == None:
+        return None
 
     targets = target_deck["targets"]
 
@@ -393,18 +459,26 @@ def import_targets(target_deck):
             target["targetSet"] = create_point_targets(target_positions, type);
         else:
             target["targetSet"] = create_targets(target_positions, target_vertices, type);
+    return True
 
 def import_schedule(schedule):
-    set_default(schedule, DEFAULT_SCHEDULE)
-    parse_schedule(schedule);
+    return parse_schedule(schedule);
 
 def import_preset(preset):
     if contains_key("platform", preset):
-        import_platform(preset["platform"])
+        set_default(preset["platform"], DEFAULT_PLATFORM)
+        is_valid = import_platform(preset["platform"])
+        if not is_valid:
+            preset.pop("platform", None)
     if contains_key("target_deck", preset):
-        import_targets(preset["target_deck"])
+        is_valid = import_targets(preset["target_deck"])
+        if not is_valid:
+            preset.pop("target_deck", None)
     if contains_key("schedule", preset):
-        import_schedule(preset["schedule"])
+        set_default(preset["schedule"], DEFAULT_SCHEDULE)
+        is_valid = import_schedule(preset["schedule"])
+        if not is_valid:
+            preset.pop("schedule", None)
 
     return json.dumps(preset);
 
