@@ -1,4 +1,6 @@
 import json
+import sys
+import getopt
 from os import listdir
 from os.path import isfile, join, basename
 from functools import reduce
@@ -95,61 +97,8 @@ TARGET_POINT = 1
 TARGET_DSA = 3
 TARGET_MCG = 5
 
-SAVE_DIR = "./data/python_preset.json"
-
-preset = {
-    "platform" : {
-        # "name" : "platform.csv",
-        "path" : "data/platform.csv",
-        "satellites" : {
-            1 : {
-                "name" : "platform_reallylongname",
-                "color" : "#ff00ff"
-            },
-            2 : {
-                "name" : "platform_asd2",
-                "color" : "#00ffff",
-                "orbitTrail" : "all"
-            }
-        },
-        "sensors" : {
-            "path" : "./data/sensor_constraints.csv"
-        },
-        "cwWindow" : {
-            "name": "comm windows",
-            "path" : "./data/comm_windows.csv"
-        },
-        "iwWindow" : {
-            "name" : "imaging window",
-            "path" : "./data/imaging_windows.csv"
-        }
-    },
-    "schedule" : {
-        "name" : "schedule operations",
-        "path" : "./data/scheduled_operations.csv"
-    },
-    "target_deck" : {
-        "target_path" : "./data/TestScenario1 Deck/targets.csv",
-        "target_vertices" : "./data/TestScenario1 Deck/target_vertices.csv",
-        "targets" : {
-            3 : {
-                "name" : "deck_dsa",
-                "color" : "#ff00ff"
-            },
-            1 : {
-                "name" : "deck_point",
-                "color" : "#ffffff",
-                "alpha" : .7
-            },
-
-            5 : {
-                "name" : "deck_mcg",
-                "color" : "#0000ff",
-                "alpha" : .5
-            },
-        }
-    }
-}
+DEFAULT_INPUT = "./example_preset.json"
+DEFAULT_OUTPUT = "../data/python_preset.json"
 
 def listdir_fullpath(d):
     return [join(d, f) for f in listdir(d)];
@@ -161,15 +110,20 @@ def get_filenames(foldernames):
     filenames = reduce(lambda a, b : a + b, map(get_files_in_dir, foldernames));
     return filenames
 
-
 def read_file(filename):
+
     lines = []
-    with open(filename, 'r') as f:
-        lines = f.readlines()
-    return lines
+    try:
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+        print("Read [{}]".format(filename))
+        return lines
+    except:
+        print("FAILED TO READ", filename)
+        return ["bad", "code"]
 
 def read_json(filename):
-    lines = read_file(filename)
+    return json.loads(str(''.join(read_file(filename))))
 def read_csv(filename):
     lines = read_file(filename)
     columns = [line.strip().split(DELIM) for line in lines]
@@ -223,6 +177,7 @@ def parse_platform(platform):
 
     satellites = platform["satellites"]
     for [id, ephemeris] in ephemera.items():
+        id = str(id)
         if not id in satellites:
             satellites[id] = DEFAULT_SATELLITE.copy()
             satellites[id]["name"] += str(id)
@@ -454,6 +409,7 @@ def import_targets(target_deck):
     targets = target_deck["targets"]
 
     for [type, target] in targets.items():
+        type = int(type)
         target = set_default(target, DEFAULT_TARGET);
         if type == TARGET_POINT:
             target["targetSet"] = create_point_targets(target_positions, type);
@@ -486,7 +442,29 @@ def import_preset(preset):
 # IMPORTING
 #
 
-blob = import_preset(preset)
+def main(argv):
 
-with open(SAVE_DIR, 'w') as writer:
-    writer.write(blob);
+    try:
+        opts, args = getopt.getopt(argv, "i:o:")
+    except getopt.GetoptError:
+        print("preset_builder.py -i <input_preset> -o <output_state>")
+        sys.exit(-2)
+
+    input_file = DEFAULT_INPUT
+    output_file = DEFAULT_OUTPUT
+    for opt, arg in opts:
+        if opt == "-i":
+            input_file = arg
+        elif opt == "-o":
+            output_file = arg
+
+    print("Importing...")
+    blob = import_preset(read_json(input_file))
+
+
+    print("Writing [{}]".format(output_file))
+    with open(DEFAULT_OUTPUT, 'w') as writer:
+        writer.write(blob);
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

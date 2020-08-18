@@ -1,0 +1,58 @@
+{
+    "settings" : {
+        "currentTime" : 10,
+        "follow" : "platform_reallylongname"
+    },
+    "platform" : {
+        "name" : "platform.csv",
+        "path" : "../data/platform.csv",
+        "satellites" : {
+            "1" : {
+                "name" : "platform_reallylongname",
+                "color" : "#3300ff",
+                "orbitTrail" : "one_rev"
+            },
+            "2" : {
+                "name" : "platform_asd2",
+                "color" : "#11ffff",
+                "orbitTrail" : "all"
+            }
+        },
+        "sensors" : {
+            "path" : "../data/sensor_constraints.csv"
+        },
+        "cwWindow" : {
+            "name": "comm windows",
+            "path" : "../data/comm_windows.csv"
+        },
+        "iwWindow" : {
+            "name" : "imaging window",
+            "path" : "../data/imaging_windows.csv"
+        }
+    },
+    "schedule" : {
+        "name" : "schedule operations", 
+        "path" : "../data/scheduled_operations.csv"
+    },
+    "target_deck" : {
+        "target_path" : "../data/TestScenario1 Deck/targets.csv",
+        "target_vertices" : "../data/TestScenario1 Deck/target_vertices.csv",
+        "targets" : {
+            "3" : {
+                "name" : "deck_dsa",
+                "color" : "#ff00ff"
+            },
+            "1" : {
+                "name" : "deck_point",
+                "color" : "#ffffff",
+                "alpha" : 0.7
+            },
+
+            "5" : {
+                "name" : "deck_mcg",
+                "color" : "#0000ff",
+                "alpha" : 0.5
+            }
+        }
+    }
+}
