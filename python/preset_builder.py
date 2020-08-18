@@ -459,7 +459,8 @@ def main(argv):
             output_file = arg
 
     print("Importing...")
-    blob = import_preset(read_json(input_file))
+    json = read_json(input_file)
+    blob = import_preset(json)
 
 
     print("Writing [{}]".format(output_file))
@@ -467,4 +468,9 @@ def main(argv):
         writer.write(blob);
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    try:
+        main(sys.argv[1:])
+    except Exception as e:
+        print("ERROR:", e);
+        print("Press Enter to Close.")
+        input()
