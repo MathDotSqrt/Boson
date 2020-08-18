@@ -1,0 +1,49 @@
+{
+  "settings" : {
+    "currentTime" : 1000
+  },
+  "platform" : {
+    "name" : "platform.csv",
+    "path" : "../data/20satellites.csv",
+    "satellites" : {
+      "1" : {
+        "name" : "First_Platform",
+        "color" : "#11ffff",
+        "orbitTrail" : "one_rev"
+      },
+      "2" : {
+        "name" : "Second_Platform",
+        "color" : "#ffff00",
+        "orbitTrail" : "one_rev"
+      },
+      "18" : {
+        "name" : "Important Satellite",
+        "color" : "#ff0000"
+      }
+    },
+    "sensors" : {
+      "path" : "../data/sensor_constraints.csv"
+    }
+  },
+  "target_deck" : {
+    "target_path" : "../data/TestScenario1 Deck/targets.csv",
+    "target_vertices" : "../data/TestScenario1 Deck/target_vertices.csv",
+    "targets" : {
+      "1" : {
+          "name" : "deck_point",
+          "color" : "#ffaa00",
+          "alpha" : 0.7
+      },
+
+      "3" : {
+          "name" : "deck_dsa",
+          "color" : "#0011ff"
+      },
+
+
+      "5" : {
+          "name" : "deck_mcg"
+      }
+    }
+  }
+}

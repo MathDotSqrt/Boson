@@ -156,7 +156,7 @@ def parse_platform(platform):
 
     ephemera = {};
     for row in content:
-        id = int(row[index_map["platformID"]]);
+        id = row[index_map["platformID"]]
         if not id in ephemera:
             ephemera[id] = {
                 "position" : [],
@@ -176,11 +176,16 @@ def parse_platform(platform):
         ephemeris["velocity"].append(float(row[index_map["velz"]]) * 1000);
 
     satellites = platform["satellites"]
+
+    for key in list(satellites):
+        if not key in ephemera.keys():
+            satellites.pop(key)
+
     for [id, ephemeris] in ephemera.items():
-        id = str(id)
         if not id in satellites:
             satellites[id] = DEFAULT_SATELLITE.copy()
             satellites[id]["name"] += str(id)
+
 
 
         satellites[id]["id"] = id
@@ -464,7 +469,7 @@ def main(argv):
 
 
     print("Writing [{}]".format(output_file))
-    with open(DEFAULT_OUTPUT, 'w') as writer:
+    with open(output_file, 'w') as writer:
         writer.write(blob);
 
 if __name__ == "__main__":
