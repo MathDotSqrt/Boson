@@ -2,7 +2,7 @@ import json
 import sys
 import getopt
 from os import listdir
-from os.path import isfile, join, basename
+from os.path import isfile, join, dirname
 from functools import reduce
 
 DELIM = ','
@@ -99,6 +99,7 @@ TARGET_MCG = 5
 
 DEFAULT_INPUT = "./example_preset.json"
 DEFAULT_OUTPUT = "../data/python_preset.json"
+REL_PATH = './'
 
 def listdir_fullpath(d):
     return [join(d, f) for f in listdir(d)];
@@ -111,6 +112,7 @@ def get_filenames(foldernames):
     return filenames
 
 def read_file(filename):
+    filename = REL_PATH + filename
 
     lines = []
     try:
@@ -449,6 +451,7 @@ def import_preset(preset):
 
 def main(argv):
 
+    print(REL_PATH)
     try:
         opts, args = getopt.getopt(argv, "i:o:")
     except getopt.GetoptError:
@@ -469,11 +472,20 @@ def main(argv):
 
 
     print("Writing [{}]".format(output_file))
-    with open(output_file, 'w') as writer:
+    with open(REL_PATH + output_file, 'w') as writer:
         writer.write(blob);
 
 if __name__ == "__main__":
     try:
+        dir = dirname(__file__)
+        if len(dir) == 0:
+            REL_PATH = ''
+        else:
+            REL_PATH = dir + '/'
+
+
+        print(__file__)
+        print(REL_PATH)
         main(sys.argv[1:])
     except Exception as e:
         print("ERROR:", e);
