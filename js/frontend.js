@@ -1,691 +1,555 @@
-"use strict";
+/*
+...
+A collection of functions that add event listeners to existing html elements
+and make the UI responsive.
+...
+*/
+
 import * as BOSON from './demo.js'
 import * as BOSON_FILELOADER from './file_loader.js';
 
-const colors = ["#C02B9A", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#ffDD00", "#34b1eb","#C02B9A", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#ffDD00", "#34b1eb","#C02B9A", "#C0392B", "#BB8FCE", "#1ABC9C", "#BA4A00", "#ffDD00", "#34b1eb"];
-
+//simulation is an instance that repersents the state of the visualization
 const simulation = new BOSON.Simulation(document.getElementById('view'));
 
+//max width for the side panel to expand to
+const MAX_WIDTH = "300px"
 
 /* PANEL */
-export function openNav(){
-  document.getElementById("side_panel_1").style.width = "285px";
-}
-export function closeNav(){
-  document.getElementById("side_panel_1").style.width = "0px";
+function initPanel(){
+  const close_nav_element = document.getElementById("close_nav");
+  const open_nav_element = document.getElementById("open_nav");
+
+  close_nav_element.onclick = closeNav;
+  open_nav_element.onclick = openNav;
+
+  const tabs = document.getElementsByClassName("tab");
+  for(const tab of tabs){
+    tab.onclick = () => selectTab(tab.id);
+  }
 }
 
-for(const element of document.getElementsByClassName("close_btn")){
-  element.onclick = closeNav;
+function openNav(){
+  const panel = document.getElementById("side_panel_1");
+  panel.style.width = MAX_WIDTH;
+}
+function closeNav(){
+  const panel = document.getElementById("side_panel_1");
+  panel.style.width = "0px"
 }
 
-for(const element of document.getElementsByClassName("open_btn")){
-  element.onclick = openNav;
+function selectTab(id){
+  const SELECTED = "selected";
+
+  const tab = document.getElementById(id);
+  if(tab){
+    const tabs = document.getElementsByClassName("tab");
+    for(const tab of tabs){
+      tab.classList.remove(SELECTED);
+    }
+
+    tab.classList.add(SELECTED);
+
+    const side_panel_elements = document.getElementsByClassName("side_panel_element");
+    const tab_content = document.querySelector("[tabID='" + id + "']");
+
+    for(const element of side_panel_elements){
+      //TODO: add sticky mode
+      //if(element.getAttribute("tabid")==="controls") continue;
+      element.classList.add("hide");
+    }
+    tab_content.classList.remove("hide");
+  }
 }
+
+initPanel();
 /* PANEL */
 
-/* GLOBAL CONTROLS */
-function createGlobalControls(){
-  const global_panel = document.getElementById("global");
-
-  const table = document.createElement("table");
-  global_panel.append(table);
-
-  function insert_field(table, field_name, field){
-    const tr = table.insertRow(-1);
-    tr.className = "global_control";
-    const cell0 = tr.insertCell(0);
-    insertP(cell0, field_name);
-
-    const cell1 = tr.insertCell(1);
-    cell1.className = "data";
-    cell1.append(field);
-  }
-
-  const selector = createFollowSelector(["None"]);
-  insert_field(table, "Follow", selector);
-
-  const button = createPresetButton();
-  insert_field(table, "Save Preset", button);
-
-  const input = createPlatformInput("Load Preset", function(file){
-    BOSON_FILELOADER.loadPresetJSON(file, function(name, json){
-      importPreset(name, json);
-    });
-  });
-  insert_field(table, "Load Preset", input);
-}
-/* GLOBAL CONTROLS */
-
-/* SATELLITE NODE */
-function createSatelliteNode(name){
-  const new_node = document.createElement("div");
-  new_node.id = name;
-  new_node.className = "element showable";
-  insertP(new_node, name, "showable");
-
-  const controls = document.createElement("div");
-  controls.className = "element_controls";
-  const table = document.createElement("table");
-  controls.append(table);
-
-  function insert_field(table, field_name, field){
-    const tr = table.insertRow(-1);
-    const cell0 = tr.insertCell(0);
-    insertP(cell0, field_name);
-
-    const cell1 = tr.insertCell(1);
-    cell1.append(field);
-  }
-
-  const color_picker = createColorPicker(name, function(name, color){
-    simulation.setOrbitColor(name, color);
-  });
-  insert_field(table, "Color", color_picker);
-
-  const alpha_data = document.createElement("p");
-  alpha_data.className = "data";
-  alpha_data.append(document.createTextNode("0.5"));
-  insert_field(table, "Alpha", alpha_data);
-
-  const orbit_selector = createOrbitSelector([name]);
-  insert_field(table, "Orbit Trail", orbit_selector);
-
-  const sensor_type = document.createElement("p");
-  sensor_type.className = "data";
-  sensor_type.append(document.createTextNode("squint"));
-  insert_field(table, "Sensor Type", sensor_type);
-
-  new_node.append(controls);
-
-  new_node.onclick = function(event){
-    const classList = event.target.classList;
-    if(!classList.contains("showable")){
-      return;
-    }
-    new_node.classList.toggle("show");
-  }
-  return new_node;
-}
-
-/* SATELLITE NODE */
-/* EPHEMERIS NODE */
-
-function createEphemerisNode(name, satellite_names){
-  const new_node = document.createElement("div");
-  new_node.id = name;
-  new_node.className = "element showable";
-  new_node.append(createDeleteNodeTitle(name, onDeleteHandeler));
-
-  const controls = document.createElement("div");
-  controls.className = "element_controls";
-  const table = document.createElement("table");
-  controls.append(table);
-
-  function insert_field(table, field_name, field){
-    const tr = table.insertRow(-1);
-    const cell0 = tr.insertCell(0);
-    insertP(cell0, field_name);
-
-    const cell1 = tr.insertCell(1);
-    cell1.append(field);
-  }
-
-  for(const satellite_name of satellite_names){
-    const p = document.createElement("p");
-    p.className = "data";
-    p.append(document.createTextNode(satellite_name));
-    insert_field(table, "ID:", p);
-  }
-
-  const orbit_selector = createOrbitSelector(satellite_names);
-  insert_field(table, "Orbit Trail", orbit_selector);
-
-  const sensor_input = createPlatformInput("SENSOR FILE", function(file){
-    BOSON_FILELOADER.loadSensorFile(file, function(sensor_name, result){
-      importSensor(name, sensor_name, result);
-    });
-  });
-  insert_field(table, "Sensor File", sensor_input)
-
-  const iw_input = createPlatformInput("IW FILE", function (file){
-    BOSON_FILELOADER.loadWindowFile(file, function(window_name, result){
-      importWindow(name, result, true);
-    });
-  });
-  insert_field(table, "IW File", iw_input)
-
-  const cw_input = createPlatformInput("CW FILE", function (file){
-    BOSON_FILELOADER.loadWindowFile(file, function(window_name, result){
-      importWindow(name, result, false);
-    });
-  });
-  insert_field(table, "CW File", cw_input)
-
-  new_node.append(controls);
-
-  new_node.onclick = function(event){
-    const classList = event.target.classList;
-    if(!classList.contains("showable")){
-      return;
-    }
-    new_node.classList.toggle("show");
-  }
-  return new_node;
-}
-
-/* EPHEMERIS NODE */
-/* TARGET NODE */
-
-function createTargetNode(name, num_targets){
-  const new_node = document.createElement("div");
-  new_node.id = name;
-  new_node.className = "element showable";
-  new_node.append(createDeleteNodeTitle(name, onDeleteTargetHandler));
-  //insertP(new_node, name, "showable");
-
-  const controls = document.createElement("div");
-  controls.className = "element_controls";
-  const table = document.createElement("table");
-  controls.append(table);
-
-  function insert_field(table, field_name, field){
-    const tr = table.insertRow(-1);
-    const cell0 = tr.insertCell(0);
-    insertP(cell0, field_name);
-
-    const cell1 = tr.insertCell(1);
-    cell1.append(field);
-  }
-
-  const color_picker = createColorPicker(name, function(name, color){
-    simulation.setTargetColor(name, color);
-  }, "#00FF00");
-  insert_field(table, "Color", color_picker);
-
-  const slider = createSlider(0, 1, 1, function(e){
-    const alpha = e.target.value;
-    simulation.setTargetColor(name, color_picker.value, alpha);
-  });
-  insert_field(table, "Alpha", slider);
-
-  const color_select_picker = createColorPicker(name, function(name, color){
-    simulation.setTargetSelectColor(name, color);
-  }, "#ff0000");
-  insert_field(table, "Select Color", color_select_picker);
-
-  const p = document.createElement("p");
-  p.className = "data";
-  p.append(document.createTextNode(num_targets + ""));
-  insert_field(table, "Num Targets:", p);
-
-  new_node.append(controls);
-
-  new_node.onclick = function(event){
-    const classList = event.target.classList;
-    if(!classList.contains("showable")){
-      return;
-    }
-    new_node.classList.toggle("show");
-  }
-  return new_node;
-}
-
-/* TARGET NODE */
-/* SCHEDULE NODE */
-
-function createScheduleNode(name){
-  const new_node = document.createElement("div");
-  new_node.id = name;
-  new_node.className = "element showable";
-  new_node.append(createDeleteNodeTitle(name, function(){console.log("lol");}));
-
-  return new_node;
-}
-
-/* SCHEDULE NODE */
 /* WIDGETS */
-
-function createFollowSelector(names){
-  const select = document.createElement("select");
-  select.className = "follow_selector";
-  select.onchange = function(event){
-    const value = select.options[select.selectedIndex].value;
-    simulation.follow(value);
-    //simulation.setOrbitTrail(names, value);
-  }
-
-  for(const name of names){
-    insertSelect(select, name);
-  }
-
-  return select;
-}
-
-export function insertFollowSelect(name){
-  const select = document.getElementsByClassName("follow_selector")[0];
-  if(select){
-    insertSelect(select, name);
-  }
-}
-
-export function removeFollowSelect(name){
-  const select = document.getElementsByClassName("follow_selector")[0];
-  if(select){
-    for(const option of select){
-      if(option.value == name){
-        const value_before = select.value;
-        option.remove();
-        const value_after = select.value;
-        if(value_before != value_after){
-          simulation.follow("None");
-        }
-
-        break;
-      }
-    }
-  }
-}
-
 function insertSelect(select, value){
+  const p = document.createElement("p");
+  p.innerHTML = value;
+
   const option = document.createElement("option");
   option.value = value;
-  insertP(option, value);
+  option.appendChild(p);
   select.add(option);
-}
-function createPresetButton(){
-  const button = document.createElement("button");
-  button.className = "preset_button";
-  button.onclick = function(){
-    const json = JSON.stringify(simulation.toJSON());
-    const blob = new Blob([json], {type: "text/plain;"});
-    saveAs(blob, "preset.json"); //from FileSaver.js
-  }
-  insertP(button, "Save preset");
-  return button;
+  return option;
 }
 
-function createDeleteNodeTitle(text, deleteFunc){
-  const header = document.createElement("div");
-  header.className = "title showable";
-
-  const table = document.createElement("table");
-  const tr = table.insertRow(-1);
-
-  const cell0 = tr.insertCell(0);
-  cell0.className = "showable";
-  insertP(cell0, text, "showable");
-  const cell1 = tr.insertCell(1);
-  cell1.className = "showable";
-
-  const close = document.createElement("a");
-  close.className = "close";
-  close.innerHTML = "&times;";
-  close.onclick = deleteFunc;
-  cell1.append(close);
-  header.append(table);
-
-  return header;
-}
-
-function createOrbitSelector(names){
-  const select = document.createElement("select");
-  select.className = "orbit_trail_selector";
-  select.onchange = function(event){
-    const value = select.options[select.selectedIndex].value;
-    simulation.setOrbitTrail(names, value);
-  }
-
-  const option_all = document.createElement("option");
-  option_all.value = "all";
-  insertP(option_all, "All");
-
-  const option_one = document.createElement("option");
-  option_one.value = "one_rev";
-  insertP(option_one, "One Rev");
-
-  const option_none = document.createElement("option");
-  option_none.value = "none";
-  insertP(option_none, "None");
-
-  select.add(option_all);
-  select.add(option_one);
-  select.add(option_none);
-
-  return select;
-}
-
-function createColorPicker(id, set_color_func, default_color){
-  const color_picker = document.createElement("input");
-  color_picker.className = "color_picker";
-  color_picker.type = "color";
-  color_picker.id = "color_" + id;
-
-  const color = default_color ? default_color : colors.pop();
-  color_picker.value = color;
-  color_picker.addEventListener("input", function(event){
-    set_color_func(id, event.target.value);
-  });
-  set_color_func(id, color);
-
-
-  return color_picker;
-}
-
-function createPlatformInput(text, func){
-  const input = document.createElement("div");
-  input.className = "sensor_input";
-  insertP(input, text);
-
-  const file_input = document.createElement("input");
-  file_input.className = "file_input";
-  file_input.type = "file";
-
-  input.append(file_input);
-
-  function appendInput(name){
-    input.classList.add("selected");
-    const p = input.getElementsByTagName("p");
-    if(p){
-      p[0].innerHTML = name.split('.')[0];
+function removeSelect(select, value){
+  for(const option of select){
+    if(option.value === value){
+      option.remove();
+      return true;
     }
   }
+  return false;
+}
 
-  input.onclick = function(){
-    file_input.onchange = function(e){
-      const files = e.target.files;
-      for(const file of files){
-        appendInput(file.name);
-        func(file)
-      }
-    };
-    file_input.click();
+function setName(element, name){
+  const p = element.getElementsByClassName("name")[0];
+  p.innerHTML = name;
+}
+
+function fileDropSelected(element, name){
+  element.classList.add("selected");
+  const p = element.getElementsByTagName("p")[0];
+  p.innerHTML = name;
+}
+
+function fileDropDeselected(element, name){
+  element.classList.remove("selected");
+  const p = element.getElementsByTagName("p")[0];
+  p.innerHTML = name;
+}
+
+function hideContainer(element, hide=true){
+  if(hide){
+    element.classList.add("hide");
   }
-
-  return input;
+  else{
+    element.classList.remove("hide");
+  }
 }
-
-function createSlider(min, max, defaultValue, func){
-  const slider_container = document.createElement("div");
-  slider_container.className = "slider_container";
-  const input = document.createElement("input");
-  input.className = "slider";
-  input.type="range";
-  input.min = min;
-  input.step = .01;
-  input.max = max;
-  input.value = defaultValue;
-  input.oninput = func;
-
-  slider_container.append(input);
-  return slider_container;
-}
-
-function insertP(parent, text, className=""){
-  const p = document.createElement("p");
-  p.className = className;
-  p.append(document.createTextNode(text));
-  parent.append(p);
-  return parent;
-}
-
 /* WIDGETS */
-/* DELETE WIDGETS */
 
-function deleteSatelliteNode(name){
-  document.getElementById(name).remove();
-  removeFollowSelect(name);
+/* EXPORTS */
+export function saveState(){
+  //serializes the json
+  const json = JSON.stringify(simulation.toJSON());
+  const blob = new Blob([json], {type: "text/plain;"});
+  saveAs(blob, "preset.json"); //from FileSaver.js
 }
 
-function onDeleteHandeler(event){
-
-  // TODO: Fix this. This is kinda bad lol
-  const parentElement = event.target
-    .parentElement
-    .parentElement
-    .parentElement
-    .parentElement
-    .parentElement
-    .parentElement;
-  const names = parentElement.getAttribute("ephemeris_name").split(',');
-  parentElement.remove();
-
-  for(const name of names){
-    //BOSON_EPHEMERIS.delete_ephemeris(name);
-    deleteSatelliteNode(name);
+export function insertFollowSelect(value){
+  const select = document.getElementById("follow_select");
+  if(select){
+    insertSelect(select, value);
   }
-  simulation.removeOrbit(parentElement.id);
-  //BOSON.remove_simulation(names);
 }
 
-function onDeleteTargetHandler(event){
-  // TODO: Fix this. This is kinda bad lol
-  const parentElement = event.target
-    .parentElement
-    .parentElement
-    .parentElement
-    .parentElement
-    .parentElement
-    .parentElement;
-  const names = parentElement.getAttribute("target_set_name").split(',');
-  parentElement.remove();
+export function setFollowSelect(value){
+  const select = document.getElementById("follow_select");
+  if(select){
+    select.value = value;
+    select.onchange();
+  }
+}
 
-  for(const name of names){
-    simulation.removeTargetSet(name);
+export function removeFollowSelect(value){
+  const select = document.getElementById("follow_select");
+  if(select){
+    removeSelect(select, value);
+    select.onchange();
+  }
+}
+
+export function setSatelliteColor(id, color){
+  const satellite = document.getElementById(id);
+  if(satellite){
+    const color_picker = satellite.getElementsByClassName("color_picker")[0];
+    color_picker.value = color;
+    simulation.setOrbitColor(id, color);
+  }
+}
+
+export function setSatelliteTrail(id, orbit_trail){
+  const global_select = document.getElementById("global_orbit_trail_select");
+  const satellite = document.getElementById(id);
+  if(satellite){
+    global_select.value = "";
+    const select = satellite.getElementsByClassName("orbit_trail_select")[0];
+    select.value = orbit_trail;
+    simulation.setOrbitTrail(id, orbit_trail);
+  }
+}
+
+export function setAllSatelliteTrail(names, orbit_trail){
+  console.log(names);
+  for(name of names){
+      const node = document.getElementById(name);
+      if(node){
+        const select = node.getElementsByClassName("orbit_trail_select")[0];
+        select.value = orbit_trail;
+        simulation.setOrbitTrail(name, orbit_trail);
+      }
+  }
+}
+/* EXPORTS */
+
+
+
+/* NODES */
+function linkFileDrop(element, load_file_func){
+  //dont propigate the event
+  const prevent_default = (e)=>e.preventDefault();
+  const load_file = (e) => {if(e.target.files.length > 0) load_file_func(e.target.files);};
+
+  const input = element.getElementsByTagName("input")[0];
+  input.oninput = load_file;
+
+  element.ondrop = load_file;
+  element.ondragover = prevent_default;
+  element.ondragenter = prevent_default;
+  element.ondragleave = prevent_default;
+  element.onclick = () => {
+    input.click();
+    //reset input so it will trigger again
+    //when user selects same file
+    input.value = null;
+  }
+}
+
+function linkGlobalControls(){
+  const select = document.getElementById("follow_select");
+  const save = document.getElementById("save_button");
+  const preset = document.getElementById("preset_file_drop");
+
+  select.onchange = (e) => {
+    simulation.follow(select.value);
+  };
+
+  save.onclick = (e) => {
+    saveState();
   }
 
-  //BOSON.delete_target_set(names);
+  linkFileDrop(preset, (e) => {
+    BOSON_FILELOADER.loadPresetJSON(e[0], importPreset);
+  });
 }
 
-/* DELETE WIDGETS */
-/* APPEND */
+function linkPlatformNode(){
+  const platform_controls = document.getElementById("platform_control_grid");
+  const platform_filedrop = document.getElementById("ephemeris_file_drop");
+  const sensor_filedrop = document.getElementById("sensor_file_drop");
+  const iw_filedrop = document.getElementById("iw_file_drop");
+  const cw_filedrop = document.getElementById("cw_file_drop");
+  const remove_all = document.getElementById("platform_delete_all");
 
-export function appendSatellite(name){
-  const satellite_list = document.querySelector("#satellite_list");
-  const satellite = createSatelliteNode(name);
-  satellite_list.append(satellite);
-  insertFollowSelect(name);
-}
+  linkFileDrop(platform_filedrop, (e) => {
+    BOSON_FILELOADER.loadEphemerisFile(e[0], importPlatform);
+  });
 
-export function appendDropFileElement(name, satellite_names){
-  if(satellite_names === undefined){
-    satellite_names = [name];
+  linkFileDrop(sensor_filedrop, (e) => {
+    BOSON_FILELOADER.loadSensorFile(e[0], importSensors);
+  });
+
+  linkFileDrop(iw_filedrop, (e) => {
+    BOSON_FILELOADER.loadWindowFile(e[0], (name, window)=>importWindow(name, window, true));
+  });
+
+  linkFileDrop(cw_filedrop, (e) => {
+    BOSON_FILELOADER.loadWindowFile(e[0], (name, window)=>importWindow(name, window, false));
+  });
+
+  remove_all.onclick = (e) => {
+    removeAllSatellites();
   }
-  const new_node = createEphemerisNode(name, satellite_names);
-  new_node.setAttribute("ephemeris_name", name);
-
-  const reference_node = document.querySelector('#file_drop_ephemeris');
-  reference_node.before(new_node);
-  return new_node;
 }
 
-export function appendDropFileElementPlatform(name, platform_names){
-  const node = appendDropFileElement(name, platform_names);
-  node.setAttribute("ephemeris_name", platform_names.join());
+function linkTargetNode(){
+  const target_filedrop = document.getElementById("target_file_drop");
+  const remove_all = document.getElementById("target_delete_all");
+
+  linkFileDrop(target_filedrop, (e) => {
+    BOSON_FILELOADER.loadTargetFile(e, importTargetSet);
+  });
+
+  remove_all.onclick = (e) => {
+    removeAllTargetSets();
+  }
 }
 
-export function appendDropFileElementTarget(name, num_targets){
-  const new_node = createTargetNode(name, num_targets);
-  new_node.setAttribute("target_set_name", name);
+function linkScheduleNode(){
+  const schedule_filedrop = document.getElementById("schedule_file_drop");
+  const remove_all = document.getElementById("schedule_delete_all");
+  const next_button = document.getElementById("next_event");
+  const prev_button = document.getElementById("prev_event");
 
-  const reference_node = document.querySelector('#file_drop_target');
-  reference_node.before(new_node);
-  return new_node;
+  linkFileDrop(schedule_filedrop, (e) => {
+    BOSON_FILELOADER.loadScheduleFile(e[0], importSchedule);
+  });
+
+  remove_all.onclick = (e) => {
+    removeSchedule();
+  }
+
+  next_button.onclick = (e) => {
+    simulation.nextScheduleEvent();
+  }
+  prev_button.onclick = (e) => {
+    simulation.prevScheduleEvent();
+  }
 }
 
-export function appendDropFileElementSchedule(name){
-  const new_node = createScheduleNode(name);
-  new_node.setAttribute("schedule_name", name);
+function createAndLinkSatellite(name, platform){
+  const satellite_scroll_box = document.getElementById("satellite_scroll_box");
+  const dummy_satellite = document.getElementById("dummy_satellite_node");
+  const satellite = dummy_satellite.cloneNode(true);
+  const control = satellite.getElementsByClassName("light_container")[0];
+  const color_picker = satellite.getElementsByClassName("color_picker")[0];
+  const orbit_trail_select = satellite.getElementsByClassName("orbit_trail_select")[0];
 
-  const reference_node = document.querySelector('#file_drop_schedule');
-  reference_node.before(new_node);
-  return new_node;
+  satellite.id = platform.name;
+  setName(satellite, platform.id + ": " + platform.name);
+  // setName(control, platform.name)
+  satellite.onclick = (e) => {
+    //Onclick event is triggered for all children including the control panel
+    //for the satellites. We test if child element contains "showable" before
+    //toggling visibility
+    if(e.target.classList.contains("showable")){
+      control.classList.toggle("hide");
+    }
+  };
+
+  color_picker.value = platform.color;
+  color_picker.oninput = () => {
+    setSatelliteColor(name, color_picker.value);
+  };
+
+  orbit_trail_select.value = platform.orbitTrail;
+  orbit_trail_select.onchange = (e) => {
+    setSatelliteTrail(name, orbit_trail_select.value);
+  }
+
+  satellite.classList.remove("hide");
+  satellite_scroll_box.appendChild(satellite);
 }
 
-/* APPEND */
-/* IMPORT DATA */
+function createAndLinkTargetSet(name, target_set){
+  const target_scroll_box = document.getElementById("target_scroll_box");
+  const dummy_target = document.getElementById("dummy_target_node");
+  const target = dummy_target.cloneNode(true);
+  const control = target.getElementsByClassName("light_container")[0];
 
+  const target_color = control.getElementsByClassName("color_picker")[0];
+  const select_color = control.getElementsByClassName("color_picker")[1];
+  const alpha_slider = control.getElementsByClassName("slider")[0];
+  const stat = control.getElementsByClassName("stat")[0];
+
+  target.id = name;
+  target.classList.remove("hide");
+
+  setName(target, name);
+
+  target.onclick = (e) => {
+    if(e.target.classList.contains("showable")){
+      control.classList.toggle("hide");
+    }
+  };
+
+
+  target_color.value = target_set.color;
+  select_color.value = target_set.selectColor;
+  alpha_slider.value = target_set.alpha;
+  target_color.oninput = (e) => {
+    simulation.setTargetColor(name, target_color.value, parseFloat(alpha_slider.value));
+  }
+  select_color.oninput = (e) => {
+    simulation.setTargetSelectColor(name, select_color.value);
+  }
+  alpha_slider.oninput = (e) => {
+    simulation.setTargetColor(name, target_color.value, parseFloat(alpha_slider.value));
+  }
+
+  stat.innerHTML = Object.values(target_set.targetSet).length + "";
+
+  target_scroll_box.appendChild(target);
+}
+
+linkGlobalControls();
+linkPlatformNode();
+linkTargetNode();
+linkScheduleNode();
+/* NODES */
+
+
+/* IMPORT */
 function importPreset(name, json){
-  console.log("Import JSON:", json);
+  console.log(name, json);
 
-  const platforms = json.platform;
-  platforms.forEach(p => {
-    const name = p.name;
-    const satellites = p.satellites;
+  if(!json) return;
 
-    const satellite_names = Object.values(satellites).map(s => s.name).sort();
-    satellite_names.forEach(appendSatellite);
-    appendDropFileElementPlatform(name, satellite_names);
+  //clears the state of the visualization
+  removeAllState();
 
-    simulation.importPlatform(name, satellites);
-    if(p.sensors){
-      simulation.importSensors(name, p.sensors.name, p.sensors.parameters);
+  if(json.platform){
+    //TODO make json.platform not an array
+    const platform = json.platform;
+
+    importPlatform(platform.name, platform.satellites);
+
+    const sensors = platform.sensors;
+    const iw = platform.iwWindow;
+    const cw = platform.cwWindow;
+
+    if(sensors){
+      importSensors(sensors.name, sensors.parameters);
     }
-    if(p.iwWindow){
-      simulation.importWindow(name, p.iwWindow, true);
+    if(iw){
+      importWindow(iw.name, iw, true);
     }
-    if(p.cwWindow){
-      simulation.importWindow(name, p.cwWindow, false);
+    if(cw){
+      importWindow(cw.name, cw, false);
     }
-  });
+  }
 
-  const targets = json.targets;
-  targets.forEach(t => {
-    appendDropFileElementTarget(t.name, Object.values(t).length);
-    simulation.importTargetSet(t.name, t);
-  });
+  const target_deck = json.target_deck;
+  if(target_deck){
+    Object.values(target_deck.targets).forEach(target => importTargetSet(target.name, target));
+  }
 
   const schedule = json.schedule;
   if(schedule){
-    appendDropFileElementSchedule(schedule.name.split('.')[0]);
-    simulation.importSchedule(schedule.name, schedule.schedule);
+    importSchedule(schedule.name, schedule);
+  }
+
+  const settings = json.settings;
+  if(settings){
+    if(settings.follow){
+      //Enough time for scene to load before following a satellite
+      setTimeout(function(){
+        setFollowSelect(settings.follow);
+      }, 1500);   //1.5 seconds
+    }
+
+    if(settings.currentTime){
+      simulation.setVisualizationTime(settings.currentTime);
+    }
+  }
+
+  const preset_filedrop = document.getElementById("preset_file_drop");
+  fileDropSelected(preset_filedrop, name);
+}
+
+function importPlatform(name, platform){
+  console.log(name, platform);
+
+  const platform_controls = document.getElementById("platform_control_grid");
+  const platform_filedrop = document.getElementById("ephemeris_file_drop");
+  const global_orbit_select = document.getElementById("global_orbit_trail_select");
+
+  const platforms = Object.values(platform).sort((a, b) => a.id - b.id);
+  platforms.forEach(p => createAndLinkSatellite(p.name, p));
+  platforms.map(p => p.name).forEach(insertFollowSelect);
+  setName(platform_controls, name);
+
+  hideContainer(platform_filedrop, true);
+  hideContainer(platform_controls, false);
+  global_orbit_select.value = "";
+  global_orbit_select.onchange = () => {
+    setAllSatelliteTrail(platforms.map(p => p.name), global_orbit_select.value);
+  }
+
+  simulation.importPlatform(name, platform);
+}
+
+function importSensors(name, sensors){
+  console.log(name, sensors);
+
+  const sensor_file_drop = document.getElementById("sensor_file_drop");
+  fileDropSelected(sensor_file_drop, name);
+  simulation.importSensors(name, sensors);
+}
+
+function importWindow(name, window, isIW=true){
+  console.log(name, window);
+
+  const file_drop = document.getElementById(isIW ? "iw_file_drop" : "cw_file_drop");
+  fileDropSelected(file_drop, name);
+  simulation.importWindow(window, isIW);
+}
+
+function importTargetSet(name, target_set){
+  console.log(name, target_set);
+
+  const target_filedrop = document.getElementById("target_file_drop");
+  createAndLinkTargetSet(name, target_set);
+  hideContainer(target_filedrop, true);
+
+  simulation.importTargetSet(name, target_set);
+}
+
+function importSchedule(name, schedule){
+  console.log(name, schedule);
+
+  const schedule_filedrop = document.getElementById("schedule_file_drop");
+  const schedule_controls = document.getElementById("schedule_control_grid");
+  const num_events = schedule_controls.getElementsByClassName("stat")[0];
+
+  setName(schedule_controls, name);
+
+  //Hack to count the number of events in the schedule
+  //TODO: there is a bug with counting NaN events
+  const accumulator = (a, c) => a + c;
+  num_events.innerHTML = Object
+    .values(schedule.schedule)
+    .map(s => s.targets.length)
+    .reduce(accumulator) + "";
+
+  hideContainer(schedule_filedrop, true);
+  hideContainer(schedule_controls, false);
+
+  simulation.importSchedule(name, schedule);
+}
+/* IMPORT */
+
+
+/* DELETES */
+function removeAllChildren(element){
+  //Javascript has no built in functionality to delete all children
+  while(element.firstChild){
+    element.removeChild(element.lastChild);
   }
 }
 
-function importEphemeris(name, platform){
-  console.log("Import Ephemeris:", platform);
-
-  simulation.importPlatform(name, platform);
-  const names = Object.keys(platform).sort();
-  names.forEach(appendSatellite);
-  appendDropFileElementPlatform(name, names);
+function removeAllState(){
+  //This is most efficent order to remove visualization elements
+  removeAllSatellites();
+  removeAllTargetSets();
+  removeSchedule();
 }
 
-function importSensor(ephemeris_name, sensor_name, sensors){
-  console.log("Import Sensor:", sensors);
-  simulation.importSensors(ephemeris_name, sensor_name, sensors);
+function removeAllSatellites(){
+  const platform_controls = document.getElementById("platform_control_grid");
+  const platform_filedrop = document.getElementById("ephemeris_file_drop");
+  const sensor_filedrop = document.getElementById("sensor_file_drop");
+  const iw_filedrop = document.getElementById("iw_file_drop");
+  const cw_filedrop = document.getElementById("cw_file_drop");
+  const satellite_scroll_box = document.getElementById("satellite_scroll_box");
+
+
+  hideContainer(platform_controls, true);
+  hideContainer(platform_filedrop, false);
+
+  fileDropDeselected(sensor_filedrop, "Load Sensor");
+  fileDropDeselected(iw_filedrop, "Load IW");
+  fileDropDeselected(cw_filedrop, "Load CW");
+  removeAllChildren(satellite_scroll_box);
+  simulation.getAllPlatformNames().forEach(removeFollowSelect);
+  simulation.removeAllOrbits();
+
 }
 
-function importWindow(ephemeris_name, window, isIW=true){
-  console.log("Import Window:", window);
-  simulation.importWindow(ephemeris_name, window, isIW);
+function removeAllTargetSets(){
+  const target_filedrop = document.getElementById("target_file_drop");
+  const traget_scroll_box = document.getElementById("target_scroll_box");
+
+  hideContainer(target_filedrop, false);
+
+  removeAllChildren(target_scroll_box);
+  simulation.removeAllTargetSets();
 }
 
-function importTargetSet(name, target){
-  console.log("Import Target:", target);
-  appendDropFileElementTarget(name, Object.values(target.targetSet).length);
+function removeSchedule(){
+  const schedule_filedrop = document.getElementById("schedule_file_drop");
+  const schedule_controls = document.getElementById("schedule_control_grid");
 
-  simulation.importTargetSet(name, target);
+  hideContainer(schedule_filedrop, false);
+  hideContainer(schedule_controls, true);
+  simulation.removeSchedule();
 }
+/* DELETES */
 
-function importSchedule(file, schedule){
-  console.log("Import Schedule:", schedule);
-  simulation.importSchedule(file.name, schedule);
-  appendDropFileElementSchedule(file.name.split('.')[0]);
-}
-
-/* IMPORT DATA */
-/* FILE DROP */
-
-function dragOverHandler(event){
-  event.preventDefault();
-}
-function dragStartHandler(event){
-  event.preventDefault();
-}
-function dragEndHandler(event){
-  event.preventDefault();
-}
-
-function dropHandlerEphemeris(event){
-  event.preventDefault();
-  if(!BOSON_FILELOADER.isValidFile(event)) return;
-
-  const file = event.dataTransfer.items[0].getAsFile();
-  // appendDropFileElement(file.name);
-  BOSON_FILELOADER.loadEphemerisFile(file, importEphemeris);
-}
-
-function dropHandlerSensor(event){
-  event.preventDefault();
-  if(!BOSON_FILELOADER.isValidFile(event)) return;
-
-  const file = event.dataTransfer.items[0].getAsFile();
-  // appendDropFileElement(file.name);
-  //BOSON_FILELOADER.loadSensorFile(file, importSensor);
-}
-
-function dropHandlerTarget(event){
-  event.preventDefault();
-  if(!BOSON_FILELOADER.isValidFile(event)) return;
-  const file = event.dataTransfer.items[0].getAsFile();
-  // appendDropFileElement(file.name);
-  BOSON_FILELOADER.loadTargetFile(file, importTargetSet);
-}
-
-function dropHandlerSchedule(event){
-  event.preventDefault();
-  if(!BOSON_FILELOADER.isValidFile(event)) return;
-  const file = event.dataTransfer.items[0].getAsFile();
-  BOSON_FILELOADER.loadScheduleFile(file, importSchedule);
-}
-
-const ephemeris = document.getElementById("file_drop_ephemeris");
-ephemeris.ondrop = dropHandlerEphemeris;
-ephemeris.ondragover = dragOverHandler;
-ephemeris.ondragenter = dragStartHandler;
-ephemeris.ondragleave = dragEndHandler;
-ephemeris.onclick = function(){
-  const input = document.getElementById("ephemeris_file_input");
-  input.oninput = function(e){
-    const files = e.target.files;
-    for(const file of files){
-      BOSON_FILELOADER.loadEphemerisFile(file, importEphemeris);
-    }
-  };
-  input.click();
-}
-
-
-const target = document.getElementById("file_drop_target");
-target.ondrop = dropHandlerTarget;
-target.ondragover = dragOverHandler;
-target.ondragenter = dragStartHandler;
-target.ondragleave = dragEndHandler;
-target.onclick = function(){
-  const input = document.getElementById("target_file_input");
-  input.oninput = function(e){
-    BOSON_FILELOADER.loadTargetFile(e.target.files, importTargetSet);
-  };
-  input.click();
-}
-
-const schedule = document.getElementById("file_drop_schedule");
-schedule.ondrop = dropHandlerSchedule;
-schedule.ondragover = dragOverHandler;
-schedule.ondragenter = dragStartHandler;
-schedule.ondragleave = dragEndHandler;
-schedule.onclick = function(){
-  const input = document.getElementById("schedule_file_input");
-  input.oninput = function(e){
-    const files = e.target.files;
-    for(const file of files){
-      BOSON_FILELOADER.loadScheduleFile(file, importSchedule);
-    }
-  };
-  input.click();
-}
-/* FILE DROP */
-
-//load global controls
-createGlobalControls();
+//removes annoying bottom text for cesium
+document.getElementsByClassName("cesium-viewer-bottom")[0].remove();
