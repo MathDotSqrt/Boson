@@ -20,7 +20,7 @@ Although `Boson` runs entirely on the front-end's browser, Cesium will not serve
 ## Developer Guide
 
 ### Setup
-To develop on Boson you will need the code repository, a web server, and a python interpreter with PIP.  
+To develop on Boson you will need the code repository, a web server, and a python interpreter.  
 
 1. Download the code repository
 
@@ -39,7 +39,7 @@ To develop on Boson you will need the code repository, a web server, and a pytho
 
 3. Install Python Interpreter
 
-  TBD
+Download the most recent version of [python 3.x.x](https://www.python.org/ftp/python/3.8.5/python-3.8.5.exe). Follow the wizard to complete the instillation process.   
 
 
 ### Classes
@@ -457,4 +457,157 @@ export function create_material(){
 
   return appearance;
 }
+```
+
+## Generating Presets with Python
+
+### Preset Builder
+> defined in `./python/preset_builder.py`
+
+This script takes in a preset json file containing settings and file locations for the visualization.
+
+#### Example
+`python preset_builder.py -i example_preset.json -o ./../data/python_preset_output.json`
+
+*NOTE: ALL of the paths are relative to the location of the script, not the current working directory*
+
+This will use the parameters and settings from `example_preset.json` and create a single file `python_preset_output.json` with the entire state of the visualization for boson to visualize. You can import this file strait into boson by loading the preset.  
+
+
+
+### Example Valid Preset Input Files
+#### Ephemeris preset
+> defined in `python/example_basic_preset.json`
+
+The simplest preset to generate. It will extract all satellites within the platform file and import them with default parameters. Any unspecified optional parameters are set to default values specified in `preset_builder.py`
+```json
+{
+  "platform" : {
+    "path" : "../data/platform.csv"     //relative path to platform file
+  }
+}
+```
+
+#### Custom Ephemeris preset
+> defined in `python/example_custom_ephemeris_preset.json`
+
+
+You can optionally specify visual components of the imported satellites. Not every satellites settings need to be specified.
+```json
+{
+  "platform" : {
+    "name" : "Cool and Interesting Name",         //optional
+    "path" : "../data/20satellites.csv",
+    "satellites" : {
+      "1" : {
+        "name" : "platform_really_long_name",     //optional
+        "color" : "#3300ff",                      //optional
+        "orbitTrail" : "one_rev"                  //optional
+      },
+      "2" : {                                     
+        "color" : "#11ffff"                       //optional
+      },
+      "18" : {
+        "color" : "#ff0000",                      //optional
+        "orbitTrail" : "all"                      //optional
+      }
+    }
+  }
+}
+
+```
+
+#### Target preset
+> defined in `python/example_target.json`
+
+It takes two paths to load targets into preset. The `targets` key specify what target type to load into visualization. In this example only target types 1, 3, 5 are defined. Only those three types will be loaded into visualization.   
+```json
+{
+  ...
+  "target_deck" : {
+    "target_path" : "../data/TestScenario1 Deck/targets.csv",               //required
+    "target_vertices" : "../data/TestScenario1 Deck/target_vertices.csv",   //required
+    "targets" : {                                                           //required
+      "1" : {
+      "name" : "deck_point",                //optional
+        "color" : "#ffaa00",                //optional
+        "selectColor" : "#ff00ff",
+        "alpha" : 0.7                       //optional
+      },
+      "3" : {
+        "name" : "deck_dsa",                //optional
+        "color" : "#0011ff"                 //optional
+      },
+      "5" : {
+        "name" : "custom_name_mcg"          //optional
+      }
+    }
+  }
+}
+
+
+```
+
+#### Example Preset
+> defined in `python/example_target.json`
+
+Here is an example with a preset that uses every implemented feature in `Boson`
+```JSON
+{
+  "settings" : {
+    "currentTime" : 10,
+    "follow" : "platform_reallylongname"
+  },
+  "platform" : {
+    "name" : "platform.csv",
+    "path" : "../data/platform.csv",
+    "satellites" : {
+      "1" : {
+        "name" : "platform_reallylongname",
+        "color" : "#3300ff",
+        "orbitTrail" : "one_rev"
+      },
+      "2" : {
+        "name" : "platform_asd2",
+        "color" : "#11ffff",
+        "orbitTrail" : "all"
+      }
+    },
+    "sensors" : {
+      "path" : "../data/sensor_constraints.csv"
+    },
+    "cwWindow" : {
+      "name": "comm windows",
+      "path" : "../data/comm_windows.csv"
+    },
+    "iwWindow" : {
+      "name" : "imaging window",
+      "path" : "../data/imaging_windows.csv"
+    }
+  },
+  "schedule" : {
+    "name" : "schedule operations",
+    "path" : "../data/scheduled_operations.csv"
+  },
+  "target_deck" : {
+    "target_path" : "../data/TestScenario1 Deck/targets.csv",
+    "target_vertices" : "../data/TestScenario1 Deck/target_vertices.csv",
+    "targets" : {
+      "1" : {
+        "name" : "deck_point_chris",
+        "color" : "#ffaa00",
+        "selectColor" : "#ff00ff",
+        "alpha" : 0.7
+      },
+      "3" : {
+        "name" : "deck_dsa",
+        "color" : "#0011ff"
+      },
+      "5" : {
+        "name" : "deck_mcg"
+      }
+    }
+  }
+}
+
 ```

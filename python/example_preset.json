@@ -41,6 +41,7 @@
       "1" : {
           "name" : "deck_point_chris",
           "color" : "#ffaa00",
+          "selectColor" : "#ff00ff",
           "alpha" : 0.7
       },
 
