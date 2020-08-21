@@ -95,6 +95,7 @@ DEFAULT_SCHEDULE = {
 
 TARGET_POINT = 1
 TARGET_DSA = 3
+TARGET_FOUR = 4 #No idea what the name of this target type is
 TARGET_MCG = 5
 
 DEFAULT_INPUT = "./example_preset.json"
@@ -316,10 +317,12 @@ def create_targets(targets, vertices, type):
 
     is_type = lambda x: x["typeID"] == type
     for target in filter(is_type, targets):
-        target_set[target["targetID"]] = {
-            "targetID" : target["targetID"],
-            "coords" : vertices[target["targetID"]]["coords"]
-        }
+
+        if target["targetID"] in vertices:
+            target_set[target["targetID"]] = {
+                "targetID" : target["targetID"],
+                "coords" : vertices[target["targetID"]]["coords"]
+            }
     return target_set
 
 #
@@ -418,7 +421,7 @@ def import_targets(target_deck):
     for [type, target] in targets.items():
         type = int(type)
         target = set_default(target, DEFAULT_TARGET);
-        if type == TARGET_POINT:
+        if type == TARGET_POINT or type == TARGET_FOUR:
             target["targetSet"] = create_point_targets(target_positions, type);
         else:
             target["targetSet"] = create_targets(target_positions, target_vertices, type);

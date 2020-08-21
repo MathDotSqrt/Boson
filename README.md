@@ -6,18 +6,21 @@ electro-optical/radar sensors.
 All dependencies are prebuilt and stored in `./js/build/`. These dependencies are either imported with a script tag in `index.html` or imported with ES6 modules.
 
 #### Current Dependencies
-- [Cesium 1.72](https://cesium.com/downloads/) *earth visualization*
+- [Cesium 1.59](https://cesium.com/downloads/) *earth visualization*
 - [MathDotSqrt/cesium-sensor-volumes](https://github.com/MathDotSqrt/cesium-sensor-volumes) *sensor visualization*
 - [FileSaver.js](https://github.com/eligrey/FileSaver.js/) *saves BLOB as file*
 
-*`Boson` should be backward compatible with all versions of Cesium >= __1.62__*
+*`Boson` should be forward compatible with all versions till Cesium __1.66__*
+
+## Upgrading past 1.65
+Version 1.65 is the most recent version of `Cesium` that `Boson` should be forward compatible with. To upgrade past version 1.65, merge all changes onto the `1.66` branch. The `1.66` branch is forward compatible to the most recent version of cesium, 1.72  
 
 ## Deployment
 
 `Boson` runs best on the newest version of chrome, but will run on any browser that supports ES6 and WebGL.
 
 #### Hosting
-Although `Boson` runs entirely on the front-end's browser, Cesium will not serve cross-origin requests unless it is hosted on a webserver. To run `Boson` the entire project folder needs to be on a webserver. The user can either host the webserver locally on a personal machine or host it remotely. If hosted locally you can access `Boson` via [localhost](http://localhost:8080/Boson/new_ui.html).
+Although `Boson` runs entirely on the front-end's browser, Cesium will not serve cross-origin requests unless it is hosted on a webserver. To run `Boson` the entire project folder needs to be on a webserver. The user can either host the webserver locally on a personal machine or host it remotely. If hosted locally you can access `Boson` via [localhost](http://localhost:8080/Boson/).
 
 ## Developer Guide
 
@@ -33,11 +36,11 @@ To develop on Boson you will need the code repository, a web server, and a pytho
 
   Version [Apache Tomcat Version 10.0.0](http://mirrors.ibiblio.org/apache/tomcat/tomcat-10/v10.0.0-M7/bin/apache-tomcat-10.0.0-M7-windows-x64.zip). After it is unzipped there are two important folders `bin` and `webapps`. To host `Boson` on tomcat put its root directory in the `webapps` folder. To launch the webserver, run `startup.bat` within the `bin` folder.
 
-  Now `Boson` should be hosted locally on http://localhost:8080/Boson/new_ui.html
+  Now `Boson` should be hosted locally on http://localhost:8080/Boson/
 
   To host `Boston` remotely, complete the previous steps on a dedicated host machine. Get its IPv4 Address and use the IP address with port 8080 to access it same as before.
 
-  Example: http://100.100.0.100:8080/Boson/new_ui.html
+  Example: http://100.100.0.100:8080/Boson/
 
 3. Install Python Interpreter
 
@@ -317,8 +320,8 @@ class Schedule{
 ```
 
 ### More Important Files
-  - `ui_style.css` is the base CSS of `Boson`
-  - `new_ui.html` is the base HTML of `Boson`
+  - `boson_style.css` is the base CSS of `Boson`
+  - `index.html` is the base HTML of `Boson`
   - `frontend.js` is a collection of functions that add event listeners to html elements and make the UI dynamic
   - `file_loader.js` is a collection of functions that read and parse files into JSON asynchronously. When files are successfully parsed they trigger a callback
 
