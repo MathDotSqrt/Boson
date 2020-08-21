@@ -1,0 +1,20 @@
+{
+  "target_deck" : {
+    "target_path" : "../data/TestScenario1 Deck/targets.csv",
+    "target_vertices" : "../data/TestScenario1 Deck/target_vertices.csv",
+    "targets" : {
+      "1" : {
+          "name" : "deck_point",
+          "color" : "#ffaa00",
+          "alpha" : 0.7
+      },
+      "3" : {
+          "name" : "deck_dsa",
+          "color" : "#0011ff"
+      },
+      "5" : {
+          "name" : "custom_name_mcg"
+      }
+    }
+  }
+}

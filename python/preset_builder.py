@@ -55,7 +55,8 @@ SCHEDULE_COLUMN_MAP = {
 }
 
 DEFAULT_PLATFORM = {
-    "name" : "platform"
+    "name" : "platform",
+    "satellites" : {}
 }
 
 DEFAULT_SATELLITE = {
