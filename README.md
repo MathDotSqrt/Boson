@@ -10,7 +10,10 @@ All dependencies are prebuilt and stored in `./js/build/`. These dependencies ar
 - [MathDotSqrt/cesium-sensor-volumes](https://github.com/MathDotSqrt/cesium-sensor-volumes) *sensor visualization*
 - [FileSaver.js](https://github.com/eligrey/FileSaver.js/) *saves BLOB as file*
 
-*`Boson` should be forward compatible with all versions up till Cesium __1.62__*
+*`Boson` should be forward compatible with all versions till Cesium __1.66__*
+
+## Upgrading past 1.65
+Version 1.65 is the most recent version of `Cesium` that `Boson` should be forward compatible with. To upgrade past version 1.65, merge all changes onto the `1.66` branch. The `1.66` branch is forward compatible to the most recent version of cesium, 1.72  
 
 ## Deployment
 
